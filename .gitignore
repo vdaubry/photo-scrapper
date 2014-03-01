@@ -1,5 +1,6 @@
 websites.yml
 forums.yml
+coverage
 
 *.rbc
 *.sassc
