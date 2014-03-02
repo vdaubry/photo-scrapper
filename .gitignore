@@ -1,5 +1,7 @@
 websites.yml
 forums.yml
+spec/ressources
+spec/fixtures
 
 *.rbc
 *.sassc

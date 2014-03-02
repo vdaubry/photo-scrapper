@@ -16,7 +16,10 @@ pp "Sign in user : #{user}"
 user = YAML.load_file('config/websites.yml')["website1"]["username"]
 password = YAML.load_file('config/websites.yml')["website1"]["password"]
 top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
-website.sign_in(user, password, top_link)
+website.sign_in(user, password)
+
+top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
+top_page = website.top_page(top_link)
 
 images_saved = 0
 (1..12).each do |category_number|

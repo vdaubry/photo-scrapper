@@ -1,8 +1,14 @@
 source 'https://rubygems.org'
 
-gem 'httparty', '0.13.0'
+gem 'httparty',         '~> 0.13.0'
+gem 'mail',             git: 'git://github.com/pwnall/mail', :ref => 'd367c0827b10161d7cc42fd22237daa9a7cedafd' #Fixes mail dependency with mimetypes 1.x which conflicts with Mechanize dependency on mimetypes 2.x => https://github.com/mikel/mail/issues/641
+gem 'mechanize',        '~> 2.7.3'
+gem "activesupport",    '~> 4.0.3'
 
-gem 'rspec'
-gem 'factory_girl'
-gem 'mocha'
-gem 'webmock'
+group :test do
+  gem 'rspec',          '~> 2.14.1'
+  gem 'factory_girl',   '~> 4.4.0'
+  gem 'mocha',          '~> 1.0.0'
+  gem 'webmock',        '~> 1.17.3'
+  gem 'vcr',            '~> 2.8.0'
+end
