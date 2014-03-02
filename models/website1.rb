@@ -2,19 +2,20 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'active_support/core_ext/array/access.rb'
+require_relative '../models/image_api'
 
 class Website1
 
-  attr_reader :url
+  attr_reader :image_url
   attr_accessor :current_page
   attr_accessor :current_post
 
   def initialize(url)
-    @url = url
+    @image_url = url
   end
 
   def home_page
-    @current_page = Mechanize.new.get(url)
+    @current_page = Mechanize.new.get(@image_url)
   end
 
   def previous_month
@@ -33,42 +34,49 @@ class Website1
     @current_page = @current_page.link_with(:text => top_link).click
   end
 
-  def scrap_category(category, previous_month)
-    @current_post = "#{category}_#{previous_month.strftime("%Y_%B")}"
+  def category(category_name, previous_month)
+    pp "Go to category : #{category_name} - #{previous_month.strftime("%Y/%B")}"
+    @current_post = "#{category_name}_#{previous_month.strftime("%Y_%B")}"
 
-    pp "Scrap category : #{category} - #{previous_month.strftime("%Y/%B")}"
-    page = @current_page.link_with(:text => category).click
+    page = @current_page.link_with(:text => category_name).click
     page = page.link_with(:text => previous_month.strftime("%Y")).click
-    page = page.link_with(:text => previous_month.strftime("%B")).click
+    page.link_with(:text => previous_month.strftime("%B")).click
+  end
 
+  def scrap_category(category_page)
     #post = scrapping.posts.find_or_create_by(:name => "#{category}_#{previous_month.strftime("%Y_%B")}")
     #post.update_attributes(:website => website, :status => Post::TO_SORT_STATUS)
 
     link_reg_exp = YAML.load_file('config/websites.yml')["website1"]["link_reg_exp"]
-    links = page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
+    links = category_page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
     pp "Found #{links.count} links" 
     links.each do |link|
-      download_image(link)
+      parse_image(link)
     end
 
     #post.destroy if post.images.count==0
   end
 
-  def download_image(link)
-    pp "download"
-    # page = link.click
-    # page_image = page.image_with(:src => %r{/norm/})
-    # if page_image
-    #   url = page_image.url.to_s
+  def parse_image(link)
+    page = link.click
+    page_image = page.image_with(:src => %r{/norm/})
 
-    #   image = Image.where(:source_url => url).first
-    #   if image.nil?
-    #     image = Image.new.build_info(url, website, post)
-    #     pp "Save #{image.key}"
-    #     image.download
-    #     sleep(1)
-    #   end
-    # end
+    if page_image
+      image_url = page_image.url.to_s
+
+      image = ImageApi.new.search(@url, image_url).first
+      if image.nil?
+        download_image(image_url)
+      end
+    end
+  end
+
+  def download_image(url)
+    pp "FAIL-download"
+    # image = Image.new.build_info(url, website, post)
+    # pp "Save #{image.key}"
+    # image.download
+    # sleep(1)
   end
 
 end
