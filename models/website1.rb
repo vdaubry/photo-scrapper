@@ -7,6 +7,7 @@ class Website1
 
   attr_reader :url
   attr_accessor :current_page
+  attr_accessor :current_post
 
   def initialize(url)
     @url = url
@@ -33,8 +34,10 @@ class Website1
   end
 
   def scrap_category(category, previous_month)
+    @current_post = "#{category}_#{previous_month.strftime("%Y_%B")}"
+
     pp "Scrap category : #{category} - #{previous_month.strftime("%Y/%B")}"
-    page = page.link_with(:text => category).click
+    page = @current_page.link_with(:text => category).click
     page = page.link_with(:text => previous_month.strftime("%Y")).click
     page = page.link_with(:text => previous_month.strftime("%B")).click
 
@@ -45,23 +48,27 @@ class Website1
     links = page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
     pp "Found #{links.count} links" 
     links.each do |link|
-      page = link.click
-      page_image = page.image_with(:src => %r{/norm/})
-      if page_image
-        url = page_image.url.to_s
-
-        #image = Image.where(:source_url => url).first
-        if image.nil?
-          image = Image.new.build_info(url, website, post)
-          pp "Save #{image.key}"
-          image.download
-          sleep(1)
-        end
-      end
-      
+      download_image(link)
     end
 
     #post.destroy if post.images.count==0
+  end
+
+  def download_image(link)
+    pp "download"
+    # page = link.click
+    # page_image = page.image_with(:src => %r{/norm/})
+    # if page_image
+    #   url = page_image.url.to_s
+
+    #   image = Image.where(:source_url => url).first
+    #   if image.nil?
+    #     image = Image.new.build_info(url, website, post)
+    #     pp "Save #{image.key}"
+    #     image.download
+    #     sleep(1)
+    #   end
+    # end
   end
 
 end
