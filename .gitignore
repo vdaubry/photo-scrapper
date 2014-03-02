@@ -1,7 +1,7 @@
 websites.yml
 forums.yml
-spec/ressources
 spec/fixtures
+coverage
 
 *.rbc
 *.sassc

@@ -7,6 +7,9 @@
 
 require 'webmock/rspec'
 require 'vcr'
+require 'coveralls'
+Coveralls.wear!
+
 require_relative '../models/website_api'
 require_relative '../models/website1'
 

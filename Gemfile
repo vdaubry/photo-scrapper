@@ -6,6 +6,7 @@ gem 'mechanize',        '~> 2.7.3'
 gem "activesupport",    '~> 4.0.3'
 
 group :test do
+  gem 'coveralls', '~> 0.7.0', require: false
   gem 'rspec',          '~> 2.14.1'
   gem 'factory_girl',   '~> 4.4.0'
   gem 'mocha',          '~> 1.0.0'
