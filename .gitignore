@@ -2,6 +2,7 @@ websites.yml
 forums.yml
 spec/fixtures
 coverage
+websites_test_conf.yml
 
 *.rbc
 *.sassc
