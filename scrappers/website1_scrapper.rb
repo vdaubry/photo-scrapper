@@ -24,6 +24,6 @@ top_page = website.top_page(top_link)
 images_saved = 0
 (1..12).each do |category_number|
   category_name = YAML.load_file('config/websites.yml')["website1"]["category#{category_number}"]
-  website.scrap_category(top_page, category_name, previous_month, website, scrapping) 
-  images_saved+=post.where(:name => "#{category_name}_#{previous_month.strftime("%Y_%B")}").images.count
+  website.scrap_category(category_name, previous_month) 
+  #images_saved+=post.where(:name => "#{category_name}_#{previous_month.strftime("%Y_%B")}").images.count
 end
