@@ -9,7 +9,7 @@ class PostApi
 
   def create(website_id, name)
     resp = self.class.post("/websites/#{website_id}/posts.json", :body => {:post => {:name => name}})
-    Post.new(resp)
+    Post.new(resp["post"])
   end
 end
 
@@ -22,6 +22,6 @@ class Post
   end
 
   def name
-    json["post"]["name"]
+    json["name"]
   end
 end

@@ -12,8 +12,10 @@ describe "WebsiteApi" do
                   :body => website_json, 
                   :status => 200)
 
-      websites = WebsiteApi.new.search("www.foo.bar")
-      websites.first.last_scrapping_date.should == Date.parse("2010-01-01")
+      website = WebsiteApi.new.search("www.foo.bar").first
+      website.last_scrapping_date.should == Date.parse("2010-01-01")
+      website.id.should == "506144650ed4c08d84000001"
+      website.url.should == "some url"
     end
   end
 end

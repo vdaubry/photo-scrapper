@@ -11,7 +11,6 @@ class WebsiteApi
     resp = self.class.get("/websites/search.json", :query => {:url => url})
     websites = resp["websites"]
     websites.map {|website| Website.new(website)}
-    
   end
 end
 
@@ -26,5 +25,13 @@ class Website
   def last_scrapping_date
     date_str = json["last_scrapping_date"]
     Date.parse(date_str)
+  end
+
+  def url
+    json["url"]
+  end
+
+  def id
+    json["id"]
   end
 end

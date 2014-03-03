@@ -2,24 +2,27 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'active_support/core_ext/array/access.rb'
+require 'active_support/time'
+require_relative '../models/website_api'
 require_relative '../models/image_api'
+require_relative '../models/post_api'
 
 class Website1
 
-  attr_reader :image_url
+  attr_accessor :website
   attr_accessor :current_page
   attr_accessor :current_post
 
   def initialize(url)
-    @image_url = url
+    @website = WebsiteApi.new.search(url).first
   end
 
   def home_page
-    @current_page = Mechanize.new.get(@image_url)
+    @current_page = Mechanize.new.get(@website.url)
   end
 
   def previous_month
-    previous_month = website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (website.last_scrapping_date - 1.month).beginning_of_month
+    previous_month = @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date - 1.month).beginning_of_month
   end
 
   def sign_in(user, password)
@@ -44,9 +47,8 @@ class Website1
   end
 
   def scrap_category(category_page)
-    #post = scrapping.posts.find_or_create_by(:name => "#{category}_#{previous_month.strftime("%Y_%B")}")
-    #post.update_attributes(:website => website, :status => Post::TO_SORT_STATUS)
-
+    post = PostApi.new.create(@website.id, "#{@current_post}_#{previous_month.strftime("%Y_%B")}")
+    
     link_reg_exp = YAML.load_file('config/websites.yml')["website1"]["link_reg_exp"]
     links = category_page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
     pp "Found #{links.count} links" 
