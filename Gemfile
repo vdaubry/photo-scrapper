@@ -10,6 +10,6 @@ group :test do
   gem 'rspec',          '~> 2.14.1'
   gem 'factory_girl',   '~> 4.4.0'
   gem 'mocha',          '~> 1.0.0'
-  gem 'webmock',        '~> 1.17.3'
+  gem 'webmock',        '~> 1.17.4'
   gem 'vcr',            '~> 2.8.0'
 end
