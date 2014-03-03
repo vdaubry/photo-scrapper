@@ -15,38 +15,47 @@ describe "Website1", :local => :true do
 
   before(:each) do
     @url = YAML.load_file('config/websites.yml')["website1"]["url"]
-    @website = Website1.new(@url)
+    @website1 = Website1.new(@url)
   end
 
   def go_to_home_page
-    @website.home_page
+    @website1.home_page
   end
 
   def do_sign_in
     @user = YAML.load_file('config/websites.yml')["website1"]["username"]
     @password = YAML.load_file('config/websites.yml')["website1"]["password"]
 
-    @website.sign_in(@user, @password)
+    @website1.sign_in(@user, @password)
   end
 
   def go_to_top_page
     go_to_home_page
     do_sign_in
     top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
-    @website.top_page(top_link)
+    @website1.top_page(top_link)
   end
 
   def go_to_category
     go_to_top_page
     @category_name = YAML.load_file('config/websites.yml')["website1"]["category1"]
     @previous_month = Date.parse("01-02-2014")
-    @website.category(@category_name, @previous_month)
+    @website1.category(@category_name, @previous_month)
   end
 
   describe "home_page", vcr: true do
     it "navigates to home_page" do
       go_to_home_page
-      @website.current_page.content.should match /Log-in/
+      @website1.current_page.content.should match /Log-in/
+    end
+  end
+
+  describe "previous_month", vcr: true do
+    context "has last scrapping date" do
+      it "returns 1 month before last scrapping date" do
+        @website1.website = Website.new({"last_scrapping_date" => "01/02/2010"})
+        @website1.previous_month.should == Date.parse("01/01/2010")
+      end
     end
   end
 
@@ -54,21 +63,21 @@ describe "Website1", :local => :true do
     it "post sign in form" do
       go_to_home_page
       do_sign_in
-      @website.current_page.content.should match /#{@user}/
+      @website1.current_page.content.should match /#{@user}/
     end
   end
 
   describe "top_page", vcr: true do
     it "navigates to top page" do
       go_to_top_page
-      @website.current_page.content.should match /Top of/
+      @website1.current_page.content.should match /Top of/
     end
   end
 
   describe "category", vcr: true do
     it "sets current post" do
       go_to_category
-      @website.current_post.should == "#{@category_name}_2014_February"
+      @website1.current_post.should == "#{@category_name}_2014_February"
     end
 
     it "sets category on month and year" do
@@ -78,10 +87,22 @@ describe "Website1", :local => :true do
   end
 
   describe "scrap_category", vcr: true do
+    it "creates a post" do
+      page = go_to_category
+      @website1.website = Website.new({"id" => "12345"})
+      @website1.current_post = "foobar"
+      @website1.stubs(:previous_month).returns(Date.parse("01/02/2010"))
+      @website1.stubs(:parse_image).returns(nil)
+      PostApi.any_instance.expects(:create).with("12345", "foobar_2010_February")
+
+
+      @website1.scrap_category(page)
+    end
+
     it "iterates on all links" do
       page = go_to_category
-      @website.expects(:parse_image).times(100)
-      @website.scrap_category(page)
+      @website1.expects(:parse_image).times(100)
+      @website1.scrap_category(page)
     end
   end
 
@@ -97,17 +118,17 @@ describe "Website1", :local => :true do
 
     it "do nothing if no image on link" do
       ImageApi.any_instance.stubs(:search).returns([{:key => "image_key"}])
-      @website.expects(:download_image).never
-      @website.parse_image(link)
+      @website1.expects(:download_image).never
+      @website1.parse_image(link)
     end
 
     it "downloads found image" do
       ImageApi.any_instance.stubs(:search).returns([])
-      @website.current_page = current_page
+      @website1.current_page = current_page
       do_sign_in
 
-      @website.expects(:download_image).once
-      @website.parse_image(link)
+      @website1.expects(:download_image).once
+      @website1.parse_image(link)
     end    
   end
 end
