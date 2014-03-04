@@ -15,6 +15,7 @@ describe "PostApi" do
 
       post = PostApi.new.create(123, "some_name")
       post.name.should == "some_name"
+      post.id.should == "5314e4264d6163063f020000"
     end
   end
 end

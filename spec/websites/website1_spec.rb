@@ -87,22 +87,45 @@ describe "Website1", :local => :true do
   end
 
   describe "scrap_category", vcr: true do
-    it "creates a post" do
-      page = go_to_category
-      @website1.website = Website.new({"id" => "12345"})
-      @website1.current_post = "foobar"
-      @website1.stubs(:previous_month).returns(Date.parse("01/02/2010"))
-      @website1.stubs(:parse_image).returns(nil)
-      PostApi.any_instance.expects(:create).with("12345", "foobar_2010_February")
+    context "calls post api" do
+      let(:website1) do
+        @website1.website = Website.new({"id" => "12345", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
+        @website1.current_post = "foobar"
+        @website1.stubs(:parse_image).returns(nil)
+        
+        @website1
+      end
 
+      it "creates a post" do
+        page = go_to_category
+        PostApi.any_instance.expects(:create).with("12345", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
 
-      @website1.scrap_category(page)
-    end
+        website1.scrap_category(page)
+      end
 
-    it "iterates on all links" do
-      page = go_to_category
-      @website1.expects(:parse_image).times(100)
-      @website1.scrap_category(page)
+      it "destroys post if post_image_count is 0" do
+        page = go_to_category
+        PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
+        website1.stubs(:post_images_count).returns(0)
+        PostApi.any_instance.expects(:destroy).with("12345", "6789")
+        
+        website1.scrap_category(page)
+      end
+
+      it "sets post_image_count to 0" do
+        page = go_to_category
+        PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
+        website1.scrap_category(page)
+
+        website1.post_images_count.should == 0      
+      end
+
+      it "iterates on all links" do
+        page = go_to_category
+        PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
+        website1.expects(:parse_image).times(100)
+        website1.scrap_category(page)
+      end
     end
   end
 

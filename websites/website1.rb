@@ -12,6 +12,7 @@ class Website1
   attr_accessor :website
   attr_accessor :current_page
   attr_accessor :current_post
+  attr_accessor :post_images_count
 
   def initialize(url)
     @website = WebsiteApi.new.search(url).first
@@ -47,7 +48,11 @@ class Website1
   end
 
   def scrap_category(category_page)
+    puts "@website.id = #{@website.id}"
+    puts "previous_month = #{previous_month.strftime("%Y_%B")}"
+
     post = PostApi.new.create(@website.id, "#{@current_post}_#{previous_month.strftime("%Y_%B")}")
+    @post_images_count = 0
     
     link_reg_exp = YAML.load_file('config/websites.yml')["website1"]["link_reg_exp"]
     links = category_page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
@@ -56,7 +61,7 @@ class Website1
       parse_image(link)
     end
 
-    #post.destroy if post.images.count==0
+    PostApi.new.destroy(@website.id, post.id) if @post_images_count==0
   end
 
   def parse_image(link)
