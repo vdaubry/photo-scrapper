@@ -11,6 +11,10 @@ class PostApi
     resp = self.class.post("/websites/#{website_id}/posts.json", :body => {:post => {:name => name}})
     Post.new(resp["post"])
   end
+
+  def destroy(website_id, id)
+    self.class.delete("/websites/#{website_id}/posts/#{id}.json")
+  end
 end
 
 
@@ -24,4 +28,8 @@ class Post
   def name
     json["name"]
   end
+
+  def id
+    json["id"]
+  end  
 end

@@ -25,4 +25,7 @@ class Image
   def key
     json["key"]
   end
+
+  def download
+  end
 end
