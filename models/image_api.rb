@@ -12,6 +12,10 @@ class ImageApi
     images = resp["images"]
     images.map {|image| Image.new(image)}
   end
+
+  def post(source_url, hosting_url, key, status, image_hash, width, height, file_size)
+    resp = self.class.post("/websites/#{website_id}/images/search.json", :body => {:source_url => source_url})
+  end
 end
 
 

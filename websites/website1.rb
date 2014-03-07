@@ -79,7 +79,6 @@ class Website1
   end
 
   def download_image(url)
-    pp "FAIL-download"
     # image = Image.new.build_info(url, website, post)
     # pp "Save #{image.key}"
     # image.download

@@ -154,4 +154,8 @@ describe "Website1", :local => :true do
       @website1.parse_image(link)
     end    
   end
+
+  describe "download_image" do
+    it ""
+  end
 end
