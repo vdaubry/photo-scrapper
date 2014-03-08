@@ -31,7 +31,7 @@ describe "ImageApi" do
         stub_request(:get, "http://localhost:3002/websites/123/images/search.json?source_url=www.foo.bar")
         .to_return(:headers => {"Content-Type" => 'text/plain'},
                     :body => File.read("spec/ressources/api_image_search_failure.response"), 
-                    :status => 200)
+                    :status => 500)
         
         images = ImageApi.new.search("123", "www.foo.bar")
         images.should == nil

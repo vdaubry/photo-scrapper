@@ -9,14 +9,14 @@ class WebsiteApi
 
   def search(url)
     resp = self.class.get("/websites/search.json", :query => {:url => url})
-    websites = resp["websites"]
 
-    #If the api fails, it returns a string with stacktrace
-    if websites!="websites"
-      websites.map {|website| Website.new(website)}
-    else
+    if resp.code != 200
       puts "API Failed with response : #{resp}"
+      return
     end
+
+    websites = resp["websites"]
+    websites.map {|website| Website.new(website)}
   end
 end
 
