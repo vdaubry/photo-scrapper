@@ -61,6 +61,7 @@ class ImageDownloader
   end
 
   def download(page_image=nil)
+    result = false
     begin
       if page_image
         page_image.fetch.save image_save_path #To protect from hotlinking we reuse the same session
@@ -73,12 +74,15 @@ class ImageDownloader
       generate_thumb
       set_image_info
       image = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size)
-      Ftp.new.upload_file(self) unless image.nil?
-
+      result = !image.nil?
+      Ftp.new.upload_file(self) unless !result
+      result
     rescue Timeout::Error, Errno::ENOENT => e
       puts e.to_s
     rescue OpenURI::HTTPError => e
-      puts "40x error at url : #{source_url}, deleting image"+e.to_s
+      puts "40x error at url : #{source_url}"+e.to_s
+    ensure
+      result
     end
   end
 

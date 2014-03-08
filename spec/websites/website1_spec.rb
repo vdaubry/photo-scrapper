@@ -167,17 +167,41 @@ describe "Website1", :local => :true do
   end
 
   describe "download_image", vcr: true do
+    let(:url) { "www.foo.bar/image.png" }
+
     before(:each) do
       @website1.website = Website.new({"id" => "123", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
       @website1.post_id = "456"
     end
 
     it "downloads image" do
-      url = "www.foo.bar/image.png"
       mock = ImageDownloader.new("key")
       mock.expects(:download).once
       ImageDownloader.any_instance.expects(:build_info).with("123", "456", url).returns(mock)
+
       @website1.download_image(url)
+    end
+
+    context "download image ok" do
+      it "increases post_images_count" do
+        @website1.post_images_count = 0
+        ImageDownloader.any_instance.expects(:download).returns(true)
+
+        @website1.download_image(url)
+
+        @website1.post_images_count.should == 1
+      end
+    end
+
+    context "download image ko" do
+      it "doesn't increase post_images_count" do
+        @website1.post_images_count = 0
+        ImageDownloader.any_instance.expects(:download).returns(false)
+
+        @website1.download_image(url)
+
+        @website1.post_images_count.should == 0
+      end
     end
   end
 end

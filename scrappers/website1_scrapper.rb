@@ -33,5 +33,4 @@ images_saved = 0
   category_name = YAML.load_file('config/websites.yml')["website1"]["category#{category_number}"]
   category_page = website.category(category_name, current_month)
   website.scrap_category(category_page, current_month)
-  #images_saved+=post.where(:name => "#{category_name}_#{previous_month.strftime("%Y_%B")}").images.count
 end
