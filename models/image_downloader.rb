@@ -76,10 +76,11 @@ class ImageDownloader
       image = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size)
       result = !image.nil?
       Ftp.new.upload_file(self) unless !result
+      result
     rescue Timeout::Error, Errno::ENOENT => e
       puts e.to_s
     rescue OpenURI::HTTPError => e
-      puts "40x error at url : #{source_url}, deleting image"+e.to_s
+      puts "40x error at url : #{source_url}"+e.to_s
     ensure
       result
     end

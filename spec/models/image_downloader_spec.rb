@@ -40,7 +40,7 @@ describe ImageDownloader do
 			Ftp.any_instance.expects(:upload_file).with(image)
 			ImageApi.any_instance.stubs(:post).returns(Image.new({}))
 
-			image.download
+			image.download.should == true
 		end
 
 		it "POST image to photo downloader" do
@@ -51,7 +51,7 @@ describe ImageDownloader do
 			image.stubs(:set_image_info).returns(true)
 			ImageApi.any_instance.expects(:post).with(123, 456, "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456).returns(Image.new({}))
 
-			image.download
+			image.download.should == true
 		end
 
 		it "deletes image if API responds with nil" do
@@ -61,7 +61,7 @@ describe ImageDownloader do
 			ImageApi.any_instance.expects(:post).returns(nil)
 			Ftp.any_instance.expects(:upload_file).never
 
-			image.download
+			image.download == false
 		end		
 
 		context "raises exception" do
@@ -72,17 +72,17 @@ describe ImageDownloader do
 
 			it "catches timeout error and keep image" do
 				@image.stubs(:open).raises(Timeout::Error)
-				@image.download
+				@image.download == false
 			end
 
 			it "catches 404 error and delete image" do
 				@image.stubs(:open).raises(OpenURI::HTTPError.new('',mock('io')))
-				@image.download
+				@image.download.should be_false
 			end
 
 			it "catches file not found and keep image" do
 				@image.stubs(:open).raises(Errno::ENOENT)
-				@image.download
+				@image.download == false
 			end
 		end
 	end
