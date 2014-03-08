@@ -83,7 +83,8 @@ class Website1
   def download_image(url)
     imageDownloader = ImageDownloader.new.build_info(@website.id, @post_id, url)
     pp "Save #{imageDownloader.key}"
-    imageDownloader.download
+    success = imageDownloader.download
+    @post_images_count += 1 if success
     sleep(1) unless ENV['TEST']
   end
 
