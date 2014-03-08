@@ -13,6 +13,8 @@ class ImageApi
     #If the api fails, it returns a string with stacktrace
     if images!="images"
       images.map {|image| Image.new(image)}
+    else
+      puts "API Failed with response : #{resp}"
     end
   end
 

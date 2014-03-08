@@ -74,11 +74,15 @@ class Website1
       image_url = page_image.url.to_s
 
       images = ImageApi.new.search(@website.id, image_url)
-      api_response_is_not_nil = !images.nil?
-      no_same_images_found = images.first.nil? rescue nil
+      if images.nil?
+        puts "Image search failed"
+        return
+      end
 
-      if api_response_is_not_nil && no_same_images_found
+      if images.first.nil?
         download_image(image_url)
+      else
+        puts "Image search found a similar images : #{images.first.key}"
       end
     end
   end

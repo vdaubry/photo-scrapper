@@ -150,7 +150,7 @@ describe "Website1", :local => :true do
     end
 
     it "do nothing if no image on link" do
-      ImageApi.any_instance.stubs(:search).returns([{:key => "image_key"}])
+      ImageApi.any_instance.stubs(:search).returns([Image.new({"key" => "image_key"})])
       @website1.expects(:download_image).never
       @website1.parse_image(link)
     end
