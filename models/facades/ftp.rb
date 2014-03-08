@@ -4,9 +4,7 @@ class Ftp
   FTP_ADRESS = '84.103.194.37'
 
   IMAGES_PATH="/mnt/HDD/ftp/images/to_sort"
-  THUMBNAILS_PATH="/mnt/HDD/ftp/images/to_sort/thumbnails/300"  
-  SAVE_PATH="/mnt/HDD/ftp/backup/Pic/New"
-
+  THUMBNAILS_PATH="/mnt/HDD/ftp/images/to_sort/thumbnails/300"
 
   def move_files_to_keep(keys)
     Net::SFTP.start(FTP_ADRESS, ENV['FTP_LOGIN'], :password => ENV['FTP_PASSWORD']) do |sftp|
@@ -36,7 +34,7 @@ class Ftp
       img_path = "#{ImageDownloader.image_path}/#{image.key}"
       thumb_path = "#{ImageDownloader.thumbnail_path}/#{image.key}"
       Net::SFTP.start(FTP_ADRESS, ENV['FTP_LOGIN'], :password => ENV['FTP_PASSWORD']) do |sftp|
-        sftp.upload!(img_path, "#{SAVE_PATH}/#{image.key}")
+        sftp.upload!(img_path, "#{IMAGES_PATH}/#{image.key}")
         sftp.upload!(thumb_path, "#{THUMBNAILS_PATH}/#{image.key}")
       end
 

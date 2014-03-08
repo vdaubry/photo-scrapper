@@ -163,7 +163,15 @@ describe "Website1", :local => :true do
 
       @website1.expects(:download_image).once
       @website1.parse_image(link)
-    end    
+    end
+
+    context "Search API failure" do
+      it "do nothing if no image on link" do
+        ImageApi.any_instance.stubs(:search).returns(nil)
+        @website1.expects(:download_image).never
+        @website1.parse_image(link)
+      end
+    end
   end
 
   describe "download_image", vcr: true do

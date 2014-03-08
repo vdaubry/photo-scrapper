@@ -10,7 +10,10 @@ class ImageApi
   def search(website_id, source_url)
     resp = self.class.get("/websites/#{website_id}/images/search.json", :query => {:source_url => source_url})
     images = resp["images"]
-    images.map {|image| Image.new(image)}
+    #If the api fails, it returns a string with stacktrace
+    if images!="images"
+      images.map {|image| Image.new(image)}
+    end
   end
 
   def post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size)
@@ -29,8 +32,5 @@ class Image
 
   def key
     json["key"]
-  end
-
-  def download
   end
 end

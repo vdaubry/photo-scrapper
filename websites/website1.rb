@@ -50,7 +50,7 @@ class Website1
   end
 
   def scrap_category(category_page, month)
-    puts "creating post  = #{@current_post_name}}"
+    puts "creating post  = #{@current_post_name}"
 
     post = PostApi.new.create(@website.id, @current_post_name)
     @post_id = post.id
@@ -73,8 +73,11 @@ class Website1
     if page_image
       image_url = page_image.url.to_s
 
-      image = ImageApi.new.search(@website.id, image_url).first
-      if image.nil?
+      images = ImageApi.new.search(@website.id, image_url)
+      api_response_is_not_nil = !images.nil?
+      no_same_images_found = images.first.nil? rescue nil
+
+      if api_response_is_not_nil && no_same_images_found
         download_image(image_url)
       end
     end

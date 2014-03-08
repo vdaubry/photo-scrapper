@@ -3,9 +3,9 @@ require 'rubygems'
 require 'bundler/setup'
 require 'yaml'
 require 'dotenv'
-require_relative 'config/application'
-require_relative 'models/website_api'
-require_relative 'websites/website1'
+require_relative '../config/application'
+require_relative '../models/website_api'
+require_relative '../websites/website1'
 
 Dotenv.load
 
@@ -19,10 +19,10 @@ pp "Start scrapping #{url} for month : #{current_month}"
 
 website.home_page
 
-pp "Sign in user : #{user}"
 user = YAML.load_file('config/websites.yml')["website1"]["username"]
 password = YAML.load_file('config/websites.yml')["website1"]["password"]
 top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
+pp "Sign in user : #{user}"
 website.sign_in(user, password)
 
 top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
