@@ -32,7 +32,7 @@ describe "ImageApi" do
 
     it "returns an image" do
       stub_request(:post, "http://localhost:3002/websites/123/posts/456/images.json").
-        with(:body => "source_url=www.foo.bar%2Fimage.png&hosting_url=www.foo.bar&key=543_image.png&status=TO_SORT_STATUS&image_hash=dfg2345679876&width=400&height=400&file_size=123456").
+        with(:body => "image[source_url]=www.foo.bar%2Fimage.png&image[hosting_url]=www.foo.bar&image[key]=543_image.png&image[status]=TO_SORT_STATUS&image[image_hash]=dfg2345679876&image[width]=400&image[height]=400&image[file_size]=123456").
         to_return(:headers => {"Content-Type" => 'application/json'},
                   :body => image_json, 
                   :status => 200)
@@ -43,7 +43,7 @@ describe "ImageApi" do
 
     it "returns nil" do
       stub_request(:post, "http://localhost:3002/websites/123/posts/456/images.json").
-        with(:body => "source_url=www.foo.bar%2Fimage.png&hosting_url=www.foo.bar&key=543_image.png&status=TO_SORT_STATUS&image_hash=dfg2345679876&width=400&height=400&file_size=123456").
+        with(:body => "image[source_url]=www.foo.bar%2Fimage.png&image[hosting_url]=www.foo.bar&image[key]=543_image.png&image[status]=TO_SORT_STATUS&image[image_hash]=dfg2345679876&image[width]=400&image[height]=400&image[file_size]=123456").
         to_return(:headers => {"Content-Type" => 'application/json'},
                   :body => nil, 
                   :status => 200)

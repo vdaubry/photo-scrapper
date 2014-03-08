@@ -21,8 +21,12 @@ class Website1
   end
 
   def previous_month
-    previous_month = @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date - 1.month).beginning_of_month
+    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date - 1.month).beginning_of_month
   end
+
+  def next_month
+    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date + 1.month).beginning_of_month
+  end  
 
   def sign_in(user, password)
     sign_in_page = @current_page.links.find { |l| l.text == 'Log-in' }.click
@@ -36,19 +40,19 @@ class Website1
     @current_page = @current_page.link_with(:text => top_link).click
   end
 
-  def category(category_name, previous_month)
-    pp "Go to category : #{category_name} - #{previous_month.strftime("%Y/%B")}"
-    @current_post_name = "#{category_name}_#{previous_month.strftime("%Y_%B")}"
+  def category(category_name, month)
+    pp "Go to category : #{category_name} - #{month.strftime("%Y/%B")}"
+    @current_post_name = "#{category_name}_#{month.strftime("%Y_%B")}"
 
     page = @current_page.link_with(:text => category_name).click
-    page = page.link_with(:text => previous_month.strftime("%Y")).click
-    page.link_with(:text => previous_month.strftime("%B")).click
+    page = page.link_with(:text => month.strftime("%Y")).click
+    page.link_with(:text => month.strftime("%B")).click
   end
 
-  def scrap_category(category_page)
-    puts "previous_month = #{previous_month.strftime("%Y_%B")}"
+  def scrap_category(category_page, month)
+    puts "creating post  = #{@current_post_name}}"
 
-    post = PostApi.new.create(@website.id, "#{@current_post_name}_#{previous_month.strftime("%Y_%B")}")
+    post = PostApi.new.create(@website.id, @current_post_name)
     @post_id = post.id
     @post_images_count = 0
     
@@ -69,7 +73,7 @@ class Website1
     if page_image
       image_url = page_image.url.to_s
 
-      image = ImageApi.new.search(@url, image_url).first
+      image = ImageApi.new.search(@website.id, image_url).first
       if image.nil?
         download_image(image_url)
       end
@@ -77,7 +81,7 @@ class Website1
   end
 
   def download_image(url)
-    imageDownloader = ImageDownloader.new.build_info(url)
+    imageDownloader = ImageDownloader.new.build_info(@website.id, @post_id, url)
     pp "Save #{imageDownloader.key}"
     imageDownloader.download
     sleep(1) unless ENV['TEST']
