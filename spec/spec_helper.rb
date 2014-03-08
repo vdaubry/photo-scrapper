@@ -8,7 +8,10 @@
 require 'webmock/rspec'
 require 'vcr'
 require 'coveralls'
+require 'stub_chain_mocha'
 Coveralls.wear!
+
+ENV['TEST']="true"
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
