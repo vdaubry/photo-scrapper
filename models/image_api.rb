@@ -14,7 +14,7 @@ class ImageApi
   end
 
   def post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size)
-    resp = self.class.post("/websites/#{website_id}/posts/#{post_id}/images.json", :body => {:source_url => source_url, :hosting_url => hosting_url, :key => key, :status => status, :image_hash => image_hash, :width => width, :height => height, :file_size => file_size})
+    resp = self.class.post("/websites/#{website_id}/posts/#{post_id}/images.json", :body => {:image => {:source_url => source_url, :hosting_url => hosting_url, :key => key, :status => status, :image_hash => image_hash, :width => width, :height => height, :file_size => file_size}})
     Image.new(resp["image"]) if resp["image"]
   end
 end

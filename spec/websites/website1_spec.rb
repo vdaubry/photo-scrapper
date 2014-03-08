@@ -59,6 +59,15 @@ describe "Website1", :local => :true do
     end
   end
 
+  describe "next_month", vcr: true do
+    context "has last scrapping date" do
+      it "returns 1 month after last scrapping date" do
+        @website1.website = Website.new({"last_scrapping_date" => "01/02/2010"})
+        @website1.next_month.should == Date.parse("01/03/2010")
+      end
+    end
+  end
+
   describe "sign_in", vcr: true do
     it "post sign in form" do
       go_to_home_page
@@ -88,9 +97,10 @@ describe "Website1", :local => :true do
 
   describe "scrap_category", vcr: true do
     context "calls post api" do
+      let(:month) { Date.parse("01/01/2010") }
       let(:website1) do
         @website1.website = Website.new({"id" => "12345", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
-        @website1.current_post_name = "foobar"
+        @website1.current_post_name = "foobar_2010_January"
         @website1.stubs(:parse_image).returns(nil)
         
         @website1
@@ -100,7 +110,7 @@ describe "Website1", :local => :true do
         page = go_to_category
         PostApi.any_instance.expects(:create).with("12345", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
 
-        website1.scrap_category(page)
+        website1.scrap_category(page, month)
       end
 
       it "destroys post if post_image_count is 0" do
@@ -109,13 +119,13 @@ describe "Website1", :local => :true do
         website1.stubs(:post_images_count).returns(0)
         PostApi.any_instance.expects(:destroy).with("12345", "6789")
         
-        website1.scrap_category(page)
+        website1.scrap_category(page, month)
       end
 
       it "sets post_image_count to 0" do
         page = go_to_category
         PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
-        website1.scrap_category(page)
+        website1.scrap_category(page, month)
 
         website1.post_images_count.should == 0      
       end
@@ -124,7 +134,7 @@ describe "Website1", :local => :true do
         page = go_to_category
         PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
         website1.expects(:parse_image).times(100)
-        website1.scrap_category(page)
+        website1.scrap_category(page, month)
       end
     end
   end
@@ -146,7 +156,8 @@ describe "Website1", :local => :true do
     end
 
     it "downloads found image" do
-      ImageApi.any_instance.stubs(:search).returns([])
+      image_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website1"]["parse_image"]["first_image"]
+      ImageApi.any_instance.stubs(:search).with('52ee82a14d6163a27e000000', image_url).returns([])
       @website1.current_page = current_page
       do_sign_in
 
@@ -165,7 +176,7 @@ describe "Website1", :local => :true do
       url = "www.foo.bar/image.png"
       mock = ImageDownloader.new("key")
       mock.expects(:download).once
-      ImageDownloader.any_instance.expects(:build_info).with(url).returns(mock)
+      ImageDownloader.any_instance.expects(:build_info).with("123", "456", url).returns(mock)
       @website1.download_image(url)
     end
   end
