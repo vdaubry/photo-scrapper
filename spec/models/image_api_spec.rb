@@ -27,10 +27,10 @@ describe "ImageApi" do
     end
 
     context "downlader api failure" do
-      it "returns empty images" do
+      it "returns nil" do
         stub_request(:get, "http://localhost:3002/websites/123/images/search.json?source_url=www.foo.bar")
         .to_return(:headers => {"Content-Type" => 'text/plain'},
-                    :body => File.read("spec/ressources/api_search_failure.response"), 
+                    :body => File.read("spec/ressources/api_image_search_failure.response"), 
                     :status => 200)
         
         images = ImageApi.new.search("123", "www.foo.bar")

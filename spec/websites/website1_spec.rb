@@ -43,6 +43,31 @@ describe "Website1", :local => :true do
     @website1.category(@category_name, @previous_month)
   end
 
+  describe "initialize", vcr: true do
+    
+    context "API return websites" do
+      it "sets website" do
+        result = Website.new({"id" => "12345"})
+        WebsiteApi.any_instance.stubs(:search).with(@url).returns([result])
+
+        websites = Website1.new(@url)
+
+        websites.website.should == result
+      end
+    end
+
+    context "API return error" do
+      it "sets website" do
+        result = Website.new({"id" => "12345"})
+        WebsiteApi.any_instance.stubs(:search).with(@url).returns(nil)
+
+        expect {
+          Website1.new(@url)
+          }.to raise_error(RuntimeError)
+      end
+    end
+  end
+
   describe "home_page", vcr: true do
     it "navigates to home_page" do
       go_to_home_page

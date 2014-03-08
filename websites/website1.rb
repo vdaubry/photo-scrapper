@@ -13,7 +13,12 @@ class Website1
   attr_accessor :website, :current_page, :current_post_name, :post_images_count, :post_id
 
   def initialize(url)
-    @website = WebsiteApi.new.search(url).first
+    websites = WebsiteApi.new.search(url)
+    if websites.nil?
+      raise "Website search failed"
+    else 
+      @website = websites.first
+    end
   end
 
   def home_page

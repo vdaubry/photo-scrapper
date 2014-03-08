@@ -18,4 +18,16 @@ describe "WebsiteApi" do
       website.url.should == "some url"
     end
   end
+
+  context "downlader api failure" do
+    it "returns nil" do
+      stub_request(:get, "http://localhost:3002/websites/search.json?url=www.foo.bar")
+      .to_return(:headers => {"Content-Type" => 'text/plain'},
+                  :body => File.read("spec/ressources/api_website_search_failure.response"), 
+                  :status => 200)
+      
+      website = WebsiteApi.new.search("www.foo.bar")
+      website.should == nil
+    end
+  end
 end
