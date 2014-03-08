@@ -77,7 +77,7 @@ describe "Website1", :local => :true do
   describe "category", vcr: true do
     it "sets current post" do
       go_to_category
-      @website1.current_post.should == "#{@category_name}_2014_February"
+      @website1.current_post_name.should == "#{@category_name}_2014_February"
     end
 
     it "sets category on month and year" do
@@ -90,7 +90,7 @@ describe "Website1", :local => :true do
     context "calls post api" do
       let(:website1) do
         @website1.website = Website.new({"id" => "12345", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
-        @website1.current_post = "foobar"
+        @website1.current_post_name = "foobar"
         @website1.stubs(:parse_image).returns(nil)
         
         @website1
@@ -155,7 +155,18 @@ describe "Website1", :local => :true do
     end    
   end
 
-  describe "download_image" do
-    it ""
+  describe "download_image", vcr: true do
+    before(:each) do
+      @website1.website = Website.new({"id" => "123", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
+      @website1.post_id = "456"
+    end
+
+    it "downloads image" do
+      url = "www.foo.bar/image.png"
+      mock = ImageDownloader.new("key")
+      mock.expects(:download).once
+      ImageDownloader.any_instance.expects(:build_info).with(url).returns(mock)
+      @website1.download_image(url)
+    end
   end
 end

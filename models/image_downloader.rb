@@ -3,17 +3,20 @@ require 'fastimage'
 require 'mini_magick'
 require 'active_support/time'
 require_relative 'facades/ftp'
+require_relative 'image_api'
 
 class ImageDownloader
   TO_SORT_STATUS="TO_SORT_STATUS"
 
-  attr_accessor :source_url, :hosting_url, :key, :status, :image_hash, :width, :height, :file_size
+  attr_accessor :source_url, :hosting_url, :key, :status, :image_hash, :width, :height, :file_size, :website_id, :post_id
 
   def initialize(key=nil)
     @key = key
   end
 
-  def build_info(source_url, hosting_url=nil)
+  def build_info(website_id, post_id, source_url, hosting_url=nil)
+    @website_id = website_id
+    @post_id = post_id
     @source_url = source_url
     @hosting_url = hosting_url
     @key = (DateTime.now.to_i.to_s + "_" + File.basename(URI.parse(source_url).path)).gsub('-', '_').gsub(/[^0-9A-Za-z_\.]/, '')
@@ -68,9 +71,8 @@ class ImageDownloader
 
       generate_thumb
       set_image_info
-      Ftp.new.upload_file(self)
-
-      #TODO : call API
+      image = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size)
+      Ftp.new.upload_file(self) unless image.nil?
 
     rescue Timeout::Error, Errno::ENOENT => e
       puts e.to_s

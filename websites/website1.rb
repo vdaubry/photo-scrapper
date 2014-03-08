@@ -6,13 +6,11 @@ require 'active_support/time'
 require_relative '../models/website_api'
 require_relative '../models/image_api'
 require_relative '../models/post_api'
+require_relative '../models/image_downloader'
 
 class Website1
 
-  attr_accessor :website
-  attr_accessor :current_page
-  attr_accessor :current_post
-  attr_accessor :post_images_count
+  attr_accessor :website, :current_page, :current_post_name, :post_images_count, :post_id
 
   def initialize(url)
     @website = WebsiteApi.new.search(url).first
@@ -40,7 +38,7 @@ class Website1
 
   def category(category_name, previous_month)
     pp "Go to category : #{category_name} - #{previous_month.strftime("%Y/%B")}"
-    @current_post = "#{category_name}_#{previous_month.strftime("%Y_%B")}"
+    @current_post_name = "#{category_name}_#{previous_month.strftime("%Y_%B")}"
 
     page = @current_page.link_with(:text => category_name).click
     page = page.link_with(:text => previous_month.strftime("%Y")).click
@@ -48,10 +46,10 @@ class Website1
   end
 
   def scrap_category(category_page)
-    puts "@website.id = #{@website.id}"
     puts "previous_month = #{previous_month.strftime("%Y_%B")}"
 
-    post = PostApi.new.create(@website.id, "#{@current_post}_#{previous_month.strftime("%Y_%B")}")
+    post = PostApi.new.create(@website.id, "#{@current_post_name}_#{previous_month.strftime("%Y_%B")}")
+    @post_id = post.id
     @post_images_count = 0
     
     link_reg_exp = YAML.load_file('config/websites.yml')["website1"]["link_reg_exp"]
@@ -61,7 +59,7 @@ class Website1
       parse_image(link)
     end
 
-    PostApi.new.destroy(@website.id, post.id) if @post_images_count==0
+    PostApi.new.destroy(@website.id, @post_id) if @post_images_count==0
   end
 
   def parse_image(link)
@@ -79,10 +77,10 @@ class Website1
   end
 
   def download_image(url)
-    # image = Image.new.build_info(url, website, post)
-    # pp "Save #{image.key}"
-    # image.download
-    # sleep(1)
+    imageDownloader = ImageDownloader.new.build_info(url)
+    pp "Save #{imageDownloader.key}"
+    imageDownloader.download
+    sleep(1) unless ENV['TEST']
   end
 
 end

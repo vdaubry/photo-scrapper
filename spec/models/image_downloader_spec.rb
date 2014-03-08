@@ -10,8 +10,10 @@ describe ImageDownloader do
 			DateTime.stubs(:now).returns fake_date
 			url = "http://foo.bar"
 			
-			img = ImageDownloader.new.build_info(url)
+			img = ImageDownloader.new.build_info(123, 456, url)
 
+			img.website_id.should == 123
+			img.post_id.should == 456
 			img.source_url.should == url
 			img.key.should == fake_date.to_i.to_s + "_" + File.basename(URI.parse(url).path)
 			img.status.should == ImageDownloader::TO_SORT_STATUS
@@ -22,7 +24,7 @@ describe ImageDownloader do
 			DateTime.stubs(:now).returns fake_date
 			url = "http://foo.bar/abc-jhvg-emil123.jpg"
 
-			img = ImageDownloader.new.build_info(url)
+			img = ImageDownloader.new.build_info(123, 456, url)
 
 			img.key.should == fake_date.to_i.to_s + "_" + "abc_jhvg_emil123.jpg"
 		end
@@ -31,15 +33,36 @@ describe ImageDownloader do
 	describe "download" do
 		let(:image) { ImageDownloader.new("calinours.jpg") }
 
-		it "POST image to photo downloader" do
-			ImageDownloader.stubs(:image_path).returns("spec/ressources")
-			ImageDownloader.stubs(:thumbnail_path).returns("spec/ressources/thumb")
-			image.stub_chain(:open, :read) { File.open("ressources/calinours.jpg").read }
+		it "uploads file to FTP" do
+			image.stub_chain(:open, :read) { File.open("spec/ressources/calinours.jpg").read }
+			image.stubs(:generate_thumb).returns(true)
+			image.stubs(:set_image_info).returns(true)
+			Ftp.any_instance.expects(:upload_file).with(image)
+			ImageApi.any_instance.stubs(:post).returns(Image.new({}))
 
 			image.download
-
-			
 		end
+
+		it "POST image to photo downloader" do
+			params = {:source_url => "www.foo.bar/image.png", :hosting_url => "www.foo.bar", :key => "543_image.png", :status => "TO_SORT_STATUS", :image_hash => "dfg2345679876", :width => 400, :height => 400, :file_size => 123456, :website_id => 123, :post_id => 456}
+			params.each {|k, v| image.instance_variable_set("@#{k}", v)}
+			image.stub_chain(:open, :read) { File.open("spec/ressources/calinours.jpg").read }
+			image.stubs(:generate_thumb).returns(true)
+			image.stubs(:set_image_info).returns(true)
+			ImageApi.any_instance.expects(:post).with(123, 456, "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456).returns(Image.new({}))
+
+			image.download
+		end
+
+		it "deletes image if API responds with nil" do
+			image.stub_chain(:open, :read) { File.open("spec/ressources/calinours.jpg").read }
+			image.stubs(:generate_thumb).returns(true)
+			image.stubs(:set_image_info).returns(true)
+			ImageApi.any_instance.expects(:post).returns(nil)
+			Ftp.any_instance.expects(:upload_file).never
+
+			image.download
+		end		
 
 		context "raises exception" do
 			before(:each) do
@@ -61,15 +84,6 @@ describe ImageDownloader do
 				@image.stubs(:open).raises(Errno::ENOENT)
 				@image.download
 			end
-		end
-
-		it "uploads file to FTP" do
-			image.stub_chain(:open, :read) { File.open("spec/ressources/calinours.jpg").read }
-			image.stubs(:generate_thumb).returns(true)
-			image.stubs(:set_image_info).returns(true)
-			Ftp.any_instance.expects(:upload_file).with(image)
-
-			image.download
 		end
 	end
 
