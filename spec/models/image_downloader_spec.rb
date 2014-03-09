@@ -84,6 +84,11 @@ describe ImageDownloader do
 				@image.stubs(:open).raises(Errno::ENOENT)
 				@image.download == false
 			end
+
+			it "catches connection error and keep image" do
+				@image.stubs(:open).raises(Errno::ECONNRESET)
+				@image.download == false
+			end
 		end
 	end
 

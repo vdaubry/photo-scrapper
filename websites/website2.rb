@@ -7,7 +7,7 @@ class Website2 < BaseWebsite
   include Download
 
   def last_scrapping_date
-    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : @website.last_scrapping_date
+    @website.last_scrapping_date.nil? ? 1.year.ago.beginning_of_month : @website.last_scrapping_date
   end
 
   def allowed_links(excluded_urls)
@@ -36,6 +36,7 @@ class Website2 < BaseWebsite
     #check current page date 
     doc = page.parser
     pid = doc.css("div.pic").first.children[1].text.split("id. ").last
+    post_url = YAML.load_file('config/websites.yml')["website2"]["post_url"]
     browser = Mechanize.new
     response_doc = browser.post(post_url, {"req" => "pexpand", "pid" => pid}).parser
     response_doc.xpath("//body").children[0].text.split("added on: ").last
@@ -56,9 +57,14 @@ class Website2 < BaseWebsite
     end
   end
 
-  def scrap_specific_page(page_name)
+  def scrap_specific_page(page_name, post_name)
     page = Mechanize.new.get(page_name)
+    post = PostApi.new.create(@website.id, post_name)
+    @post_id = post.id
+    @post_images_count = 0
     scrap_page(page, 1.year.ago)
+
+    PostApi.new.destroy(@website.id, @post_id) if @post_images_count==0
   end
 
   def scrap_page(page, previous_scrapping_date)

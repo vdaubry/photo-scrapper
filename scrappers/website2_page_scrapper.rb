@@ -14,4 +14,4 @@ website = Website2.new(url)
 page = ARGV[0]
 base_url = YAML.load_file('config/websites.yml')["website2"]["base_url"]
 
-website.scrap_specific_page("#{base_url}/#{page}")
+website.scrap_specific_page("#{base_url}/#{page}", page)
