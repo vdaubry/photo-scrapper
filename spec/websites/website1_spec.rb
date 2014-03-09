@@ -176,7 +176,7 @@ describe "Website1", :local => :true do
 
     it "do nothing if no image on link" do
       ImageApi.any_instance.stubs(:search).returns([Image.new({"key" => "image_key"})])
-      @website1.expects(:download_image).never
+      ImageDownloader.any_instance.expects(:download).never
       @website1.parse_image(link)
     end
 
@@ -186,14 +186,14 @@ describe "Website1", :local => :true do
       @website1.current_page = current_page
       do_sign_in
 
-      @website1.expects(:download_image).once
+      ImageDownloader.any_instance.expects(:download).once
       @website1.parse_image(link)
     end
 
     context "Search API failure" do
       it "do nothing if no image on link" do
         ImageApi.any_instance.stubs(:search).returns(nil)
-        @website1.expects(:download_image).never
+        ImageDownloader.any_instance.expects(:download).never
         @website1.parse_image(link)
       end
     end
@@ -205,6 +205,7 @@ describe "Website1", :local => :true do
     before(:each) do
       @website1.website = Website.new({"id" => "123", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
       @website1.post_id = "456"
+      ImageApi.any_instance.stubs(:search).returns([])
     end
 
     it "downloads image" do

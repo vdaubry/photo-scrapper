@@ -34,3 +34,4 @@ images_saved = 0
   category_page = website.category(category_name, current_month)
   website.scrap_category(category_page, current_month)
 end
+
