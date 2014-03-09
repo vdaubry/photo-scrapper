@@ -1,30 +1,11 @@
-require 'rubygems'
-require 'bundler/setup'
-require 'mechanize'
-require 'active_support/core_ext/array/access.rb'
-require 'active_support/time'
-require_relative '../models/website_api'
-require_relative '../models/image_api'
-require_relative '../models/post_api'
-require_relative '../models/image_downloader'
+require_relative 'base_website'
+require_relative 'navigation'
+require_relative 'download'
 
-class Website1
-
-  attr_accessor :website, :current_page, :current_post_name, :post_images_count, :post_id
-
-  def initialize(url)
-    websites = WebsiteApi.new.search(url)
-    if websites.nil?
-      raise "Website search failed"
-    else 
-      @website = websites.first
-    end
-  end
-
-  def home_page
-    @current_page = Mechanize.new.get(@website.url)
-  end
-
+class Website1 < BaseWebsite
+  include Navigation
+  include Download
+  
   def previous_month
     @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date - 1.month).beginning_of_month
   end
@@ -77,27 +58,8 @@ class Website1
 
     if page_image
       image_url = page_image.url.to_s
-
-      images = ImageApi.new.search(@website.id, image_url)
-      if images.nil?
-        puts "Image search failed"
-        return
-      end
-
-      if images.first.nil?
-        download_image(image_url)
-      else
-        puts "Image search found a similar images : #{images.first.key}"
-      end
+      download_image(image_url)
     end
-  end
-
-  def download_image(url)
-    imageDownloader = ImageDownloader.new.build_info(@website.id, @post_id, url)
-    pp "Save #{imageDownloader.key}"
-    success = imageDownloader.download
-    @post_images_count += 1 if success
-    sleep(1) unless ENV['TEST']
   end
 
 end

@@ -30,7 +30,7 @@ class Website
 
   def last_scrapping_date
     date_str = json["last_scrapping_date"]
-    Date.parse(date_str)
+    Date.parse(date_str) unless date_str.nil?
   end
 
   def url
