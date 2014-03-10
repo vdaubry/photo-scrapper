@@ -3,6 +3,7 @@ forums.yml
 spec/fixtures
 coverage
 websites_test_conf.yml
+forums_test_conf.yml
 
 *.rbc
 *.sassc
