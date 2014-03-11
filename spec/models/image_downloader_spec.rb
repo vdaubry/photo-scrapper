@@ -70,23 +70,28 @@ describe ImageDownloader do
 				@image = ImageDownloader.new("calinours.jpg")
 			end
 
-			it "catches timeout error and keep image" do
+			it "catches timeout error" do
 				@image.stubs(:open).raises(Timeout::Error)
 				@image.download == false
 			end
 
-			it "catches 404 error and delete image" do
+			it "catches 404 error" do
 				@image.stubs(:open).raises(OpenURI::HTTPError.new('',mock('io')))
 				@image.download.should be_false
 			end
 
-			it "catches file not found and keep image" do
+			it "catches file not found" do
 				@image.stubs(:open).raises(Errno::ENOENT)
 				@image.download == false
 			end
 
-			it "catches connection error and keep image" do
+			it "catches connection error" do
 				@image.stubs(:open).raises(Errno::ECONNRESET)
+				@image.download == false
+			end
+
+			it "catches files error" do
+				@image.stubs(:open).raises(EOFError)
 				@image.download == false
 			end
 		end

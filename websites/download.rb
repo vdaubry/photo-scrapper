@@ -1,6 +1,6 @@
 module Download
   def download_image(url)
-    images = ImageApi.new.search(@website.id, url)
+    images = ImageApi.new.search(@website.id, {:source_url => url})
     if images.nil?
       puts "Image search failed"
       return

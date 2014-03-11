@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'mechanize'
 require 'spec_helper'
 require_relative '../../websites/forum1'
+require_relative '../../models/post_api'
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassette_library'
@@ -33,11 +34,8 @@ describe "Forum1", :local => :true do
   end
 
   let(:forum_page) do
-    go_to_home_page
-    do_sign_in
-    forum_page = @forum1.category_forums(category_name)
-    link = @forum1.forum_topics(forum_page).first
-    forum_page.link_with(:href => link).click
+    post_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["post_url"]
+    Mechanize.new.get(post_url)
   end
 
   describe "forum_topics", :vcr => true do
@@ -62,14 +60,14 @@ describe "Forum1", :local => :true do
       it "creates a post" do
         forum_page.stubs(:title).returns("foobar_2010_January")
         PostApi.any_instance.expects(:create).with("52f7e1df4d61635e70010000", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
-        @forum1.stubs(:scrap_from_first_page).returns(nil)
+        @forum1.stubs(:scrap_from_page).returns(nil)
 
         @forum1.scrap_post_hosted_images(forum_page, date)
       end
 
       it "sets post_image_count to 0" do
         PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
-        @forum1.stubs(:scrap_from_first_page).returns(nil)
+        @forum1.stubs(:scrap_from_page).returns(nil)
 
         @forum1.scrap_post_hosted_images(forum_page, date)
 
@@ -78,7 +76,7 @@ describe "Forum1", :local => :true do
 
       it "destroys post if post_image_count is 0" do
         PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
-        @forum1.stubs(:scrap_from_first_page).returns(nil)
+        @forum1.stubs(:scrap_from_page).returns(nil)
         @forum1.stubs(:post_images_count).returns(0)
         PostApi.any_instance.expects(:destroy).with("52f7e1df4d61635e70010000", "6789")
         
@@ -87,7 +85,7 @@ describe "Forum1", :local => :true do
 
       it "scrap post" do
         PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
-        @forum1.expects(:scrap_from_first_page).once.returns(nil)
+        @forum1.expects(:scrap_from_page).once.returns(nil)
 
         @forum1.scrap_post_hosted_images(forum_page, date)
       end
@@ -96,13 +94,75 @@ describe "Forum1", :local => :true do
 
   describe "host_urls" do
     it "finds all images hosted urls", :vcr => true do
-      @forum1.host_urls(forum_page).should == 20
+      res = @forum1.host_urls(forum_page)
+
+      puts "#{res.first}"
+      puts "#{res.last}"
+
+      res.count.should == 1
     end
   end
 
-  describe "scrap_from_first_page", :vcr => true do
-    it "iterates on all urls" do
+  describe "page_image_at_host_url", :vcr => true do
+    it "finds all images urls" do
+      host_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_url"]
+      expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["image_url"]
+      @forum1.page_image_at_host_url(host_url).should == expected_image
+    end
+  end
 
+  describe "scrap_from_page", :vcr => true do
+    let(:fake_host_url) { YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_url"] }
+
+    it "iterates on all urls" do
+      expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["image_url"]
+      @forum1.stubs(:host_urls).returns([fake_host_url])
+      @forum1.expects(:download_image).with(expected_image).once.returns(nil)
+
+      @forum1.scrap_from_page(forum_page, date)
+    end
+
+    it "skips images not found" do
+      @forum1.stubs(:host_urls).returns([fake_host_url])
+      @forum1.stubs(:page_image_at_host_url).returns(nil)
+      @forum1.expects(:download_image).never
+
+      @forum1.scrap_from_page(forum_page, date)
+    end
+  end
+
+  describe "go_to_next_page", :vcr => true do
+    context "not yet scrapped" do
+      before(:each) do
+        PostApi.any_instance.stubs(:search).returns([])
+      end
+
+      it "updates post pages_url" do
+        expected_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["post2_url"]
+        @forum1.post_id = "456"
+        @forum1.stubs(:scrap_from_page).returns(nil)
+        PostApi.any_instance.expects(:update).with('52f7e1df4d61635e70010000', "456", expected_url)
+        
+        @forum1.go_to_next_page(forum_page, date)
+      end
+
+      it "scraps next page" do
+        PostApi.any_instance.stubs(:search).returns([])
+        @forum1.expects(:scrap_from_page).once.returns(nil)
+        PostApi.any_instance.stubs(:update).returns(nil)
+        
+        @forum1.go_to_next_page(forum_page, date)
+      end
+    end
+
+    context "already scrapped" do
+      it "doesn't update post pages_url" do
+        PostApi.any_instance.stubs(:search).returns([Post.new({"id" => "6789"})])
+        @forum1.expects(:scrap_from_page).never
+        PostApi.any_instance.expects(:update).never
+
+        @forum1.go_to_next_page(forum_page, date)
+      end
     end
   end
 end
