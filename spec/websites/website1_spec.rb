@@ -182,7 +182,7 @@ describe "Website1", :local => :true do
 
     it "downloads found image" do
       image_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website1"]["parse_image"]["first_image"]
-      ImageApi.any_instance.stubs(:search).with('52ee82a14d6163a27e000000', image_url).returns([])
+      ImageApi.any_instance.stubs(:search).with('52ee82a14d6163a27e000000', {:source_url => image_url}).returns([])
       @website1.current_page = current_page
       do_sign_in
 

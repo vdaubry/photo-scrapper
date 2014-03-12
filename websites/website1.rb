@@ -1,26 +1,12 @@
 require_relative 'base_website'
 require_relative 'navigation'
 require_relative 'download'
+require_relative 'scrapping'
 
 class Website1 < BaseWebsite
   include Navigation
   include Download
-  
-  def previous_month
-    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date - 1.month).beginning_of_month
-  end
-
-  def next_month
-    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date + 1.month).beginning_of_month
-  end  
-
-  def sign_in(user, password)
-    sign_in_page = @current_page.links.find { |l| l.text == 'Log-in' }.click
-    @current_page = sign_in_page.form_with(:name => nil) do |form|
-      form.fields.second.value = user
-      form.fields.third.value = password
-    end.submit
-  end
+  include Scrapping
 
   def top_page(top_link)
     @current_page = @current_page.link_with(:text => top_link).click

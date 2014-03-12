@@ -1,14 +1,12 @@
 require_relative 'base_website'
 require_relative 'navigation'
 require_relative 'download'
+require_relative 'scrapping'
 
 class Website2 < BaseWebsite
   include Navigation
   include Download
-
-  def last_scrapping_date
-    @website.last_scrapping_date.nil? ? 1.year.ago.beginning_of_month : @website.last_scrapping_date
-  end
+  include Scrapping
 
   def allowed_links(excluded_urls)
     @current_page.links.map {|link| link if link.text.present? && !excluded_urls.any? {|s| link.href.include?(s)} && link.href.size>1}.compact
