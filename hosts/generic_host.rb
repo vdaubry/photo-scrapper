@@ -8,17 +8,22 @@ class GenericHost
     @host_url = host_url
   end
 
+  def all_images
+    browser = Mechanize.new.get(@host_url)
+    images = browser.images.select {|i| (i.url.to_s.downcase =~ /jpg|jpeg|png/).present? }
+    images.reject! {|s| %w(rating layout).any? {|t| s.text.downcase.include?(t)} }
+    images.reject! {|s| %w(logo counter register banner imgbox.png thumbnail adhance offline medal top bottom male female promotext close btn home).any? { |w| s.url.to_s.include?(w)}}
+    images
+  end
+
   def page_image
     puts "Parse images from #{URI.parse(@host_url).host}"
     page_images = []
     begin
-      browser = Mechanize.new.get(@host_url)
       #page_images = browser.images_with(:src => /picture/, :mime_type => /jpg|jpeg|png/).reject {|s| %w(logo register banner).any? { |w| s.url.to_s.include?(w)}}
 
       #if page_images.blank?
-        page_images = browser.images.select {|i| (i.url.to_s.downcase =~ /jpg|jpeg|png/).present? }
-        page_images.reject! {|s| %w(rating layout).any? {|t| s.text.downcase.include?(t)} }
-        page_images.reject! {|s| %w(logo counter register banner imgbox.png thumbnail adhance offline medal top bottom male female promotext close btn home).any? { |w| s.url.to_s.include?(w)}}
+        page_images = all_images
       #end
       puts "No images found at : #{@host_url}" if page_images.blank?
     rescue Mechanize::ResponseCodeError => e

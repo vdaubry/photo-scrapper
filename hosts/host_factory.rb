@@ -1,5 +1,6 @@
 require_relative 'generic_host'
 require_relative 'host1'
+require_relative 'host2'
 
 class HostFactory
   def self.create_with_host_url(url)

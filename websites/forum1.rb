@@ -28,6 +28,7 @@ class Forum1 < BaseWebsite
   end
 
   def page_image_at_host_url(host_url)
+    puts "#{host_url}"
     HostFactory.create_with_host_url(host_url).page_image
   end
   

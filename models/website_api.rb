@@ -5,7 +5,10 @@ require_relative '../config/application'
 
 class WebsiteApi
   include HTTParty
-  base_uri ENV['PHOTO_DOWNLOADER_URL']
+  
+  def initialize
+    self.class.base_uri ENV['PHOTO_DOWNLOADER_URL']
+  end
 
   def search(url)
     resp = self.class.get("/websites/search.json", :query => {:url => url})
