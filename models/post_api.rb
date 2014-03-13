@@ -5,7 +5,7 @@ require_relative '../config/application'
 
 class PostApi
   include HTTParty
-  base_uri PHOTO_DOWNLOADER_URL
+  base_uri ENV['PHOTO_DOWNLOADER_URL']
 
   def create(website_id, name)
     resp = self.class.post("/websites/#{website_id}/posts.json", :body => {:post => {:name => name}})

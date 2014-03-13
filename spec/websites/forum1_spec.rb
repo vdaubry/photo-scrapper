@@ -129,6 +129,17 @@ describe "Forum1", :local => :true do
 
       @forum1.scrap_from_page(forum_page, date)
     end
+
+    it "pases images hosted on forum" do
+      post_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["scrap_from_page"]["wbw_hosted_post"]
+      @forum1.current_page = Mechanize.new.get(post_url)
+      do_sign_in
+      wbw_hosted_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["scrap_from_page"]["wbw_hosted_image"]
+      @forum1.expects(:download_image).with(wbw_hosted_image).once
+      @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)))
+
+      @forum1.scrap_from_page(@forum1.current_page, date)
+    end
   end
 
   describe "go_to_next_page", :vcr => true do
@@ -138,7 +149,7 @@ describe "Forum1", :local => :true do
       end
 
       it "updates post pages_url" do
-        expected_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["post2_url"]
+        expected_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["go_to_next_page"]["post2_url"]
         @forum1.post_id = "456"
         @forum1.stubs(:scrap_from_page).returns(nil)
         PostApi.any_instance.expects(:update).with('52f7e1df4d61635e70010000', "456", expected_url)

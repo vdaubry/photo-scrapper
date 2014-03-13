@@ -22,7 +22,14 @@ describe "HostFactory", :local => :true do
       it "returns nil" do
         HostFactory.create_with_host_url("www.foo").should == nil
       end
-    end    
+    end
+
+    context "known host" do
+      it "returns main image" do
+        image_url2 = YAML.load_file("spec/hosts/hosts_conf_spec.yml")["generic_host"]["parse_image"]["image_url2"]
+        HostFactory.create_with_host_url(image_url2).should_not be_nil
+      end
+    end
   end
 
 end

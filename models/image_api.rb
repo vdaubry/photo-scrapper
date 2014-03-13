@@ -5,7 +5,7 @@ require_relative '../config/application'
 
 class ImageApi
   include HTTParty
-  base_uri PHOTO_DOWNLOADER_URL
+  base_uri ENV['PHOTO_DOWNLOADER_URL']
 
   def search(website_id, options={})
     resp = self.class.get("/websites/#{website_id}/images/search.json", :body => options)

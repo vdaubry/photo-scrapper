@@ -56,7 +56,7 @@ class Forum1 < BaseWebsite
         page_image_at_host_url(host_url)
       else
         base_url = YAML.load_file('config/forums.yml')["forum1"]["base_url"]
-        [Str.new("#{base_url}#{host_url}")]
+        "#{base_url}#{host_url}"
       end
 
       download_image(page_image) if page_image.present?

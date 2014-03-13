@@ -1,1 +1,1 @@
-PHOTO_DOWNLOADER_URL = "http://localhost:3002"
+APP_ENV="development"
