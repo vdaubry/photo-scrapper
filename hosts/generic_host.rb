@@ -8,7 +8,7 @@ class GenericHost
     @host_url = host_url
   end
 
-  def image_url
+  def page_image
     puts "Parse images from #{URI.parse(@host_url).host}"
     page_images = []
     begin
@@ -24,7 +24,12 @@ class GenericHost
     rescue Mechanize::ResponseCodeError => e
       puts "error = #{e.to_s} at page #{@host_url}"
     ensure
-      return page_images.first.url.to_s rescue nil
+      return page_images.first rescue nil
     end
   end
+
+  def image_url
+    return page_image.url.to_s rescue nil
+  end
+    
 end

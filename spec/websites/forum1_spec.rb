@@ -107,7 +107,7 @@ describe "Forum1", :local => :true do
     it "finds all images urls" do
       host_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_url"]
       expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["image_url"]
-      @forum1.page_image_at_host_url(host_url).should == expected_image
+      @forum1.page_image_at_host_url(host_url).url.to_s.should == expected_image
     end
   end
 
@@ -117,7 +117,7 @@ describe "Forum1", :local => :true do
     it "iterates on all urls" do
       expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["image_url"]
       @forum1.stubs(:host_urls).returns([fake_host_url])
-      @forum1.expects(:download_image).with(expected_image).once.returns(nil)
+      @forum1.expects(:download_image).with(expected_image, anything).once.returns(nil)
 
       @forum1.scrap_from_page(forum_page, date)
     end
@@ -135,8 +135,9 @@ describe "Forum1", :local => :true do
       @forum1.current_page = Mechanize.new.get(post_url)
       do_sign_in
       wbw_hosted_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["scrap_from_page"]["wbw_hosted_image"]
-      @forum1.expects(:download_image).with(wbw_hosted_image).once
-      @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)))
+
+      @forum1.expects(:download_image).with(wbw_hosted_image, anything).once
+      @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)), anything)
 
       @forum1.scrap_from_page(@forum1.current_page, date)
     end

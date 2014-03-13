@@ -9,6 +9,8 @@ class Forum1 < BaseWebsite
   include Download
   include Scrapping
 
+  Str = Struct.new :url
+
   def forum_topics(forum_page)
     doc = forum_page.parser
     doc.xpath('//tr[@class=""]//td[@class="title"]//a').reject {|i| i[:href].include?("page:")}.map { |i| i[:href]}
@@ -26,7 +28,7 @@ class Forum1 < BaseWebsite
   end
 
   def page_image_at_host_url(host_url)
-    HostFactory.create_with_host_url(host_url).image_url
+    HostFactory.create_with_host_url(host_url).page_image
   end
   
   def scrap_posts_from_category(category_name, previous_scrapping_date)
@@ -56,10 +58,10 @@ class Forum1 < BaseWebsite
         page_image_at_host_url(host_url)
       else
         base_url = YAML.load_file('config/forums.yml')["forum1"]["base_url"]
-        "#{base_url}#{host_url}"
+        Str.new("#{base_url}#{host_url}")
       end
 
-      download_image(page_image) if page_image.present?
+      download_image(page_image.url.to_s, page_image) if page_image.present?
     end
 
     go_to_next_page(post_page, previous_scrapping_date)
