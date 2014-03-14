@@ -9,9 +9,13 @@ require 'webmock/rspec'
 require 'vcr'
 require 'coveralls'
 require 'stub_chain_mocha'
+require 'dotenv'
+require_relative '../config/application'
 Coveralls.wear!
 
 ENV['TEST']="true"
+
+Dotenv.load
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true

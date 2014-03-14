@@ -25,5 +25,12 @@ describe "GenericHost", :local => true do
         GenericHost.new("http://www.google.fr").image_url.should == nil
       end
     end
+
+    context "Net::HTTPNotFound" do
+      it "returns nil" do
+        unhandled_response_url = YAML.load_file("spec/hosts/hosts_conf_spec.yml")["generic_host"]["parse_image"]["unhandled_response_url"]
+        GenericHost.new(unhandled_response_url).image_url.should == nil
+      end
+    end
   end
 end

@@ -1,8 +1,11 @@
 require_relative 'generic_host'
 require_relative 'host1'
+require_relative 'host2'
 
 class HostFactory
   def self.create_with_host_url(url)
+    puts "url = #{url}"
+
     hosts = YAML.load_file("hosts/hosts_conf.yml")["hosts"]
     host = URI.parse(url).host
     return nil if host.nil?

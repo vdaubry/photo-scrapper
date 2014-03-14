@@ -9,6 +9,8 @@ class Forum1 < BaseWebsite
   include Download
   include Scrapping
 
+  Str = Struct.new :url
+
   def forum_topics(forum_page)
     doc = forum_page.parser
     doc.xpath('//tr[@class=""]//td[@class="title"]//a').reject {|i| i[:href].include?("page:")}.map { |i| i[:href]}
@@ -26,7 +28,8 @@ class Forum1 < BaseWebsite
   end
 
   def page_image_at_host_url(host_url)
-    HostFactory.create_with_host_url(host_url).image_url
+    puts "#{host_url}"
+    HostFactory.create_with_host_url(host_url).page_image
   end
   
   def scrap_posts_from_category(category_name, previous_scrapping_date)
@@ -51,15 +54,18 @@ class Forum1 < BaseWebsite
 
   def scrap_from_page(post_page, previous_scrapping_date)
     urls = host_urls(post_page)
+
+    puts "All images scrapped on page : #{post_page.uri.to_s}"
+
     urls.each do |host_url|
       page_image = if host_url.include?("http")
         page_image_at_host_url(host_url)
       else
         base_url = YAML.load_file('config/forums.yml')["forum1"]["base_url"]
-        [Str.new("#{base_url}#{host_url}")]
+        Str.new("#{base_url}#{host_url}")
       end
 
-      download_image(page_image) if page_image.present?
+      download_image(page_image.url.to_s, page_image) if page_image.present?
     end
 
     go_to_next_page(post_page, previous_scrapping_date)
@@ -71,12 +77,14 @@ class Forum1 < BaseWebsite
     if next_link
       next_link_url = (post_page.uri.merge next_link.uri).to_s
       not_scrapped = PostApi.new.search(@website.id, next_link_url).blank?
-      pp "already_scrapped = #{!not_scrapped}"
       if not_scrapped
+        puts "Scrapping next page"
         PostApi.new.update(@website.id, @post_id, next_link_url)
         
         post_page = next_link.click
         scrap_from_page(post_page, previous_scrapping_date)
+      else
+        puts "Next page already scrapped : #{post_page.uri.to_s}"
       end
     end 
   end

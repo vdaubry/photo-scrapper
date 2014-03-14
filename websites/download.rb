@@ -1,5 +1,6 @@
 module Download
-  def download_image(url)
+
+  def download_image(url, page_image=nil)
     images = ImageApi.new.search(@website.id, {:source_url => url})
     if images.nil?
       puts "Image search failed"
@@ -9,7 +10,7 @@ module Download
     if images.first.nil?
       imageDownloader = ImageDownloader.new.build_info(@website.id, @post_id, url)
       pp "Save #{imageDownloader.key}"
-      success = imageDownloader.download
+      success = imageDownloader.download(page_image)
       @post_images_count += 1 if success
       sleep(1) unless ENV['TEST']
     else

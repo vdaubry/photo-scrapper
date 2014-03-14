@@ -1,3 +1,4 @@
 --color
 --tag '~local'
+--tag '~integration'
 --format progress
