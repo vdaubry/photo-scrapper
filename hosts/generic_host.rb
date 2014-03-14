@@ -28,9 +28,8 @@ class GenericHost
       puts "No images found at : #{@host_url}" if page_images.blank?
     rescue Mechanize::ResponseCodeError => e
       puts "error = #{e.to_s} at page #{@host_url}"
-    ensure
-      return page_images.first rescue nil
     end
+    page_images.first rescue nil
   end
 
   def image_url

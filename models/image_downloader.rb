@@ -3,6 +3,7 @@ require 'open_uri_redirections'
 require 'fastimage'
 require 'mini_magick'
 require 'active_support/time'
+require 'benchmark'
 require_relative 'facades/ftp'
 require_relative 'image_api'
 
@@ -64,19 +65,35 @@ class ImageDownloader
     result = false
     begin
       if page_image
-        page_image.fetch.save image_save_path #To protect from hotlinking we reuse the same session
+        puts "Downloading with mechanize"
+        puts Benchmark.measure { 
+          page_image.fetch.save image_save_path #To protect from hotlinking we reuse the same session
+        }
       else
-        open(image_save_path, 'wb') do |file|
-          file << open(source_url, :allow_redirections => :all).read
-        end
+        puts "Downloading with open-uri"
+        puts Benchmark.measure { 
+          open(image_save_path, 'wb') do |file|
+            file << open(source_url, :allow_redirections => :all).read
+          end
+        }
       end
-
+      
       set_image_info
-      generate_thumb
-      result = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size).present?
+      puts "Generating thumnail"
+      puts Benchmark.measure { 
+          generate_thumb
+        }
+      
+      puts "Calling image post api"
+      puts Benchmark.measure { 
+          result = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size).present?
+        }
       
       if result
-        Ftp.new.upload_file(self)
+        puts "Uploading to FTP"
+        puts Benchmark.measure { 
+          Ftp.new.upload_file(self)
+        }
       end
     rescue Timeout::Error, Errno::ENOENT => e
       puts e.to_s
@@ -90,8 +107,8 @@ class ImageDownloader
       puts e.to_s
     ensure
       clean_images
-      return result
     end
+    result
   end
 
 end

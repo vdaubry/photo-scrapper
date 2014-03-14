@@ -54,6 +54,9 @@ class Forum1 < BaseWebsite
 
   def scrap_from_page(post_page, previous_scrapping_date)
     urls = host_urls(post_page)
+
+    puts "All images scrapped on page : #{post_page.uri.to_s}"
+
     urls.each do |host_url|
       page_image = if host_url.include?("http")
         page_image_at_host_url(host_url)
@@ -74,12 +77,14 @@ class Forum1 < BaseWebsite
     if next_link
       next_link_url = (post_page.uri.merge next_link.uri).to_s
       not_scrapped = PostApi.new.search(@website.id, next_link_url).blank?
-      pp "already_scrapped = #{!not_scrapped}"
       if not_scrapped
+        puts "Scrapping next page"
         PostApi.new.update(@website.id, @post_id, next_link_url)
         
         post_page = next_link.click
         scrap_from_page(post_page, previous_scrapping_date)
+      else
+        puts "Next page already scrapped : #{post_page.uri.to_s}"
       end
     end 
   end
