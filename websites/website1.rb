@@ -1,12 +1,12 @@
 require_relative 'base_website'
 require_relative 'navigation'
 require_relative 'download'
-require_relative 'scrapping'
+require_relative 'scrapping_date'
 
 class Website1 < BaseWebsite
   include Navigation
   include Download
-  include Scrapping
+  include ScrappingDate
 
   def top_page(top_link)
     @current_page = @current_page.link_with(:text => top_link).click

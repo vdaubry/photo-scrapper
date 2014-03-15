@@ -1,4 +1,4 @@
-module Scrapping
+module ScrappingDate
   def last_scrapping_date
     @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : @website.last_scrapping_date
   end
