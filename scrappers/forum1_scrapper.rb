@@ -18,7 +18,7 @@ website = Forum1.new(url)
 start_time = DateTime.now
 last_scrapping_date = website.last_scrapping_date
 
-scrapping = ScrappingApi.new.create(website.id, start_time)
+scrapping = ScrappingApi.new.create(website.website.id, start_time)
 
 website.home_page
 
@@ -34,4 +34,4 @@ pp "Start scrapping #{url} new images since : #{last_scrapping_date}"
   website.scrap_posts_from_category(category_name, last_scrapping_date)
 end
 
-ScrappingApi.new.update(website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})
+ScrappingApi.new.update(website.website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})

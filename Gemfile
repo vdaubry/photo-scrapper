@@ -9,6 +9,7 @@ gem 'mini_magick',              '~> 3.7.0'
 gem 'net-sftp',                 '~> 2.1.2'
 gem 'open_uri_redirections',    '~> 0.1.4'
 gem 'dotenv',                   '~> 0.10.0'
+gem 'progressbar',              '~> 0.21.0'
 
 group :test do
   gem 'coveralls',      '~> 0.7.0', require: false

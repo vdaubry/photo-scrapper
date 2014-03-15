@@ -26,4 +26,4 @@ website.home_page
 excluded_urls = YAML.load_file('config/websites.yml')["website2"]["excluded_urls"]
 website.scrap_allowed_links(excluded_urls, last_scrapping_date)
 
-ScrappingApi.new.update(website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})
+ScrappingApi.new.update(website.website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})

@@ -21,9 +21,6 @@ class PostApi
 
   def search(website_id, page_url)
     resp = self.class.get("/websites/#{website_id}/posts/search.json", :query => {:post => {:page_url => page_url}})
-
-    puts "resp = #{resp}"
-
     posts = resp["posts"]
     posts.map {|post| Post.new(post)}
   end

@@ -13,9 +13,7 @@ require 'dotenv'
 require_relative '../config/application'
 Coveralls.wear!
 
-ENV['TEST']="true"
-
-Dotenv.load
+Dotenv.load(File.expand_path("../../.test.env", __FILE__))
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
