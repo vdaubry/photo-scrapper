@@ -71,6 +71,8 @@ describe ImageDownloader do
 
 		it "cleans temporary images" do
 			ImageApi.any_instance.stubs(:post).returns(nil)
+			ImageDownloader.stubs(:image_path).returns("spec/ressources/tmp/images")
+			ImageDownloader.stubs(:thumbnail_path).returns("spec/ressources/tmp/images/thumbnails/300")
 			FileUtils.cp("spec/ressources/calinours.jpg", image.image_save_path)
 			FileUtils.cp("spec/ressources/calinours.jpg", image.thumbnail_save_path)
 			
