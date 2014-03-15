@@ -9,8 +9,6 @@ class Forum1 < BaseWebsite
   include Download
   include ScrappingDate
 
-  Str = Struct.new :url
-
   def forum_topics(forum_page)
     doc = forum_page.parser
     doc.xpath('//tr[@class=""]//td[@class="title"]//a').reject {|i| i[:href].include?("page:")}.map { |i| i[:href]}
@@ -58,14 +56,13 @@ class Forum1 < BaseWebsite
     puts "All images scrapped on page : #{post_page.uri.to_s}"
 
     urls.each do |host_url|
-      page_image = if host_url.include?("http")
-        page_image_at_host_url(host_url)
+      if host_url.include?("http")
+        page_image = page_image_at_host_url(host_url)
+        download_image(page_image.url.to_s, page_image) if page_image.present?
       else
         base_url = YAML.load_file('config/forums.yml')["forum1"]["base_url"]
-        Str.new("#{base_url}#{host_url}")
+        download_image("#{base_url}#{host_url}", nil)
       end
-
-      download_image(page_image.url.to_s, page_image) if page_image.present?
     end
 
     go_to_next_page(post_page, previous_scrapping_date)

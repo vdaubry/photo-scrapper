@@ -138,8 +138,8 @@ describe "Forum1" do
         do_sign_in
         wbw_hosted_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["scrap_from_page"]["wbw_hosted_image"]
 
-        @forum1.expects(:download_image).with(wbw_hosted_image, anything).once
-        @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)), anything)
+        @forum1.expects(:download_image).with(wbw_hosted_image, nil).once
+        @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)), nil)
 
         @forum1.scrap_from_page(@forum1.current_page, date)
       end
