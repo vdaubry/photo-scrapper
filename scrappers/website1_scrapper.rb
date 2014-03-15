@@ -4,16 +4,20 @@ require 'bundler/setup'
 require 'yaml'
 require 'dotenv'
 require_relative '../config/application'
-require_relative '../models/website_api'
+require_relative '../models/scrapping_api'
 require_relative '../websites/website1'
 
-Dotenv.load
+Dotenv.load(
+  File.expand_path("../../.#{APP_ENV}.env", __FILE__),
+  File.expand_path("../../.env",  __FILE__))
 
 url = YAML.load_file('config/websites.yml')["website1"]["url"]
 website = Website1.new(url)
 
 start_time = DateTime.now
 current_month = website.next_month
+
+scrapping = ScrappingApi.new.create(website.id, current_month)
 
 pp "Start scrapping #{url} for month : #{current_month}"
 
@@ -35,3 +39,4 @@ images_saved = 0
   website.scrap_category(category_page, current_month)
 end
 
+ScrappingApi.new.update(website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})

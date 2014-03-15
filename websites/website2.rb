@@ -1,12 +1,12 @@
 require_relative 'base_website'
 require_relative 'navigation'
 require_relative 'download'
-require_relative 'scrapping'
+require_relative 'scrapping_date'
 
 class Website2 < BaseWebsite
   include Navigation
   include Download
-  include Scrapping
+  include ScrappingDate
 
   def allowed_links(excluded_urls)
     @current_page.links.map {|link| link if link.text.present? && !excluded_urls.any? {|s| link.href.include?(s)} && link.href.size>1}.compact
@@ -69,7 +69,7 @@ class Website2 < BaseWebsite
     added_on = find_latest_pic_date(page)
     puts "latest pic is #{added_on}"
 
-    if Date.parse(added_on) > previous_scrapping_date
+    if Date.parse(added_on) >= previous_scrapping_date
       img_links = images_links(page)
       puts "Found #{img_links.count} images"
 

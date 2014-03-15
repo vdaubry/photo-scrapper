@@ -1,13 +1,13 @@
 require_relative 'base_website'
 require_relative 'navigation'
 require_relative 'download'
-require_relative 'scrapping'
+require_relative 'scrapping_date'
 require_relative '../hosts/host_factory'
 
 class Forum1 < BaseWebsite
   include Navigation
   include Download
-  include Scrapping
+  include ScrappingDate
 
   Str = Struct.new :url
 

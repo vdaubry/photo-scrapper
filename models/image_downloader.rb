@@ -4,6 +4,7 @@ require 'fastimage'
 require 'mini_magick'
 require 'active_support/time'
 require 'benchmark'
+require 'progressbar'
 require_relative 'facades/ftp'
 require_relative 'image_api'
 
@@ -63,6 +64,7 @@ class ImageDownloader
 
   def download(page_image=nil)
     result = false
+    pbar = nil
     begin
       if page_image
         puts "Downloading with mechanize"
@@ -73,28 +75,26 @@ class ImageDownloader
         puts "Downloading with open-uri"
         puts Benchmark.measure { 
           open(image_save_path, 'wb') do |file|
-            file << open(source_url, :allow_redirections => :all).read
+            file << open(source_url, 
+                      :allow_redirections => :all,
+                      :content_length_proc => lambda { |t|
+                      if t && t > 0
+                        pbar = ProgressBar.new("...", t)
+                        pbar.file_transfer_mode
+                      end
+                      },
+                      :progress_proc => lambda {|s|
+                        pbar.set s if pbar
+                      }).read
           end
         }
       end
       
       set_image_info
-      puts "Generating thumnail"
-      puts Benchmark.measure { 
-          generate_thumb
-        }
-      
-      puts "Calling image post api"
-      puts Benchmark.measure { 
-          result = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size).present?
-        }
-      
-      if result
-        puts "Uploading to FTP"
-        puts Benchmark.measure { 
-          Ftp.new.upload_file(self)
-        }
-      end
+      generate_thumb
+      result = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size).present?            
+      Ftp.new.upload_file(self) if result
+        
     rescue Timeout::Error, Errno::ENOENT => e
       puts e.to_s
     rescue OpenURI::HTTPError => e

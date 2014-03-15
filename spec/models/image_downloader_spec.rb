@@ -50,6 +50,7 @@ describe ImageDownloader do
 			params = {:source_url => "www.foo.bar/image.png", :hosting_url => "www.foo.bar", :key => "543_image.png", :status => "TO_SORT_STATUS", :image_hash => "dfg2345679876", :width => 400, :height => 400, :file_size => 123456, :website_id => 123, :post_id => 456}
 			params.each {|k, v| image.instance_variable_set("@#{k}", v)}
 			ImageApi.any_instance.expects(:post).with(123, 456, "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456).returns(Image.new({}))
+			Ftp.any_instance.stubs(:upload_file).returns(nil)
 
 			image.download.should == true
 		end
@@ -70,6 +71,8 @@ describe ImageDownloader do
 
 		it "cleans temporary images" do
 			ImageApi.any_instance.stubs(:post).returns(nil)
+			ImageDownloader.stubs(:image_path).returns("spec/ressources/tmp/images")
+			ImageDownloader.stubs(:thumbnail_path).returns("spec/ressources/tmp/images/thumbnails/300")
 			FileUtils.cp("spec/ressources/calinours.jpg", image.image_save_path)
 			FileUtils.cp("spec/ressources/calinours.jpg", image.thumbnail_save_path)
 			

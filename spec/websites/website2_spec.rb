@@ -106,6 +106,21 @@ describe "Website2", :local => :true do
       
       @website2.scrap_page(sample_page, date)
     end
+
+    it "ignores post with older dates" do
+      @website2.stubs(:find_latest_pic_date).returns("01/01/2010")
+      @website2.expects(:images_links).never
+
+      @website2.scrap_page(sample_page, date)
+    end
+
+    it "scraps images after current scrapping date" do
+      @website2.stubs(:find_latest_pic_date).returns("01/02/2010")
+      @website2.stubs(:go_to_next_page).returns(nil)
+      @website2.expects(:images_links).once.returns([])
+
+      @website2.scrap_page(sample_page, date)
+    end
   end
 
   describe "next_page_button", vcr: true do
