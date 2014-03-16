@@ -8,17 +8,20 @@ class Website2 < BaseWebsite
   include Download
   include ScrappingDate
 
+  attr_accessor :has_next_page, :model_id
+
   def allowed_links(excluded_urls)
     @current_page.links.map {|link| link if link.text.present? && !excluded_urls.any? {|s| link.href.include?(s)} && link.href.size>1}.compact
   end
 
   def images_links(page)
-    page.links_with(:href=>/.jpg/)
+    doc = page.parser
+    doc.xpath("//div[@class='pic ']//a")
   end
 
   def next_page_button(page)
     doc = page.parser
-    doc.xpath("//button[@onclick]").select {|node| node.text == "Load 100 more"}.first
+    doc.xpath("//button[@onclick]").select {|node| node.text.match('Load.*more').present?}.first
   end
 
   def model_id(page)
@@ -26,8 +29,8 @@ class Website2 < BaseWebsite
   end
 
   def lastpid(page)
-    button = next_page_button(page)
-    button.attr("onclick").scan(/[0-9]/).join
+    doc = page.parser
+    doc.xpath("//div[@class='pic ']//a").last.attributes["id"].value.split('link')[1]
   end
 
   def find_latest_pic_date(page)
@@ -49,6 +52,10 @@ class Website2 < BaseWebsite
       
       pp "Scrap : #{post.name} since #{previous_scrapping_date}"
       page = link.click
+
+      button = next_page_button(page)
+      @has_next_page = button.present?
+      @model_id = model_id(page)
       scrap_page(page, previous_scrapping_date)
 
       PostApi.new.destroy(@website.id, @post_id) if @post_images_count==0
@@ -60,7 +67,11 @@ class Website2 < BaseWebsite
     post = PostApi.new.create(@website.id, post_name)
     @post_id = post.id
     @post_images_count = 0
-    scrap_page(page, 1.year.ago)
+
+    button = next_page_button(page)
+    @has_next_page = button.present?
+    @model_id = model_id(page)
+    scrap_page(page, 10.year.ago)
 
     PostApi.new.destroy(@website.id, @post_id) if @post_images_count==0
   end
@@ -74,7 +85,7 @@ class Website2 < BaseWebsite
       puts "Found #{img_links.count} images"
 
       img_links.each do |img_link|
-        url = img_link.href
+        url = img_link["href"]
         download_image(url)
       end
 
@@ -86,13 +97,15 @@ class Website2 < BaseWebsite
 
   def go_to_next_page(page, previous_scrapping_date)
     #next page
-    button = next_page_button(page)
-    if button
+    if @has_next_page
       puts "Loading next page"
-      model_id = model_id(page)
       lastpid = lastpid(page)
       post_url = YAML.load_file('config/websites.yml')["website2"]["post_url"]
-      page = Mechanize.new.post(post_url, {"req" => "morepics", "cid" => model_id, "lastpid" => lastpid})
+      page = Mechanize.new.post(post_url, {"req" => "morepics", "cid" => @model_id, "lastpid" => lastpid})
+
+      remaining_images = page.content.split("|")[1]
+      @has_next_page = remaining_images.to_i>0
+
       scrap_page(page, previous_scrapping_date)
     end
   end

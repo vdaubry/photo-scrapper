@@ -89,12 +89,12 @@ describe "Website2", :local => :true do
   end
 
   describe "images_links", vcr: true do
-    it { @website2.images_links(sample_page).count.should == 106 }
+    it { @website2.images_links(sample_page).count.should == 100 }
   end
 
   describe "scrap_page", vcr: true do
     it "downloads found images" do
-      @website2.expects(:download_image).times(106).returns(nil)
+      @website2.expects(:download_image).times(100).returns(nil)
       @website2.stubs(:go_to_next_page).returns(nil)
       
       @website2.scrap_page(sample_page, date )
@@ -132,19 +132,26 @@ describe "Website2", :local => :true do
   end
 
   describe "lastpid", vcr: true do
-    it { @website2.lastpid(sample_page).should == "915378" }
+    it { @website2.lastpid(sample_page).should == "983911" }
   end
 
   describe "go_to_next_page", vcr: true do
+    before(:each) do
+      @website2.has_next_page = true
+      @website2.model_id = "601553"
+    end
+
     it "gets next page" do
       post_url = YAML.load_file('config/websites.yml')["website2"]["post_url"]
-      Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "915378"})
+      mock_page = stub(:content => "</div>|815|976002")
+      Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "983911"}).returns(mock_page)
       @website2.stubs(:scrap_page).returns(nil)
+      
       @website2.go_to_next_page(sample_page, date)
     end
 
     it "scraps next page" do
-      mock_page = mock()
+      mock_page = stub(:content => "</div>|815|976002")
       date = Date.parse("01/02/2010")
       Mechanize.any_instance.stubs(:post).returns(mock_page)
       @website2.expects(:scrap_page).with(mock_page, date).once
