@@ -20,13 +20,14 @@ class GenericHost
     puts "Parse images from #{URI.parse(@host_url).host}"
     page_images = []
     begin
-      #page_images = browser.images_with(:src => /picture/, :mime_type => /jpg|jpeg|png/).reject {|s| %w(logo register banner).any? { |w| s.url.to_s.include?(w)}}
+      page_images = all_images
 
-      #if page_images.blank?
-        page_images = all_images
-      #end
       puts "No images found at : #{@host_url}" if page_images.blank?
     rescue Mechanize::ResponseCodeError => e
+      puts "error = #{e.to_s} at page #{@host_url}"
+    rescue URI::InvalidURIError => e
+      puts "error = #{e.to_s} at page #{@host_url}"
+    rescue SocketError => e
       puts "error = #{e.to_s} at page #{@host_url}"
     end
     page_images.first rescue nil

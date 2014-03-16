@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'mechanize'
 require_relative '../../models/image_downloader'
 require_relative '../../models/facades/ftp'
 
@@ -116,6 +117,12 @@ describe ImageDownloader do
 			it "catches socket error" do
 				@image.stubs(:open).raises(SocketError)
 				@image.download == false
+			end
+
+			it "catches mechanize responseCodeError" do
+				page_image = mock()
+				page_image.stubs(:fetch).raises(Mechanize::ResponseCodeError.new(stub(:code=>404)))
+				@image.download(page_image) == false
 			end
 		end
 	end
