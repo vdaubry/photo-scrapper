@@ -33,6 +33,8 @@ class Ftp
         end
       rescue Errno::ECONNRESET => e
         puts "Failed to upload image #{image.key} to FTP"+e.to_s
+      rescue Net::SSH::Disconnect => e
+        puts "Failed to upload image #{image.key} to FTP"+e.to_s
       end
     end
   end

@@ -60,14 +60,14 @@ describe ImageDownloader do
 			ImageApi.any_instance.expects(:post).returns(nil)
 			Ftp.any_instance.expects(:upload_file).never
 
-			image.download == false
+			image.download.should == false
 		end		
 
 		it "ignores file if API create image returns nil" do
 			ImageApi.any_instance.expects(:post).returns(nil)
 			Ftp.any_instance.expects(:upload_file).never
 
-			image.download == false
+			image.download.should == false
 		end
 
 		it "cleans temporary images" do
@@ -91,7 +91,7 @@ describe ImageDownloader do
 
 			it "catches timeout error" do
 				@image.stubs(:open).raises(Timeout::Error)
-				@image.download == false
+				@image.download.should == false
 			end
 
 			it "catches 404 error" do
@@ -101,28 +101,33 @@ describe ImageDownloader do
 
 			it "catches file not found" do
 				@image.stubs(:open).raises(Errno::ENOENT)
-				@image.download == false
+				@image.download.should == false
 			end
 
 			it "catches connection error" do
 				@image.stubs(:open).raises(Errno::ECONNRESET)
-				@image.download == false
+				@image.download.should == false
 			end
 
 			it "catches files error" do
 				@image.stubs(:open).raises(EOFError)
-				@image.download == false
+				@image.download.should == false
 			end
 
 			it "catches socket error" do
 				@image.stubs(:open).raises(SocketError)
-				@image.download == false
+				@image.download.should == false
 			end
 
 			it "catches mechanize responseCodeError" do
 				page_image = mock()
 				page_image.stubs(:fetch).raises(Mechanize::ResponseCodeError.new(stub(:code=>404)))
 				@image.download(page_image) == false
+			end
+
+			it "catches RuntimeEror" do
+				@image.stubs(:open).raises(RuntimeError)
+				@image.download.should == false
 			end
 		end
 	end

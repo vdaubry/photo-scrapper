@@ -6,14 +6,14 @@ require 'dotenv'
 require_relative '../config/application'
 require_relative '../models/website_api'
 require_relative '../models/scrapping_api'
-require_relative '../websites/forum1'
+require_relative '../websites/forum2'
 
 Dotenv.load(
   File.expand_path("../../.#{APP_ENV}.env", __FILE__),
   File.expand_path("../../.env",  __FILE__))
 
 url = YAML.load_file('config/forums.yml')["forum2"]["url"]
-website = Forum1.new(url)
+website = Forum2.new(url)
 
 start_time = DateTime.now
 last_scrapping_date = website.last_scrapping_date
