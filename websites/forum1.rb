@@ -17,8 +17,7 @@ class Forum1 < BaseWebsite
   def host_urls(post_page)
     doc = post_page.parser
     links = doc.xpath('//div[@class="bodyContent"]//a')
-    base_url = YAML.load_file('config/forums.yml')["forum1"]["base_url"]
-
+    
     hrefs = links.map { |i| i[:href] }
     already_downloaded_images = ImageApi.new.search(@website.id, {:hosting_urls => hrefs})
     hrefs = hrefs-already_downloaded_images.map(&:hosting_url) if already_downloaded_images
@@ -53,7 +52,7 @@ class Forum1 < BaseWebsite
   def scrap_from_page(post_page, previous_scrapping_date)
     urls = host_urls(post_page)
 
-    puts "All images scrapped on page : #{post_page.uri.to_s}"
+    puts "All images scrapped on page : #{post_page.uri.to_s}" if urls.blank?
 
     urls.each do |host_url|
       if host_url.include?("http")

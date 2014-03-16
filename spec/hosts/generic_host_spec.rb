@@ -32,5 +32,19 @@ describe "GenericHost", :local => true do
         GenericHost.new(unhandled_response_url).image_url.should == nil
       end
     end
+
+    context "URI::InvalidURIError" do
+      it "returns nil" do
+        invalid_uri = YAML.load_file("spec/hosts/hosts_conf_spec.yml")["generic_host"]["parse_image"]["invalid_uri"]
+        GenericHost.new(invalid_uri).image_url.should == nil
+      end
+    end
+
+    context "SocketError" do
+      it "returns nil" do
+        Mechanize.any_instance.stubs(:get).raises(SocketError)
+        GenericHost.new("http://www.google.fr").image_url.should == nil
+      end
+    end
   end
 end
