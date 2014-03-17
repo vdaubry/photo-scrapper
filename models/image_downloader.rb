@@ -107,6 +107,8 @@ class ImageDownloader
       puts e.to_s
     rescue Mechanize::ResponseCodeError => e
       puts e.to_s
+    rescue RuntimeError => e
+      puts "progressbar error :"+e.to_s
     ensure
       clean_images
     end
