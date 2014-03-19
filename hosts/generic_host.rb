@@ -29,7 +29,10 @@ class GenericHost
       puts "error = #{e.to_s} at page #{@host_url}"
     rescue SocketError => e
       puts "error = #{e.to_s} at page #{@host_url}"
+    rescue Zlib::BufError => e
+      puts "error = #{e.to_s} at page #{@host_url}"
     end
+    
     page_images.first rescue nil
   end
 

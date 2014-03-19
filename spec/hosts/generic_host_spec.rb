@@ -51,5 +51,12 @@ describe "GenericHost", :local => true do
         GenericHost.new("http://www.google.fr").image_url.should == nil
       end
     end
+
+    context "Zlib::BufError" do
+      it "returns nil" do
+        Mechanize.any_instance.stubs(:get).raises(Zlib::BufError)
+        GenericHost.new("http://www.google.fr").image_url.should == nil
+      end
+    end
   end
 end
