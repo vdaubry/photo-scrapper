@@ -52,8 +52,11 @@ class ImageDownloader
   def set_image_info
     image_file = File.read(image_save_path)
     self.image_hash = Digest::MD5.hexdigest(image_file)
-    self.width = FastImage.size(image_save_path)[0]
-    self.height = FastImage.size(image_save_path)[1]
+    image_size = FastImage.size(image_save_path)
+    if image_size
+      self.width = image_size[0]
+      self.height = image_size[1]
+    end
     self.file_size = image_file.size
   end
 
@@ -109,6 +112,8 @@ class ImageDownloader
       puts e.to_s
     rescue RuntimeError => e
       puts "progressbar error :"+e.to_s
+    rescue Zlib::BufError => e
+      puts e.to_s
     ensure
       clean_images
     end

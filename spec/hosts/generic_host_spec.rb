@@ -18,6 +18,11 @@ describe "GenericHost", :local => true do
         expected_image = YAML.load_file("spec/hosts/hosts_conf_spec.yml")["generic_host"]["parse_image"]["image_url"]
         generic_host.image_url.should == expected_image
       end
+
+      it "excludes icon images" do
+        icon_url = YAML.load_file("spec/hosts/hosts_conf_spec.yml")["generic_host"]["parse_image"]["icon_url"]
+        GenericHost.new(icon_url).image_url.should =~ /1091666581/
+      end
     end
 
     context "No main image" do

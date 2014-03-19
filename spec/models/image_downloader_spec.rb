@@ -129,6 +129,12 @@ describe ImageDownloader do
 				@image.stubs(:open).raises(RuntimeError)
 				@image.download.should == false
 			end
+
+			it "catches Zlib::BufError" do
+				page_image = mock()
+				page_image.stubs(:fetch).raises(Zlib::BufError)
+				@image.download(page_image) == false
+			end
 		end
 	end
 

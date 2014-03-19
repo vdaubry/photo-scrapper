@@ -11,6 +11,11 @@ class ImageApi
   end
 
   def search(website_id, options={})
+
+    #Retriable.retriable :timeout => 1 do
+      
+    #end
+
     resp = self.class.get("/websites/#{website_id}/images/search.json", :body => options)
 
     if resp.code != 200

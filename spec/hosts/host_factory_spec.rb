@@ -22,6 +22,10 @@ describe "HostFactory", :local => :true do
       it "returns nil" do
         HostFactory.create_with_host_url("www.foo").should == nil
       end
+
+      it "catches invalid uri exception" do
+        HostFactory.create_with_host_url("http://foo.*malware*/bar.php?id=1448977725").should == nil
+      end
     end
 
     context "known host" do
