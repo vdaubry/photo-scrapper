@@ -131,6 +131,11 @@ describe "Forum3" do
         expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum3"]["image_url"]
         @forum3.page_image_at_host_url(host_url).url.to_s.should == expected_image
       end
+
+      it "returns nil if host is nil" do
+        HostFactory.stubs(:create_with_host_url).returns(nil)
+        @forum3.page_image_at_host_url("www.foo.bar").should == nil
+      end
     end
 
     describe "scrap_from_page", :vcr => true do

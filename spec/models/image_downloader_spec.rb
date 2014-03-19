@@ -135,6 +135,12 @@ describe ImageDownloader do
 				page_image.stubs(:fetch).raises(Zlib::BufError)
 				@image.download(page_image) == false
 			end
+
+			it "catches Net::HTTP::Persistent::Error" do
+				page_image = mock()
+				page_image.stubs(:fetch).raises(Net::HTTP::Persistent::Error)
+				@image.download(page_image) == false
+			end
 		end
 	end
 

@@ -42,7 +42,7 @@ class Forum2 < BaseWebsite
   end
 
   def page_image_at_host_url(host_url)
-    HostFactory.create_with_host_url(host_url).page_image
+    HostFactory.create_with_host_url(host_url).page_image rescue nil
   end
   
   def scrap_posts_from_category(category_name, previous_scrapping_date)

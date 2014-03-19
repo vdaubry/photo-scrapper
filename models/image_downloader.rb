@@ -114,6 +114,10 @@ class ImageDownloader
       puts "progressbar error :"+e.to_s
     rescue Zlib::BufError => e
       puts e.to_s
+    rescue Net::HTTP::Persistent::Error => e
+      puts e.to_s
+    rescue Errno::ECONNREFUSED => e
+      puts e.to_s
     ensure
       clean_images
     end
