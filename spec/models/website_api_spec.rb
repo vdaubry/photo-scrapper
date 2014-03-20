@@ -17,6 +17,12 @@ describe "WebsiteApi" do
       website.id.should == "506144650ed4c08d84000001"
       website.url.should == "some url"
     end
+
+    it "retries 3 times" do
+      WebsiteApi.expects(:get).times(3).raises(Errno::ECONNRESET)
+
+      WebsiteApi.new.search("www.foo.bar")
+    end
   end
 
   context "downlader api failure" do

@@ -17,6 +17,12 @@ describe "ScrappingApi" do
       scrapping.date.should == "2010-01-02T00:00:00.000Z"
       scrapping.id.should == "5314e4264d6163063f020000"
     end
+
+    it "retries 3 times" do
+      ScrappingApi.expects(:post).times(3).raises(Errno::ECONNRESET)
+
+      ScrappingApi.new.create(123, Date.parse("2012/01/02"))
+    end
   end
 
   describe "update" do
@@ -30,6 +36,12 @@ describe "ScrappingApi" do
 
       post = ScrappingApi.new.update(123, "5314e4264d6163063f020000", valid_attributes)
       post.id.should == "5314e4264d6163063f020000"
+    end
+
+    it "retries 3 times" do
+      ScrappingApi.expects(:put).times(3).raises(Errno::ECONNRESET)
+
+      ScrappingApi.new.update(123, "5314e4264d6163063f020000", valid_attributes)
     end
   end
 end

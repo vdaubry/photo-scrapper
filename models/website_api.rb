@@ -1,25 +1,29 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'httparty'
+require_relative 'api_helper'
 require_relative '../config/application'
 
 class WebsiteApi
   include HTTParty
-  
+  include ApiHelper
+
   def initialize
     self.class.base_uri ENV['PHOTO_DOWNLOADER_URL']
   end
 
   def search(url)
-    resp = self.class.get("/websites/search.json", :query => {:url => url})
+    retry_call do
+      resp = self.class.get("/websites/search.json", :query => {:url => url})
 
-    if resp.code != 200
-      puts "API Failed with response : #{resp}"
-      return
+      if resp.code != 200
+        puts "API Failed with response : #{resp}"
+        return
+      end
+
+      websites = resp["websites"]
+      websites.map {|website| Website.new(website)}
     end
-
-    websites = resp["websites"]
-    websites.map {|website| Website.new(website)}
   end
 end
 
