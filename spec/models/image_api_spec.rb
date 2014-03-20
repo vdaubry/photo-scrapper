@@ -77,5 +77,16 @@ describe "ImageApi" do
       image = ImageApi.new.post("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
       image.should == nil
     end
+
+    it "returns nil if errors" do
+      stub_request(:post, "http://localhost:3002/websites/123/posts/456/images.json").
+        with(:body => "image[source_url]=www.foo.bar%2Fimage.png&image[hosting_url]=www.foo.bar&image[key]=543_image.png&image[status]=TO_SORT_STATUS&image[image_hash]=dfg2345679876&image[width]=200&image[height]=200&image[file_size]=123456").
+        to_return(:headers => {"Content-Type" => 'application/json'},
+                  :body => '{"errors":["Width too small"]}', 
+                  :status => 422)
+      
+      image = ImageApi.new.post("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 200, 200, 123456)
+      image.should == nil
+    end
   end
 end

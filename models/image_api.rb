@@ -25,8 +25,11 @@ class ImageApi
   def post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size)
     resp = self.class.post("/websites/#{website_id}/posts/#{post_id}/images.json", :body => {:image => {:source_url => source_url, :hosting_url => hosting_url, :key => key, :status => status, :image_hash => image_hash, :width => width, :height => height, :file_size => file_size}})
 
-    if resp.code != 200
-      puts "API Failed with response : #{resp.code} for post image with source_url : #{source_url}"
+    if resp.code == 422
+      puts "API reject image with errors : #{resp["errors"]}"
+      return
+    elsif resp.code != 200
+      puts "API image post failed with response : #{resp.code}"
       return
     end
 
