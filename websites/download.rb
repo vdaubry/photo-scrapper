@@ -9,10 +9,12 @@ module Download
 
     if images.first.nil?
       imageDownloader = ImageDownloader.new.build_info(@website.id, @post_id, url)
-      pp "Save #{imageDownloader.key}"
-      success = imageDownloader.download(page_image)
-      @post_images_count += 1 if success
-      sleep(1) unless ENV['TEST']
+      if imageDownloader.key
+        pp "Save #{imageDownloader.key}"
+        success = imageDownloader.download(page_image)
+        @post_images_count += 1 if success
+        sleep(1) unless ENV['TEST']
+      end
     else
       puts "Image search found a similar images : #{images.first.key}"
     end

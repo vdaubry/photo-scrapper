@@ -29,6 +29,11 @@ describe ImageDownloader do
 
 			img.key.should == fake_date.to_i.to_s + "_" + "abc_jhvg_emil123.jpg"
 		end
+
+		it "sets nil key if invalid uri" do
+			img = ImageDownloader.new.build_info(123, 456, "http://foo.*malware*/img.jpg")
+			img.key.should == nil
+		end
 	end
 
 	describe "download" do

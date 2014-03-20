@@ -237,5 +237,24 @@ describe "Website1", :local => :true do
         @website1.post_images_count.should == 0
       end
     end
+
+    context "invalid uri" do
+      it "doesn't download image" do
+        ImageDownloader.any_instance.stubs(:build_info).returns(stub(:key => nil))
+        ImageDownloader.any_instance.expects(:download).never
+
+        @website1.download_image(url)
+      end
+
+
+      it "doesn't increase post_images_count" do
+        @website1.post_images_count = 0
+        ImageDownloader.any_instance.stubs(:build_info).returns(stub(:key => nil))
+        
+        @website1.download_image(url)
+
+        @website1.post_images_count.should == 0
+      end
+    end
   end
 end

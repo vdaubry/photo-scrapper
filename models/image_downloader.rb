@@ -22,7 +22,11 @@ class ImageDownloader
     @post_id = post_id
     @source_url = source_url
     @hosting_url = hosting_url
-    @key = (DateTime.now.to_i.to_s + "_" + File.basename(URI.parse(source_url).path)).gsub('-', '_').gsub(/[^0-9A-Za-z_\.]/, '')
+    begin
+      @key = (DateTime.now.to_i.to_s + "_" + File.basename(URI.parse(source_url).path)).gsub('-', '_').gsub(/[^0-9A-Za-z_\.]/, '')
+    rescue URI::InvalidURIError => e
+      puts e.to_s
+    end
     @status = ImageDownloader::TO_SORT_STATUS
     self
   end

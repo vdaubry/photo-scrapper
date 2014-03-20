@@ -35,6 +35,8 @@ class Ftp
         puts "Failed to upload image #{image.key} to FTP"+e.to_s
       rescue Net::SSH::Disconnect => e
         puts "Failed to upload image #{image.key} to FTP"+e.to_s
+      rescue StandardError => e
+        puts "Fail for unknown reason to upload image #{image.key} to FTP"+e.to_s
       end
     end
   end
