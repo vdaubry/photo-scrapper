@@ -8,7 +8,7 @@ set :repo_url, 'git@github.com:vdaubry/photo-scrapper.git'
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
 # Default deploy_to directory is /var/www/my_app
-set :deploy_to, '/var/www/photo-scrapper'
+set :deploy_to, '/srv/www/photo-scrapper'
 
 # Default value for :scm is :git
 # set :scm, :git
@@ -36,7 +36,22 @@ set :keep_releases, 1
 
 set :ssh_options, { :forward_agent => true, :keys => %w(~/.ssh/paulette_ec2.pem) }
 
+
+
 namespace :deploy do
+
+
+  desc 'Copy config from local workstation'
+  task :copy_production do
+    on roles :all do
+      execute :mkdir, '-p', "#{shared_path}/config"
+      upload! 'config/websites.yml', "#{release_path}/config/websites.yml"
+      upload! 'config/forums.yml', "#{release_path}/config/forums.yml"
+      upload! 'hosts/hosts_conf.yml', "#{release_path}/config/hosts_conf.yml"
+    end
+  end
+
+  after :publishing, :copy_production
 
   # desc 'Restart application'
   # task :restart do
