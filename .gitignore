@@ -14,7 +14,6 @@ capybara-*.html
 .rvmrc
 /.bundle
 /vendor/bundle
-/log/*
 /db/*.sqlite3
 /public/system/*
 /coverage/
