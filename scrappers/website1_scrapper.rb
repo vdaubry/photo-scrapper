@@ -17,7 +17,7 @@ website = Website1.new(url)
 start_time = DateTime.now
 current_month = website.next_month
 
-scrapping = ScrappingApi.new.create(website.id, current_month)
+scrapping = ScrappingApi.new.create(website.website.id, current_month)
 
 pp "Start scrapping #{url} for month : #{current_month}"
 
@@ -39,4 +39,4 @@ images_saved = 0
   website.scrap_category(category_page, current_month)
 end
 
-ScrappingApi.new.update(website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})
+ScrappingApi.new.update(website.website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})

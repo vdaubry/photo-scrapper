@@ -45,9 +45,10 @@ namespace :deploy do
   task :copy_production do
     on roles :all do
       execute :mkdir, '-p', "#{shared_path}/config"
+      upload! '.env', "#{release_path}/.env"
       upload! 'config/websites.yml', "#{release_path}/config/websites.yml"
       upload! 'config/forums.yml', "#{release_path}/config/forums.yml"
-      upload! 'hosts/hosts_conf.yml', "#{release_path}/config/hosts_conf.yml"
+      upload! 'hosts/hosts_conf.yml', "#{release_path}/hosts/hosts_conf.yml"
     end
   end
 
