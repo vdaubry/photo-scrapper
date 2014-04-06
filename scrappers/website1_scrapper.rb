@@ -15,7 +15,7 @@ url = YAML.load_file('config/websites.yml')["website1"]["url"]
 website = Website1.new(url)
 
 start_time = DateTime.now
-current_month = website.next_month
+current_month = 1.month.ago.beginning_of_month#website.next_month
 
 scrapping = ScrappingApi.new.create(website.website.id, current_month)
 

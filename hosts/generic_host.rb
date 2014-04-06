@@ -12,7 +12,7 @@ class GenericHost
     browser = Mechanize.new.get(@host_url)
     images = browser.images.select {|i| (i.url.to_s.downcase =~ /jpg|jpeg|png/).present? }
     images.reject! {|s| %w(rating layout).any? {|t| s.text.downcase.include?(t)} }
-    images.reject! {|s| %w(logo counter register banner imgbox.png thumbnail adhance stumbleupon delicious.png twitter.png myspace.png button_signin.jpg offline medal top bottom male female promotext close btn home).any? { |w| s.url.to_s.include?(w)}}
+    images.reject! {|s| %w(logo counter register banner imgbox.png thumbnail adhance stumbleupon delicious.png twitter.png myspace.png button_signin.jpg offline medal top bottom male female promotext close btn home 720p 1080p wmv).any? { |w| s.url.to_s.include?(w)}}
     images
   end
 
