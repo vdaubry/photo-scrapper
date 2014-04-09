@@ -19,7 +19,7 @@ class Forum1 < BaseWebsite
     links = doc.xpath('//div[@class="bodyContent"]//a')
     
     hrefs = links.map { |i| i[:href] }
-    already_downloaded_images = ImageApi.new.search(@website.id, {:hosting_urls => hrefs})
+    already_downloaded_images = ImageApi.new.search(id, {:hosting_urls => hrefs})
     hrefs = hrefs-already_downloaded_images.map(&:hosting_url) if already_downloaded_images
     hrefs.reject {|u| u.include?("profile")}
   end
@@ -40,13 +40,13 @@ class Forum1 < BaseWebsite
 
   def scrap_post_hosted_images(post_page, previous_scrapping_date)
     pp "Scrap post for hosted images : #{post_page.title} - #{post_page.uri.to_s}"
-    post = PostApi.new.create(@website.id, post_page.title)
+    post = PostApi.new.create(id, post_page.title)
     @post_id = post.id
     @post_images_count = 0
 
     scrap_from_page(post_page, previous_scrapping_date)
 
-    PostApi.new.destroy(@website.id, @post_id) if @post_images_count==0
+    PostApi.new.destroy(id, @post_id) if @post_images_count==0
   end
 
   def scrap_from_page(post_page, previous_scrapping_date)
@@ -72,10 +72,10 @@ class Forum1 < BaseWebsite
     pp "next_link = #{next_link}"
     if next_link
       next_link_url = (post_page.uri.merge next_link.uri).to_s
-      not_scrapped = PostApi.new.search(@website.id, next_link_url).blank?
+      not_scrapped = PostApi.new.search(id, next_link_url).blank?
       if not_scrapped
         puts "Scrapping next page"
-        PostApi.new.update(@website.id, @post_id, next_link_url)
+        PostApi.new.update(id, @post_id, next_link_url)
         
         post_page = next_link.click
         scrap_from_page(post_page, previous_scrapping_date)

@@ -16,7 +16,7 @@ url = YAML.load_file('config/forums.yml')["forum2"]["url"]
 website = Forum2.new(url)
 
 start_time = DateTime.now
-last_scrapping_date = website.last_scrapping_date
+scrapping_date = website.scrapping_date
 
 scrapping = ScrappingApi.new.create(website.website.id, start_time)
 
@@ -27,11 +27,11 @@ password = YAML.load_file('config/forums.yml')["forum2"]["password"]
 pp "Sign in user : #{user}"
 website.sign_in(user, password)
 
-pp "Start scrapping #{url} new images since : #{last_scrapping_date}"
+pp "Start scrapping #{url} new images since : #{scrapping_date}"
 
 (1..2).each do |category_number|
   category_name = YAML.load_file('config/forums.yml')["forum2"]["category#{category_number}"]
-  website.scrap_posts_from_category(category_name, last_scrapping_date)
+  website.scrap_posts_from_category(category_name, scrapping_date)
 end
 
 ScrappingApi.new.update(website.website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})

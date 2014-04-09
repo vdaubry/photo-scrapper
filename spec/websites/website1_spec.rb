@@ -47,18 +47,18 @@ describe "Website1", :local => :true do
     
     context "API return websites" do
       it "sets website" do
-        result = Website.new({"id" => "12345"})
+        result = WebsiteMetadata.new({"id" => "12345"})
         WebsiteApi.any_instance.stubs(:search).with(@url).returns([result])
 
-        websites = Website1.new(@url)
+        website = Website1.new(@url)
 
-        websites.website.should == result
+        website.id.should == "12345"
       end
     end
 
     context "API return error" do
       it "sets website" do
-        result = Website.new({"id" => "12345"})
+        result = WebsiteMetadata.new({"id" => "12345"})
         WebsiteApi.any_instance.stubs(:search).with(@url).returns(nil)
 
         expect {
@@ -78,7 +78,7 @@ describe "Website1", :local => :true do
   describe "previous_month", vcr: true do
     context "has last scrapping date" do
       it "returns 1 month before last scrapping date" do
-        @website1.website = Website.new({"last_scrapping_date" => "01/02/2010"})
+        @website1.website_metadata = WebsiteMetadata.new({"last_scrapping_date" => "01/02/2010"})
         @website1.previous_month.should == Date.parse("01/01/2010")
       end
     end
@@ -87,7 +87,7 @@ describe "Website1", :local => :true do
   describe "next_month", vcr: true do
     context "has last scrapping date" do
       it "returns 1 month after last scrapping date" do
-        @website1.website = Website.new({"last_scrapping_date" => "01/02/2010"})
+        @website1.website_metadata = WebsiteMetadata.new({"last_scrapping_date" => "01/02/2010"})
         @website1.next_month.should == Date.parse("01/03/2010")
       end
     end
@@ -124,7 +124,7 @@ describe "Website1", :local => :true do
     context "calls post api" do
       let(:month) { Date.parse("01/01/2010") }
       let(:website1) do
-        @website1.website = Website.new({"id" => "12345", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
+        @website1.website_metadata = WebsiteMetadata.new({"id" => "12345", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
         @website1.current_post_name = "foobar_2010_January"
         @website1.stubs(:parse_image).returns(nil)
         
@@ -203,7 +203,7 @@ describe "Website1", :local => :true do
     let(:url) { "www.foo.bar/image.png" }
 
     before(:each) do
-      @website1.website = Website.new({"id" => "123", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
+      @website1.website_metadata = WebsiteMetadata.new({"id" => "123", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
       @website1.post_id = "456"
       ImageApi.any_instance.stubs(:search).returns([])
     end

@@ -1,13 +1,13 @@
 module ScrappingDate
-  def last_scrapping_date
-    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : @website.last_scrapping_date
+  def scrapping_date
+    last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : last_scrapping_date
   end
 
   def previous_month
-    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date - 1.month).beginning_of_month
+    last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (last_scrapping_date - 1.month).beginning_of_month
   end
 
   def next_month
-    @website.last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (@website.last_scrapping_date + 1.month).beginning_of_month
+    last_scrapping_date.nil? ? 1.month.ago.beginning_of_month : (last_scrapping_date + 1.month).beginning_of_month
   end 
 end

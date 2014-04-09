@@ -11,6 +11,7 @@ gem 'open_uri_redirections',    '~> 0.1.4'
 gem 'dotenv',                   '~> 0.10.0'
 gem 'progressbar',              '~> 0.21.0'
 gem 'retriable',                '~> 1.4.1'
+gem 'activemodel',              '~> 4.0.4'
 
 
 group :test do

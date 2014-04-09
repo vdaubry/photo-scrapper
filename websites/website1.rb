@@ -24,7 +24,7 @@ class Website1 < BaseWebsite
   def scrap_category(category_page, month)
     puts "creating post  = #{@current_post_name}"
 
-    post = PostApi.new.create(@website.id, @current_post_name)
+    post = PostApi.new.create(id, @current_post_name)
     @post_id = post.id
     @post_images_count = 0
     
@@ -35,7 +35,7 @@ class Website1 < BaseWebsite
       parse_image(link)
     end
 
-    PostApi.new.destroy(@website.id, @post_id) if @post_images_count==0
+    PostApi.new.destroy(id, @post_id) if @post_images_count==0
   end
 
   def parse_image(link)

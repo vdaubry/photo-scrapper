@@ -25,19 +25,19 @@ describe "Website2", :local => :true do
     @website2 = Website2.new(@url)
   end
 
-  describe "last_scrapping_date", vcr: true do
+  describe "scrapping_date", vcr: true do
     context "has previous scrapping" do
       it "returns last scrapping date" do
-        @website2.website = Website.new({"last_scrapping_date" => "01/02/2010"})
-        @website2.last_scrapping_date.should == date
+        @website2.website = Website.new({"scrapping_date" => "01/02/2010"})
+        @website2.scrapping_date.should == date
       end
     end
 
     context "has no previous scrapping" do
       it "returns 1 month ago" do
         Date.stubs(:now).returns(date)
-        @website2.website = Website.new({"last_scrapping_date" => nil})
-        @website2.last_scrapping_date.should == 1.month.ago.beginning_of_month
+        @website2.website = Website.new({"scrapping_date" => nil})
+        @website2.scrapping_date.should == 1.month.ago.beginning_of_month
       end
     end
   end

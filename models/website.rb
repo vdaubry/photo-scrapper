@@ -4,17 +4,14 @@ require 'httparty'
 require_relative 'api_helper'
 require_relative '../config/application'
 
-class WebsiteApi
+class Website
   include HTTParty
-  include ApiHelper
+  extend ApiHelper
 
-  def initialize
-    self.class.base_uri ENV['PHOTO_DOWNLOADER_URL']
-  end
-
-  def search(url)
+  def self.find_by(url)
+    set_base_uri
     retry_call do
-      resp = self.class.get("/websites/search.json", :query => {:url => url})
+      resp = get("/websites/search.json", :query => {:url => url})
 
       if resp.code != 200
         puts "API Failed with response : #{resp}"
@@ -22,29 +19,24 @@ class WebsiteApi
       end
 
       websites = resp["websites"]
-      websites.map {|website| Website.new(website)}
+      websites.map {|json| Website.new(json)}
     end
   end
-end
-
-
-class Website
-  attr_accessor :json
 
   def initialize(json)
     @json = json
   end
 
-  def last_scrapping_date
-    date_str = json["last_scrapping_date"]
+  def scrapping_date
+    date_str = @json["scrapping_date"]
     Date.parse(date_str) unless date_str.nil?
   end
 
   def url
-    json["url"]
+    @json["url"]
   end
 
   def id
-    json["id"]
+    @json["id"]
   end
 end
