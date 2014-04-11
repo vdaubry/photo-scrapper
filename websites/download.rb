@@ -1,7 +1,7 @@
 module Download
 
   def download_image(url, page_image=nil)
-    images = ImageApi.new.search(id, {:source_url => url})
+    images = Image.find_by(id, {:source_url => url})
     if images.nil?
       puts "Image search failed"
       return
