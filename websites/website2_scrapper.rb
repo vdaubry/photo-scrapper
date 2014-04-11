@@ -1,9 +1,9 @@
-require_relative 'base_website'
+require_relative 'scrapper'
 require_relative 'navigation'
 require_relative 'download'
 require_relative 'scrapping_date'
 
-class Website2 < BaseWebsite
+class Website2Scrapper < Scrapper
   include Navigation
   include Download
   include ScrappingDate
@@ -46,7 +46,7 @@ class Website2 < BaseWebsite
   def scrap_allowed_links(excluded_urls, previous_scrapping_date)
     allowed_links(excluded_urls).each do |link|
       post_name = link.text
-      post = PostApi.new.create(id, post_name)
+      post = Post.create(id, post_name)
       @post_id = post.id
       @post_images_count = 0
       
@@ -58,7 +58,7 @@ class Website2 < BaseWebsite
       @model_id = model_id(page)
       scrap_page(page, previous_scrapping_date)
 
-      PostApi.new.destroy(id, @post_id) if @post_images_count==0
+      Post.destroy(id, @post_id) if @post_images_count==0
     end
   end
 
@@ -73,7 +73,7 @@ class Website2 < BaseWebsite
     @model_id = model_id(page)
     scrap_page(page, 10.year.ago)
 
-    PostApi.new.destroy(id, @post_id) if @post_images_count==0
+    Post.destroy(id, @post_id) if @post_images_count==0
   end
 
   def scrap_page(page, previous_scrapping_date)

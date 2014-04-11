@@ -203,7 +203,7 @@ describe "Website1Scrapper", :local => :true do
     let(:url) { "www.foo.bar/image.png" }
 
     before(:each) do
-      @website1_scrapper.website = Website.new({"id" => "123", "last_scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
+      @website1_scrapper.website = Website.new({"id" => "123", "scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
       @website1_scrapper.post_id = "456"
       Image.stubs(:find_by).returns([])
     end
