@@ -8,8 +8,8 @@ class WebsiteScrapper
   def start
     start_time = DateTime.now
     scrapping_date = @scrapper.scrapping_date
-    pp "Start scrapping #{url} for month : #{current_month}"
-    scrapping = Scrapping.create(website.id, current_month)
+    pp "Start scrapping #{@scrapper.url} for month : #{scrapping_date}"
+    scrapping = Scrapping.create(@scrapper.id, scrapping_date)
 
     @scrapper.home_page
     @scrapper.authorize
