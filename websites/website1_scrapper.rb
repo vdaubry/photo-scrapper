@@ -9,7 +9,6 @@ class Website1Scrapper < Scrapper
   def authorize
     user = YAML.load_file('config/websites.yml')["website1"]["username"]
     password = YAML.load_file('config/websites.yml')["website1"]["password"]
-    top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
     pp "Sign in user : #{user}"
     sign_in(user, password)
   end

@@ -1,13 +1,9 @@
-require_relative 'base_website'
-require_relative 'navigation'
-require_relative 'download'
-require_relative 'scrapping_date'
+require_relative 'scrapper'
+require_relative 'forum_helper'
 require_relative '../hosts/host_factory'
 
-class Forum3 < BaseWebsite
-  include Navigation
-  include Download
-  include ScrappingDate
+class Forum3 < Scrapper
+  include ForumHelper
 
   def sign_in(user, password)
     @current_page = @current_page.form_with(:name => nil) do |form|

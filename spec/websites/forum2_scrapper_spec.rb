@@ -2,8 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'spec_helper'
-require_relative '../../websites/forum2'
-require_relative '../../models/post_api'
+require_relative '../../websites/forum2_scrapper'
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassette_library'
@@ -19,7 +18,7 @@ describe "Forum2" do
 
   before(:each) do
     @url = YAML.load_file('config/forums.yml')["forum2"]["url"]
-    @forum2 = Forum2.new(@url)
+    @forum2 = Forum2Scrapper.new(@url)
   end
 
   def go_to_home_page
@@ -66,14 +65,14 @@ describe "Forum2" do
       context "calls post api" do
         it "creates a post" do
           forum_page.stubs(:title).returns("foobar_2010_January")
-          PostApi.any_instance.expects(:create).with("52f932da4d616302cf000000", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
+          Post.expects(:create).with("52f932da4d616302cf000000", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
           @forum2.stubs(:scrap_from_page).returns(nil)
 
           @forum2.scrap_post_hosted_images(forum_page, date)
         end
 
         it "sets post_image_count to 0" do
-          PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
+          Post.stubs(:create).returns(Post.new({"id" => "6789"}))
           @forum2.stubs(:scrap_from_page).returns(nil)
 
           @forum2.scrap_post_hosted_images(forum_page, date)
@@ -82,16 +81,16 @@ describe "Forum2" do
         end
 
         it "destroys post if post_image_count is 0" do
-          PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
+          Post.stubs(:create).returns(Post.new({"id" => "6789"}))
           @forum2.stubs(:scrap_from_page).returns(nil)
           @forum2.stubs(:post_images_count).returns(0)
-          PostApi.any_instance.expects(:destroy).with("52f932da4d616302cf000000", "6789")
+          Post.expects(:destroy).with("52f932da4d616302cf000000", "6789")
           
           @forum2.scrap_post_hosted_images(forum_page, date)
         end
 
         it "scrap post" do
-          PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "6789"}))
+          Post.stubs(:create).returns(Post.new({"id" => "6789"}))
           @forum2.expects(:scrap_from_page).once.returns(nil)
 
           @forum2.scrap_post_hosted_images(forum_page, date)
@@ -109,7 +108,7 @@ describe "Forum2" do
         post_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum2"]["host_urls"]["post_with_snaptshots"]
         @forum2.current_page = Mechanize.new.get(post_url)
         do_sign_in
-        ImageApi.any_instance.stubs(:search).returns([])
+        Image.stubs(:find_by).returns([])
         res = @forum2.host_urls(@forum2.current_page)
         
         res.count.should == 1
@@ -186,7 +185,7 @@ describe "Forum2" do
     describe "go_to_next_page", :vcr => true do
       context "not yet scrapped" do
         before(:each) do
-          PostApi.any_instance.stubs(:search).returns([])
+          Post.stubs(:find_by).returns([])
         end
 
         let(:forum_page) do
@@ -200,15 +199,15 @@ describe "Forum2" do
           expected_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum2"]["go_to_next_page"]["post2_url"]
           @forum2.post_id = "456"
           @forum2.stubs(:scrap_from_page).returns(nil)
-          PostApi.any_instance.expects(:update).with('52f932da4d616302cf000000', "456", expected_url)
+          Post.expects(:update).with('52f932da4d616302cf000000', "456", expected_url)
           
           @forum2.go_to_next_page(forum_page, date)
         end
 
         it "scraps next page" do
-          PostApi.any_instance.stubs(:search).returns([])
+          Post.stubs(:find_by).returns([])
           @forum2.expects(:scrap_from_page).once.returns(nil)
-          PostApi.any_instance.stubs(:update).returns(nil)
+          Post.stubs(:update).returns(nil)
           
           @forum2.go_to_next_page(forum_page, date)
         end
@@ -216,9 +215,9 @@ describe "Forum2" do
 
       context "already scrapped" do
         it "doesn't update post pages_url" do
-          PostApi.any_instance.stubs(:search).returns([Post.new({"id" => "6789"})])
+          Post.stubs(:find_by).returns([Post.new({"id" => "6789"})])
           @forum2.expects(:scrap_from_page).never
-          PostApi.any_instance.expects(:update).never
+          Post.expects(:update).never
 
           @forum2.go_to_next_page(forum_page, date)
         end
