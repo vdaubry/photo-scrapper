@@ -12,4 +12,8 @@ module ApiHelper
       puts "error = #{e.to_s}"
     end
   end
+
+  def set_base_uri
+    base_uri ENV['PHOTO_DOWNLOADER_URL']
+  end
 end

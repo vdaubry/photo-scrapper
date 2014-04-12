@@ -1,12 +1,29 @@
-require_relative 'base_website'
-require_relative 'navigation'
-require_relative 'download'
-require_relative 'scrapping_date'
+require_relative 'scrapper'
 
-class Website1 < BaseWebsite
-  include Navigation
-  include Download
-  include ScrappingDate
+class Website1Scrapper < Scrapper
+
+  def scrapping_date
+    1.month.ago.beginning_of_month
+  end
+
+  def authorize
+    user = YAML.load_file('config/websites.yml')["website1"]["username"]
+    password = YAML.load_file('config/websites.yml')["website1"]["password"]
+    pp "Sign in user : #{user}"
+    sign_in(user, password)
+  end
+
+  def do_scrap
+    top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
+    top_page(top_link)
+
+    images_saved = 0
+    (1..12).each do |category_number|
+      category_name = YAML.load_file('config/websites.yml')["website1"]["category#{category_number}"]
+      category_page = category(category_name, scrapping_date)
+      scrap_category(category_page, scrapping_date)
+    end
+  end
 
   def top_page(top_link)
     @current_page = @current_page.link_with(:text => top_link).click
@@ -24,7 +41,7 @@ class Website1 < BaseWebsite
   def scrap_category(category_page, month)
     puts "creating post  = #{@current_post_name}"
 
-    post = PostApi.new.create(@website.id, @current_post_name)
+    post = Post.create(id, @current_post_name)
     @post_id = post.id
     @post_images_count = 0
     
@@ -35,7 +52,7 @@ class Website1 < BaseWebsite
       parse_image(link)
     end
 
-    PostApi.new.destroy(@website.id, @post_id) if @post_images_count==0
+    Post.destroy(id, @post_id) if @post_images_count==0
   end
 
   def parse_image(link)

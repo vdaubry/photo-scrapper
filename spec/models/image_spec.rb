@@ -1,9 +1,9 @@
 require 'spec_helper'
-require_relative '../../models/image_api'
+require_relative '../../models/image'
 
-describe "ImageApi" do
+describe "Image" do
   
-  describe "search" do
+  describe "find_by" do
     let(:images_json) {'{"images":[{"id":"506144650ed4c08d84000001","key":"some_key","width":200,"height":300,"source_url":"www.foo.bar"}]}'}
 
     it "returns an image" do
@@ -13,7 +13,7 @@ describe "ImageApi" do
                   :body => images_json, 
                   :status => 200)
       
-      images = ImageApi.new.search("123", {:source_url => "www.foo.bar"})
+      images = Image.find_by("123", {:source_url => "www.foo.bar"})
       images.first.key.should == "some_key"
     end
 
@@ -24,14 +24,14 @@ describe "ImageApi" do
                   :body => '{"images":[]}', 
                   :status => 200)
       
-      images = ImageApi.new.search("123", {:source_url => "www.foo.bar"})
+      images = Image.find_by("123", {:source_url => "www.foo.bar"})
       images.first.should == nil
     end
 
     it "retries 3 times" do
-      ImageApi.expects(:get).times(3).raises(Errno::ECONNRESET)
+      Image.expects(:get).times(3).raises(Errno::ECONNRESET)
 
-      ImageApi.new.search("123", {:source_url => "www.foo.bar"})
+      Image.find_by("123", {:source_url => "www.foo.bar"})
     end
 
     context "downlader api failure" do
@@ -42,13 +42,13 @@ describe "ImageApi" do
                     :body => File.read("spec/ressources/api_image_search_failure.response"), 
                     :status => 500)
         
-        images = ImageApi.new.search("123", {:source_url => "www.foo.bar"})
+        images = Image.find_by("123", {:source_url => "www.foo.bar"})
         images.should == nil
       end
     end
   end
 
-  describe "post" do    
+  describe "create" do    
     let(:image_json) {'{"image":{"id":"506144650ed4c08d84000001","key":"some_key","width":200,"height":300,"source_url":"www.foo.bar"}}'}
 
     it "returns an image" do
@@ -58,7 +58,7 @@ describe "ImageApi" do
                   :body => image_json, 
                   :status => 200)
       
-      image = ImageApi.new.post("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
+      image = Image.create("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
       image.key.should == "some_key"
     end
 
@@ -69,7 +69,7 @@ describe "ImageApi" do
                   :body => nil, 
                   :status => 200)
       
-      image = ImageApi.new.post("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
+      image = Image.create("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
       image.should == nil
     end
 
@@ -80,7 +80,7 @@ describe "ImageApi" do
                   :body => "not found", 
                   :status => 404)
       
-      image = ImageApi.new.post("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
+      image = Image.create("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
       image.should == nil
     end
 
@@ -91,14 +91,14 @@ describe "ImageApi" do
                   :body => '{"errors":["Width too small"]}', 
                   :status => 422)
       
-      image = ImageApi.new.post("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 200, 200, 123456)
+      image = Image.create("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 200, 200, 123456)
       image.should == nil
     end
 
     it "retries 3 times" do
-      ImageApi.expects(:post).times(3).raises(Errno::ECONNRESET)
+      Image.expects(:post).times(3).raises(Errno::ECONNRESET)
 
-      ImageApi.new.post("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
+      Image.create("123", "456", "www.foo.bar/image.png", "www.foo.bar", "543_image.png", "TO_SORT_STATUS", "dfg2345679876", 400, 400, 123456)
     end
   end
 end

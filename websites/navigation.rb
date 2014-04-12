@@ -1,6 +1,6 @@
 module Navigation
   def home_page
-    @current_page = Mechanize.new.get(@website.url)
+    @current_page = Mechanize.new.get(url)
   end
 
   def sign_in(user, password)

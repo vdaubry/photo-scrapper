@@ -6,7 +6,7 @@ require 'active_support/time'
 require 'benchmark'
 require 'progressbar'
 require_relative 'facades/ftp'
-require_relative 'image_api'
+require_relative 'image'
 
 class ImageDownloader
   TO_SORT_STATUS="TO_SORT_STATUS"
@@ -99,7 +99,7 @@ class ImageDownloader
       
       set_image_info
       generate_thumb
-      result = ImageApi.new.post(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size).present?            
+      result = Image.create(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size).present?            
       Ftp.new.upload_file(self) if result
         
     rescue Timeout::Error, Errno::ENOENT => e

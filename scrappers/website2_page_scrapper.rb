@@ -4,8 +4,8 @@ require 'bundler/setup'
 require 'yaml'
 require 'dotenv'
 require_relative '../config/application'
-require_relative '../websites/website2'
 require_relative '../models/scrapping_api'
+require_relative '../websites/website2'
 
 Dotenv.load(
   File.expand_path("../../.#{APP_ENV}.env", __FILE__),

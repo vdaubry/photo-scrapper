@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'spec_helper'
-require_relative '../../websites/website2'
+require_relative '../../websites/website2_scrapper'
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassette_library'
@@ -11,7 +11,7 @@ VCR.configure do |c|
   c.configure_rspec_metadata!
 end
 
-describe "Website2", :local => :true do
+describe "Website2Scrapper", :local => :true do
 
   let(:date) { Date.parse("01/02/2010") }
   let(:excluded_urls) { YAML.load_file('config/websites.yml')["website2"]["excluded_urls"] }
@@ -22,23 +22,13 @@ describe "Website2", :local => :true do
 
   before(:each) do
     @url = YAML.load_file('config/websites.yml')["website2"]["url"]
-    @website2 = Website2.new(@url)
+    @website2 = Website2Scrapper.new(@url)
   end
 
-  describe "last_scrapping_date", vcr: true do
-    context "has previous scrapping" do
-      it "returns last scrapping date" do
-        @website2.website = Website.new({"last_scrapping_date" => "01/02/2010"})
-        @website2.last_scrapping_date.should == date
-      end
-    end
-
-    context "has no previous scrapping" do
-      it "returns 1 month ago" do
-        Date.stubs(:now).returns(date)
-        @website2.website = Website.new({"last_scrapping_date" => nil})
-        @website2.last_scrapping_date.should == 1.month.ago.beginning_of_month
-      end
+  describe "do_scrap", vcr: true do
+    it "scraps allowed links" do
+      @website2.expects(:scrap_allowed_links).once
+      @website2.do_scrap
     end
   end
 
@@ -61,14 +51,14 @@ describe "Website2", :local => :true do
     end
 
     it "creates post" do
-      PostApi.any_instance.expects(:create).times(10).returns(Post.new({"id" => "123"}))
+      Post.expects(:create).times(10).returns(Post.new({"id" => "123"}))
       @website2.stubs(:scrap_page).returns(nil)
 
       @website2.scrap_allowed_links(excluded_urls, date)
     end
 
     it "scraps each link" do
-      PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "123"}))
+      Post.stubs(:create).returns(Post.new({"id" => "123"}))
       @website2.expects(:scrap_page).times(10).returns(nil)
       
       @website2.scrap_allowed_links(excluded_urls, date)
@@ -76,16 +66,16 @@ describe "Website2", :local => :true do
 
     it "destroys post if post_image_count is 0" do
       @website2.stubs(:post_images_count).returns(0)
-      PostApi.any_instance.stubs(:create).returns(Post.new({"id" => "123"}))
+      Post.stubs(:create).returns(Post.new({"id" => "123"}))
       @website2.stubs(:scrap_page).returns(nil)
-      PostApi.any_instance.expects(:destroy).with("52eea6be4d6163b84e000000", "123").times(10)
+      Post.expects(:destroy).with("52eea6be4d6163b84e000000", "123").times(10)
       
       @website2.scrap_allowed_links(excluded_urls, date)
     end
   end
 
   describe "find_latest_pic_date", vcr: true do
-    it { @website2.find_latest_pic_date(sample_page).should == "2014-03-09" }
+    it { @website2.find_latest_pic_date(sample_page).should == "2014-03-24" }
   end
 
   describe "images_links", vcr: true do
@@ -132,7 +122,7 @@ describe "Website2", :local => :true do
   end
 
   describe "lastpid", vcr: true do
-    it { @website2.lastpid(sample_page).should == "983911" }
+    it { @website2.lastpid(sample_page).should == "1025297" }
   end
 
   describe "go_to_next_page", vcr: true do
@@ -144,7 +134,7 @@ describe "Website2", :local => :true do
     it "gets next page" do
       post_url = YAML.load_file('config/websites.yml')["website2"]["post_url"]
       mock_page = stub(:content => "</div>|815|976002")
-      Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "983911"}).returns(mock_page)
+      Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "1025297"}).returns(mock_page)
       @website2.stubs(:scrap_page).returns(nil)
       
       @website2.go_to_next_page(sample_page, date)

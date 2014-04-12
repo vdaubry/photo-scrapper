@@ -1,7 +1,7 @@
 require 'spec_helper'
-require_relative '../../models/scrapping_api'
+require_relative '../../models/scrapping'
 
-describe "ScrappingApi" do
+describe "Scrapping" do
 
   let(:scrapping_json) {'{"scrapping":{"id":"5314e4264d6163063f020000","date":"2010-01-02T00:00:00.000Z","duration":3600,"image_count":123,"success":false}}'}
 
@@ -13,15 +13,15 @@ describe "ScrappingApi" do
                   :body => scrapping_json, 
                   :status => 200)
 
-      scrapping = ScrappingApi.new.create(123, Date.parse("2012/01/02"))
+      scrapping = Scrapping.create(123, Date.parse("2012/01/02"))
       scrapping.date.should == "2010-01-02T00:00:00.000Z"
       scrapping.id.should == "5314e4264d6163063f020000"
     end
 
     it "retries 3 times" do
-      ScrappingApi.expects(:post).times(3).raises(Errno::ECONNRESET)
+      Scrapping.expects(:post).times(3).raises(Errno::ECONNRESET)
 
-      ScrappingApi.new.create(123, Date.parse("2012/01/02"))
+      Scrapping.create(123, Date.parse("2012/01/02"))
     end
   end
 
@@ -34,14 +34,14 @@ describe "ScrappingApi" do
                   :body => scrapping_json, 
                   :status => 200)
 
-      post = ScrappingApi.new.update(123, "5314e4264d6163063f020000", valid_attributes)
+      post = Scrapping.update(123, "5314e4264d6163063f020000", valid_attributes)
       post.id.should == "5314e4264d6163063f020000"
     end
 
     it "retries 3 times" do
-      ScrappingApi.expects(:put).times(3).raises(Errno::ECONNRESET)
+      Scrapping.expects(:put).times(3).raises(Errno::ECONNRESET)
 
-      ScrappingApi.new.update(123, "5314e4264d6163063f020000", valid_attributes)
+      Scrapping.update(123, "5314e4264d6163063f020000", valid_attributes)
     end
   end
 end
