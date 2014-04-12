@@ -74,22 +74,25 @@ module ForumHelper
   end
 
 
+  def next_link(post_page)
+    post_page.link_with(:text => next_link_text)
+  end
+
   def go_to_next_page(post_page, previous_scrapping_date)
-    next_link = post_page.link_with(:text => next_link_text)
-    pp "next_link = #{next_link}"
-    if next_link
-      next_link_url = (post_page.uri.merge next_link.uri).to_s
+    next_link_button = next_link(post_page)
+    if next_link_button
+      next_link_url = (post_page.uri.merge next_link_button.uri).to_s
       not_scrapped = Post.find_by(id, next_link_url).blank?
 
       if not_scrapped
         puts "Scrapping next page"
         Post.update(id, @post_id, next_link_url)
         
-        post_page = next_link.click
+        post_page = next_link_button.click
         scrap_from_page(post_page, previous_scrapping_date)
       else
         puts "Next page already scrapped : #{post_page.uri.to_s}"
       end
-    end 
+    end
   end
 end
