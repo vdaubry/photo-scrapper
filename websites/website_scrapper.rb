@@ -1,3 +1,5 @@
+require_relative '../models/scrapping'
+
 class WebsiteScrapper
   def initialize(scrapper)
     @scrapper = scrapper
@@ -5,10 +7,16 @@ class WebsiteScrapper
 
   def start
     start_time = DateTime.now
-    scrapping = @scrapper.create_scrapping
+    scrapping_date = @scrapper.scrapping_date
+    pp "Start scrapping #{url} for month : #{current_month}"
+    scrapping = Scrapping.create(website.id, current_month)
+
     @scrapper.home_page
     @scrapper.authorize
     @scrapper.do_scrap
-    @scrapper.end_scrapping(scrapping, DateTime.now-start_time)
+
+    duration = DateTime.now-start_time
+    pp "End scrapping #{url} with duration : #{duration}"
+    Scrapping.update(@scrapper.id, scrapping.id, {:success => true, :duration => duration})
   end
 end

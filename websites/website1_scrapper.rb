@@ -1,17 +1,9 @@
 require_relative 'scrapper'
-require_relative 'navigation'
-require_relative 'download'
-require_relative 'scrapping_date'
 
 class Website1Scrapper < Scrapper
-  include Navigation
-  include Download
-  include ScrappingDate
 
-  def create_scrapping
-    current_month = 1.month.ago.beginning_of_month#website.next_month
-    pp "Start scrapping #{url} for month : #{current_month}"
-    Scrapping.create(website.website.id, current_month)
+  def scrapping_date
+    1.month.ago.beginning_of_month
   end
 
   def authorize
@@ -24,20 +16,15 @@ class Website1Scrapper < Scrapper
 
   def do_scrap
     top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
-    top_page = top_page(top_link)
+    top_page(top_link)
 
     images_saved = 0
     (1..12).each do |category_number|
       category_name = YAML.load_file('config/websites.yml')["website1"]["category#{category_number}"]
-      category_page = category(category_name, current_month)
-      scrap_category(category_page, current_month)
+      category_page = category(category_name, scrapping_date)
+      scrap_category(category_page, scrapping_date)
     end
   end
-
-  def end_scrapping(scrapping, duration)
-    Scrapping.update(website.id, scrapping.id, {:success => true, :duration => duration})
-  end
-
 
   def top_page(top_link)
     @current_page = @current_page.link_with(:text => top_link).click

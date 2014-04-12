@@ -43,8 +43,31 @@ describe "Website1Scrapper", :local => :true do
     @website1_scrapper.category(@category_name, @previous_month)
   end
 
+  describe "authorize", vcr: true do
+    it "calls sign in" do
+      @website1_scrapper.expects(:sign_in)
+      @website1_scrapper.authorize
+    end
+  end
+
+  describe "do_scrap", vcr: true do
+    before(:each) do
+      go_to_top_page
+      @website1_scrapper.stubs(:category).returns("foo")
+    end
+    it "goes to top page" do
+      @website1_scrapper.stubs(:scrap_category).returns("foo")
+      @website1_scrapper.expects(:top_page).once
+      @website1_scrapper.do_scrap
+    end
+
+    it "scraps all categories" do
+      @website1_scrapper.expects(:scrap_category).times(12)
+      @website1_scrapper.do_scrap
+    end
+  end
+
   describe "initialize", vcr: true do
-    
     context "API return websites" do
       it "sets website" do
         result = Website.new({"id" => "12345"})

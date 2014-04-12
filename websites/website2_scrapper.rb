@@ -10,6 +10,24 @@ class Website2Scrapper < Scrapper
 
   attr_accessor :has_next_page, :model_id
 
+  def create_scrapping
+    scrapping_date = website.scrapping_date
+    pp "Start scrapping #{url} for new images since : #{scrapping_date}"
+    scrapping = Scrapping.create(website.website.id, start_time)
+  end
+
+  def authorize
+  end
+
+  def do_scrap
+    excluded_urls = YAML.load_file('config/websites.yml')["website2"]["excluded_urls"]
+    website.scrap_allowed_links(excluded_urls, scrapping_date)
+  end
+
+  def end_scrapping(scrapping, duration)
+    Scrapping.update(website.website.id, scrapping.id, {:success => true, :duration => DateTime.now-start_time})
+  end
+
   def allowed_links(excluded_urls)
     @current_page.links.map {|link| link if link.text.present? && !excluded_urls.any? {|s| link.href.include?(s)} && link.href.size>1}.compact
   end
