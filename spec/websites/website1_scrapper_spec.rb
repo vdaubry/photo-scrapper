@@ -98,24 +98,6 @@ describe "Website1Scrapper", :local => :true do
     end
   end
 
-  describe "previous_month", vcr: true do
-    context "has last scrapping date" do
-      it "returns 1 month before last scrapping date" do
-        @website1_scrapper.website = Website.new({"scrapping_date" => "01/02/2010"})
-        @website1_scrapper.previous_month.should == Date.parse("01/01/2010")
-      end
-    end
-  end
-
-  describe "next_month", vcr: true do
-    context "has last scrapping date" do
-      it "returns 1 month after last scrapping date" do
-        @website1_scrapper.website = Website.new({"scrapping_date" => "01/02/2010"})
-        @website1_scrapper.next_month.should == Date.parse("01/03/2010")
-      end
-    end
-  end
-
   describe "sign_in", vcr: true do
     it "post sign in form" do
       go_to_home_page

@@ -25,20 +25,10 @@ describe "Website2Scrapper", :local => :true do
     @website2 = Website2Scrapper.new(@url)
   end
 
-  describe "scrapping_date", vcr: true do
-    context "has previous scrapping" do
-      it "returns last scrapping date" do
-        @website2.website = Website.new({"scrapping_date" => "01/02/2010"})
-        @website2.scrapping_date.should == date
-      end
-    end
-
-    context "has no previous scrapping" do
-      it "returns 1 month ago" do
-        Date.stubs(:now).returns(date)
-        @website2.website = Website.new({"scrapping_date" => nil})
-        @website2.last_scrapping_date.should == 1.month.ago.beginning_of_month
-      end
+  describe "do_scrap", vcr: true do
+    it "scraps allowed links" do
+      @website2.expects(:scrap_allowed_links).once
+      @website2.do_scrap
     end
   end
 

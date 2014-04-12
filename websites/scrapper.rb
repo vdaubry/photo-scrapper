@@ -31,4 +31,7 @@ class Scrapper
   def scrapping_date
     website.scrapping_date.nil? ? 1.month.ago.beginning_of_month : website.scrapping_date
   end
+
+  def authorize
+  end
 end
