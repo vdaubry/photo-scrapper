@@ -1,11 +1,17 @@
 require_relative 'scrapper'
 
 class Website2Scrapper < Scrapper
-  attr_accessor :has_next_page, :model_id
+  attr_accessor :has_next_page, :model_id, :specific_model
 
   def do_scrap
-    excluded_urls = YAML.load_file('config/websites.yml')["website2"]["excluded_urls"]
-    scrap_allowed_links(excluded_urls, scrapping_date)
+    if @specific_model
+      base_url = YAML.load_file('config/websites.yml')["website2"]["base_url"]
+      scrap_specific_page("#{base_url}/#{@specific_model}", @specific_model)
+    else
+      excluded_urls = YAML.load_file('config/websites.yml')["website2"]["excluded_urls"]
+      scrap_allowed_links(excluded_urls, scrapping_date)
+    end
+    
   end
 
   def allowed_links(excluded_urls)
@@ -62,7 +68,7 @@ class Website2Scrapper < Scrapper
 
   def scrap_specific_page(page_name, post_name)
     page = Mechanize.new.get(page_name)
-    post = PostApi.new.create(id, post_name)
+    post = Post.create(id, post_name)
     @post_id = post.id
     @post_images_count = 0
 
