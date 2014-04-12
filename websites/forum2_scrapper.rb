@@ -16,9 +16,9 @@ class Forum2Scrapper < Scrapper
   end
 
   def sign_in(user, password)
-    @current_page = @current_page.form_with(:name => nil) do |form|
-      form.fields.first.value = user
-      form.fields.second.value = password
+    @current_page = current_page.form_with(:name => nil) do |form|
+      form.fields.second.value = user
+      form.fields.third.value = password
     end.submit
   end
 
