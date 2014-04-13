@@ -112,6 +112,8 @@ class ImageDownloader
       puts e.to_s
     rescue Errno::ECONNREFUSED => e
       puts e.to_s
+    rescue MiniMagick::Invalid => e
+      puts e.to_s
     ensure
       clean_images
     end

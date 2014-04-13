@@ -146,6 +146,12 @@ describe ImageDownloader do
 				page_image.stubs(:fetch).raises(Net::HTTP::Persistent::Error)
 				@image.download(page_image) == false
 			end
+
+			it "catches MiniMagick::Invalid" do
+				page_image = mock()
+				page_image.stubs(:fetch).raises(MiniMagick::Invalid)
+				@image.download(page_image) == false
+			end
 		end
 	end
 
