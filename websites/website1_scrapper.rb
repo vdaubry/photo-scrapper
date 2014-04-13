@@ -38,6 +38,7 @@ class Website1Scrapper < Scrapper
     page.link_with(:text => month.strftime("%B")).click
   end
 
+  #Very similar to ForumHelper:scrap_post_hosted_images => except we don't use the current page title as post name, but the current category being scrapped. To refactor ?
   def scrap_category(category_page, month)
     puts "creating post  = #{@current_post_name}"
 

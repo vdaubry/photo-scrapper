@@ -5,8 +5,12 @@ module ForumHelper
     sign_in(user, password)
   end
 
+  def number_of_categories
+    2
+  end
+
   def do_scrap
-    (1..2).each do |category_number|
+    (1..number_of_categories).each do |category_number|
       scrap_posts_from_category(category_name(category_number), scrapping_date)
     end
   end
