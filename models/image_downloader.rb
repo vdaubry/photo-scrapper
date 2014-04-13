@@ -82,17 +82,7 @@ class ImageDownloader
         puts "Downloading with open-uri"
         puts Benchmark.measure { 
           open(image_save_path, 'wb') do |file|
-            file << open(source_url, 
-                      :allow_redirections => :all,
-                      :content_length_proc => lambda { |t|
-                      if t && t > 0
-                        pbar = ProgressBar.new("...", t)
-                        pbar.file_transfer_mode
-                      end
-                      },
-                      :progress_proc => lambda {|s|
-                        pbar.set s if pbar
-                      }).read
+            file << open(source_url, :allow_redirections => :all).read
           end
         }
       end
