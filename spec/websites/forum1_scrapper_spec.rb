@@ -39,6 +39,23 @@ describe "Forum1" do
 
   describe "unit tests", :local => :true do
 
+    # describe "do_scrap", :vcr => true do
+    #   it "goes back to category page after each category scrapping" do
+    #     go_to_home_page
+    #     expected_page = @forum1.current_page
+
+    #     puts "@forum1.current_page = #{@forum1.current_page.uri}"
+
+    #     @forum1.stubs(:forum_topics).returns([])
+    #     @forum1.stubs(:scrap_post_hosted_images).returns(nil)
+    #     @forum1.do_scrap
+
+    #     puts "@forum1.current_page = #{@forum1.current_page.uri}"
+
+    #     @forum1.current_page.should == expected_page
+    #   end
+    # end
+
     describe "forum_topics", :vcr => true do
       it "returns all topics" do
         go_to_home_page
