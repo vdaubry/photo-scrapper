@@ -47,7 +47,7 @@ describe "Forum2" do
         do_sign_in
 
         forum_page = @forum2.current_page.link_with(:text => category_name).click
-        @forum2.forum_topics(forum_page).count.should == 92
+        @forum2.forum_topics(forum_page).count.should == 97
       end
     end
 
@@ -55,7 +55,7 @@ describe "Forum2" do
       it "iterates on all categories" do
         go_to_home_page
         do_sign_in
-        @forum2.expects(:scrap_post_hosted_images).times(92).returns(nil)
+        @forum2.expects(:scrap_post_hosted_images).times(97).returns(nil)
 
         @forum2.scrap_posts_from_category(category_name, date)
       end
