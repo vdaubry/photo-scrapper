@@ -45,7 +45,7 @@ namespace :deploy do
   task :copy_production do
     on roles :all do
       execute :mkdir, '-p', "#{shared_path}/config"
-      execute "echo \"APP_ENV='development1'\" > #{release_path}/config/application.rb"
+      execute "echo \"APP_ENV='production'\" > #{release_path}/config/application.rb"
       upload! '.env', "#{release_path}/.env"
       upload! 'config/websites.yml', "#{release_path}/config/websites.yml"
       upload! 'config/forums.yml', "#{release_path}/config/forums.yml"
