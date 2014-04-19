@@ -26,7 +26,7 @@ class Post
   def self.find_by(website_id, page_url)
     set_base_uri
     retry_call do
-      resp = get("/websites/#{website_id}/posts/search.json", :query => {:post => {:page_url => page_url}})
+      resp = get("/websites/#{website_id}/posts/search.json", :query => {:page_url => page_url})
       posts = resp["posts"]
       posts.map {|post| Post.new(post)}
     end

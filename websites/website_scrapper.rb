@@ -16,7 +16,7 @@ class WebsiteScrapper
     @scrapper.do_scrap
 
     duration = DateTime.now-start_time
-    pp "End scrapping #{url} with duration : #{duration}"
+    pp "End scrapping #{@scrapper.url} with duration : #{duration}"
     Scrapping.update(@scrapper.id, scrapping.id, {:success => true, :duration => duration})
   end
 end
