@@ -29,6 +29,10 @@ class Forum5Scrapper < Scrapper
     '//span[@class="postbody"]//a[child::img[contains(@src, "jpg") or contains(@src, "jpeg")]]'
   end
 
+  def direct_urls_xpath
+    '___'
+  end
+
   def next_link_text
     "Next"
   end

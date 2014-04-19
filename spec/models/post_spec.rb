@@ -28,7 +28,7 @@ describe "Post" do
 
   describe "find_by" do
     it "returns matching posts" do
-      stub_request(:get, "http://localhost:3002/websites/123/posts/search.json?post%5Bpage_url%5D=www.foo.bar")
+      stub_request(:get, "http://localhost:3002/websites/123/posts/search.json?page_url=www.foo.bar")
       .to_return(:headers => {"Content-Type" => 'application/json'},
                   :body => posts_json, 
                   :status => 200)

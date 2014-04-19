@@ -99,7 +99,7 @@ module ForumHelper
         post_page = next_link_button.click
         scrap_from_page(post_page, previous_scrapping_date)
       else
-        puts "Next page already scrapped : #{post_page.uri.to_s}"
+        puts "Next page already scrapped : #{next_link_url}"
       end
     end
   end

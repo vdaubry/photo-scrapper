@@ -36,6 +36,10 @@ class Forum4Scrapper < Scrapper
     '//div[contains(@id, "post_message")]//a[child::img[contains(@src, "jpg") or contains(@src, "jpeg")]]'
   end
 
+  def direct_urls_xpath
+    '___'
+  end
+
   def next_link_text
     "Next"
   end
