@@ -39,28 +39,24 @@ describe "Forum1" do
 
   describe "unit tests", :local => :true do
 
-    # describe "do_scrap", :vcr => true do
-    #   it "goes back to category page after each category scrapping" do
-    #     go_to_home_page
-    #     expected_page = @forum1.current_page
-
-    #     puts "@forum1.current_page = #{@forum1.current_page.uri}"
-
-    #     @forum1.stubs(:forum_topics).returns([])
-    #     @forum1.stubs(:scrap_post_hosted_images).returns(nil)
-    #     @forum1.do_scrap
-
-    #     puts "@forum1.current_page = #{@forum1.current_page.uri}"
-
-    #     @forum1.current_page.should == expected_page
-    #   end
-    # end
-
     describe "forum_topics", :vcr => true do
-      it "returns all topics" do
+      before(:each) do
         go_to_home_page
-        forum_page = @forum1.current_page.link_with(:text => category_name).click
-        @forum1.forum_topics(forum_page).count.should == 50
+        @topics_page = @forum1.current_page.link_with(:text => category_name).click
+      end
+
+      it "returns all topics" do
+        @forum1.forum_topics(@topics_page).count.should == 50
+      end
+
+      it "returns multiple page topics" do
+        expected_topic = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["forum_topics"]["multiple_page_topic"]
+        @forum1.forum_topics(@topics_page).should include(expected_topic)
+      end
+
+      it "returns single page topics" do
+        expected_topic = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["forum_topics"]["single_page_topic"]
+        @forum1.forum_topics(@topics_page).should include(expected_topic)
       end
     end
 
@@ -110,10 +106,26 @@ describe "Forum1" do
       end
     end
 
-    describe "host_urls" do
+    describe "host_urls", :vcr => true do
       it "finds all images hosted urls", :vcr => true do
         res = @forum1.host_urls(forum_page)
         res.count.should == 1
+      end
+
+      it "reject images on postimage", :vcr => true do
+        forum_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_urls"]["hotlink_image"]
+        forum_page = Mechanize.new.get(forum_url)
+        res = @forum1.host_urls(forum_page)
+        res.count.should == 0
+      end
+    end
+
+    describe "direct_urls", :vcr => true do
+      it "finds all gotlink images" do
+        forum_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_urls"]["hotlink_image"]
+        forum_page = Mechanize.new.get(forum_url)
+        res = @forum1.direct_urls(forum_page)
+        res.count.should == 10
       end
     end
 
@@ -155,21 +167,35 @@ describe "Forum1" do
         
         @forum1.scrap_from_page(@forum1.current_page, date)
       end
+
+      it "scraps images hotlinked on forum" do
+        post_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_urls"]["hotlink_image"]
+        @forum1.current_page = Mechanize.new.get(post_url)
+        hotlinked_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["scrap_from_page"]["hotlinked_image"]
+        @forum1.stubs(:go_to_next_page).returns(nil)
+
+        @forum1.expects(:download_image).with(hotlinked_image, nil)
+        @forum1.stubs(:download_image).with(Not(equals(hotlinked_image)), nil)
+        
+        @forum1.scrap_from_page(@forum1.current_page, date)
+      end      
     end
 
     describe "go_to_next_page", :vcr => true do
+      let(:last_page) { Mechanize.new.get(YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["go_to_next_page"]["post_page_5_url"]) }
+
       context "not yet scrapped" do
         before(:each) do
           Post.stubs(:find_by).returns([])
         end
 
         it "updates post pages_url" do
-          expected_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["go_to_next_page"]["post2_url"]
+          expected_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["go_to_next_page"]["post_page_4_url"]
           @forum1.post_id = "456"
           @forum1.stubs(:scrap_from_page).returns(nil)
           Post.expects(:update).with('52f7e1df4d61635e70010000', "456", expected_url)
           
-          @forum1.go_to_next_page(forum_page, date)
+          @forum1.go_to_next_page(last_page, date)
         end
 
         it "scraps next page" do
@@ -177,7 +203,7 @@ describe "Forum1" do
           @forum1.expects(:scrap_from_page).once.returns(nil)
           Post.stubs(:update).returns(nil)
           
-          @forum1.go_to_next_page(forum_page, date)
+          @forum1.go_to_next_page(last_page, date)
         end
       end
 
@@ -187,7 +213,7 @@ describe "Forum1" do
           @forum1.expects(:scrap_from_page).never
           Post.expects(:update).never
 
-          @forum1.go_to_next_page(forum_page, date)
+          @forum1.go_to_next_page(last_page, date)
         end
       end
     end
