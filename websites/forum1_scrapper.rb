@@ -17,17 +17,23 @@ class Forum1Scrapper < Scrapper
 
   def forum_topics(forum_page)
     doc = forum_page.parser
-    doc.xpath('//tr[@class=""]//td[@class="title"]//a').reject {|i| i[:href].include?("page:")}.map { |i| i[:href]}
+    multiple_page_topics = doc.xpath('//tr[@class=""]//td[@class="title"]//div[@class="smallPaging"]//a[last()]').map { |i| i[:href]}
+    single_page_topic = doc.xpath('//tr[@class=""]//td[@class="title" and not(div[@class="smallPaging"]/a)]//a').map { |i| i[:href]}
+    return multiple_page_topics+single_page_topic
   end
 
   def host_urls_xpath
-    '//div[@class="bodyContent"]//a'
+    '//div[@class="bodyContent"]//a[not(contains(@href, "postimage"))]'
+  end
+
+  def direct_urls_xpath
+    '//div[@class="bodyContent"]//img[parent::a[contains(@href, "postimage")]]'
   end
 
   def scrap_from_page(post_page, previous_scrapping_date)
     urls = host_urls(post_page)
-
-    puts "All images scrapped on page : #{post_page.uri.to_s}" if urls.blank?
+    hotlink_urls = direct_urls(post_page)
+    puts "All images scrapped on page : #{post_page.uri.to_s}" if urls.blank? && hotlink_urls.blank?
 
     urls.each do |host_url|
       if host_url.include?("http")
@@ -39,10 +45,15 @@ class Forum1Scrapper < Scrapper
       end
     end
 
+    hotlink_urls.each do |hotlink_url|
+      download_image(hotlink_url)
+    end
+
     go_to_next_page(post_page, previous_scrapping_date)
   end
 
   def next_link_text
-    "»"
+    "«"
   end
+
 end
