@@ -7,19 +7,19 @@ class Website1Scrapper < Scrapper
   end
 
   def authorize
-    user = YAML.load_file('config/websites.yml')["website1"]["username"]
-    password = YAML.load_file('config/websites.yml')["website1"]["password"]
+    user = YAML.load_file('private-conf/websites.yml')["website1"]["username"]
+    password = YAML.load_file('private-conf/websites.yml')["website1"]["password"]
     pp "Sign in user : #{user}"
     sign_in(user, password)
   end
 
   def do_scrap
-    top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
+    top_link = YAML.load_file('private-conf/websites.yml')["website1"]["top_link"]
     top_page(top_link)
 
     images_saved = 0
     (1..12).each do |category_number|
-      category_name = YAML.load_file('config/websites.yml')["website1"]["category#{category_number}"]
+      category_name = YAML.load_file('private-conf/websites.yml')["website1"]["category#{category_number}"]
       category_page = category(category_name, scrapping_date)
       scrap_category(category_page, scrapping_date)
     end
@@ -46,7 +46,7 @@ class Website1Scrapper < Scrapper
     @post_id = post.id
     @post_images_count = 0
     
-    link_reg_exp = YAML.load_file('config/websites.yml')["website1"]["link_reg_exp"]
+    link_reg_exp = YAML.load_file('private-conf/websites.yml')["website1"]["link_reg_exp"]
     links = category_page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
     pp "Found #{links.count} links" 
     links.each do |link|

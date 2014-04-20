@@ -46,10 +46,10 @@ namespace :deploy do
     on roles :all do
       execute :mkdir, '-p', "#{shared_path}/config"
       execute "echo \"APP_ENV='production'\" > #{release_path}/config/application.rb"
-      upload! '.env', "#{release_path}/.env"
-      upload! 'config/websites.yml', "#{release_path}/config/websites.yml"
-      upload! 'config/forums.yml', "#{release_path}/config/forums.yml"
-      upload! 'hosts/hosts_conf.yml', "#{release_path}/hosts/hosts_conf.yml"
+      upload! 'private-conf/.env',            "#{release_path}/private-conf/.env"
+      upload! 'private-conf/websites.yml',    "#{release_path}/private-conf/websites.yml"
+      upload! 'private-conf/forums.yml',      "#{release_path}/private-conf/forums.yml"
+      upload! 'private-conf/hosts_conf.yml',  "#{release_path}/private-conf/hosts_conf.yml"
     end
   end
 

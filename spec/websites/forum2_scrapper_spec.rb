@@ -13,11 +13,11 @@ end
 
 describe "Forum2" do
 
-  let(:category_name) { YAML.load_file('config/forums.yml')["forum2"]["category1"] }
+  let(:category_name) { YAML.load_file('private-conf/forums.yml')["forum2"]["category1"] }
   let(:date) { Date.parse("01/02/2010") }
 
   before(:each) do
-    @url = YAML.load_file('config/forums.yml')["forum2"]["url"]
+    @url = YAML.load_file('private-conf/forums.yml')["forum2"]["url"]
     @forum2 = Forum2Scrapper.new(@url)
   end
 
@@ -26,8 +26,8 @@ describe "Forum2" do
   end
 
   def do_sign_in
-    @user = YAML.load_file('config/forums.yml')["forum2"]["username"]
-    @password = YAML.load_file('config/forums.yml')["forum2"]["password"]
+    @user = YAML.load_file('private-conf/forums.yml')["forum2"]["username"]
+    @password = YAML.load_file('private-conf/forums.yml')["forum2"]["password"]
 
     @forum2.sign_in(@user, @password)
   end

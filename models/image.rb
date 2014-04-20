@@ -5,7 +5,6 @@ require 'active_model'
 require_relative '../config/application'
 require_relative 'api_helper'
 
-
 class Image
   include HTTParty
   extend ApiHelper

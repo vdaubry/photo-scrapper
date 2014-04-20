@@ -6,8 +6,8 @@ class Forum3Scrapper < Scrapper
   include ForumHelper
 
   def credentials
-    user = YAML.load_file('config/forums.yml')["forum3"]["username"]
-    password = YAML.load_file('config/forums.yml')["forum3"]["password"]
+    user = YAML.load_file('private-conf/forums.yml')["forum3"]["username"]
+    password = YAML.load_file('private-conf/forums.yml')["forum3"]["password"]
     return user, password
   end
 
@@ -19,7 +19,7 @@ class Forum3Scrapper < Scrapper
   end
 
   def category_name(category_number)
-    YAML.load_file('config/forums.yml')["forum3"]["category#{category_number}"]
+    YAML.load_file('private-conf/forums.yml')["forum3"]["category#{category_number}"]
   end
 
   def forum_topics(forum_page)

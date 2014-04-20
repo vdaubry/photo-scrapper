@@ -14,7 +14,7 @@ end
 describe "Website1Scrapper", :local => :true do
 
   before(:each) do
-    @url = YAML.load_file('config/websites.yml')["website1"]["url"]
+    @url = YAML.load_file('private-conf/websites.yml')["website1"]["url"]
     @website1_scrapper = Website1Scrapper.new(@url)
   end
 
@@ -23,8 +23,8 @@ describe "Website1Scrapper", :local => :true do
   end
 
   def do_sign_in
-    @user = YAML.load_file('config/websites.yml')["website1"]["username"]
-    @password = YAML.load_file('config/websites.yml')["website1"]["password"]
+    @user = YAML.load_file('private-conf/websites.yml')["website1"]["username"]
+    @password = YAML.load_file('private-conf/websites.yml')["website1"]["password"]
 
     @website1_scrapper.sign_in(@user, @password)
   end
@@ -32,13 +32,13 @@ describe "Website1Scrapper", :local => :true do
   def go_to_top_page
     go_to_home_page
     do_sign_in
-    top_link = YAML.load_file('config/websites.yml')["website1"]["top_link"]
+    top_link = YAML.load_file('private-conf/websites.yml')["website1"]["top_link"]
     @website1_scrapper.top_page(top_link)
   end
 
   def go_to_category
     go_to_top_page
-    @category_name = YAML.load_file('config/websites.yml')["website1"]["category1"]
+    @category_name = YAML.load_file('private-conf/websites.yml')["website1"]["category1"]
     @previous_month = Date.parse("01-02-2014")
     @website1_scrapper.category(@category_name, @previous_month)
   end
@@ -175,7 +175,7 @@ describe "Website1Scrapper", :local => :true do
       Mechanize.new.get(link_url)
     end
     let(:link) do 
-      link_reg_exp = YAML.load_file('config/websites.yml')["website1"]["link_reg_exp"]
+      link_reg_exp = YAML.load_file('private-conf/websites.yml')["website1"]["link_reg_exp"]
       current_page.links_with(:href => %r{#{link_reg_exp}}).second
     end
 

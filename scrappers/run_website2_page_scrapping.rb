@@ -9,7 +9,7 @@ specific_model = ARGV[0]
 puts "specific_model = #{specific_model}"
 exit unless specific_model != nil
 
-url = YAML.load_file('config/websites.yml')["website2"]["url"]
+url = YAML.load_file('private-conf/websites.yml')["website2"]["url"]
 website2 = Website2Scrapper.new(url)
 website2.specific_model = ARGV[0]
 scrapper = WebsiteScrapper.new(website2)

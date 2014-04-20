@@ -5,10 +5,10 @@ class Website2Scrapper < Scrapper
 
   def do_scrap
     if @specific_model
-      base_url = YAML.load_file('config/websites.yml')["website2"]["base_url"]
+      base_url = YAML.load_file('private-conf/websites.yml')["website2"]["base_url"]
       scrap_specific_page("#{base_url}/#{@specific_model}", @specific_model)
     else
-      excluded_urls = YAML.load_file('config/websites.yml')["website2"]["excluded_urls"]
+      excluded_urls = YAML.load_file('private-conf/websites.yml')["website2"]["excluded_urls"]
       scrap_allowed_links(excluded_urls, scrapping_date)
     end
     
@@ -41,7 +41,7 @@ class Website2Scrapper < Scrapper
     #check current page date 
     doc = page.parser
     pid = doc.css("div.pic").first.children[1].text.split("id. ").last
-    post_url = YAML.load_file('config/websites.yml')["website2"]["post_url"]
+    post_url = YAML.load_file('private-conf/websites.yml')["website2"]["post_url"]
     browser = Mechanize.new
     response_doc = browser.post(post_url, {"req" => "pexpand", "pid" => pid}).parser
     response_doc.xpath("//body").children[0].text.split("added on: ").last
@@ -104,7 +104,7 @@ class Website2Scrapper < Scrapper
     if @has_next_page
       puts "Loading next page"
       lastpid = lastpid(page)
-      post_url = YAML.load_file('config/websites.yml')["website2"]["post_url"]
+      post_url = YAML.load_file('private-conf/websites.yml')["website2"]["post_url"]
       page = Mechanize.new.post(post_url, {"req" => "morepics", "cid" => @model_id, "lastpid" => lastpid})
 
       remaining_images = page.content.split("|")[1]

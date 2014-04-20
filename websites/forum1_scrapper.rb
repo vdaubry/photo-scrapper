@@ -6,13 +6,13 @@ class Forum1Scrapper < Scrapper
   include ForumHelper
 
   def credentials
-    user = YAML.load_file('config/forums.yml')["forum1"]["username"]
-    password = YAML.load_file('config/forums.yml')["forum1"]["password"]
+    user = YAML.load_file('private-conf/forums.yml')["forum1"]["username"]
+    password = YAML.load_file('private-conf/forums.yml')["forum1"]["password"]
     return user, password
   end
 
   def category_name(category_number)
-    YAML.load_file('config/forums.yml')["forum1"]["category#{category_number}"]
+    YAML.load_file('private-conf/forums.yml')["forum1"]["category#{category_number}"]
   end
 
   def forum_topics(forum_page)
@@ -40,7 +40,7 @@ class Forum1Scrapper < Scrapper
         page_image = page_image_at_host_url(host_url)
         download_image(page_image.url.to_s, page_image) if page_image.present?
       else
-        base_url = YAML.load_file('config/forums.yml')["forum1"]["base_url"]
+        base_url = YAML.load_file('private-conf/forums.yml')["forum1"]["base_url"]
         download_image("#{base_url}#{host_url}", nil)
       end
     end

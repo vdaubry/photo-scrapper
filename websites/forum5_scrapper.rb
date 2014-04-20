@@ -17,7 +17,7 @@ class Forum5Scrapper < Scrapper
   end
 
   def category_name(category_number)
-    YAML.load_file('config/forums.yml')["forum5"]["category#{category_number}"]
+    YAML.load_file('private-conf/forums.yml')["forum5"]["category#{category_number}"]
   end
 
   def forum_topics(forum_page)

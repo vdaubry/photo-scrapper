@@ -14,14 +14,14 @@ end
 describe "Website2Scrapper", :local => :true do
 
   let(:date) { Date.parse("01/02/2010") }
-  let(:excluded_urls) { YAML.load_file('config/websites.yml')["website2"]["excluded_urls"] }
+  let(:excluded_urls) { YAML.load_file('private-conf/websites.yml')["website2"]["excluded_urls"] }
   let(:sample_page) {
     page_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website2"]["find_latest_pic"]["link"]
     Mechanize.new.get(page_url)
   }
 
   before(:each) do
-    @url = YAML.load_file('config/websites.yml')["website2"]["url"]
+    @url = YAML.load_file('private-conf/websites.yml')["website2"]["url"]
     @website2 = Website2Scrapper.new(@url)
   end
 
@@ -132,7 +132,7 @@ describe "Website2Scrapper", :local => :true do
     end
 
     it "gets next page" do
-      post_url = YAML.load_file('config/websites.yml')["website2"]["post_url"]
+      post_url = YAML.load_file('private-conf/websites.yml')["website2"]["post_url"]
       mock_page = stub(:content => "</div>|815|976002")
       Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "1025297"}).returns(mock_page)
       @website2.stubs(:scrap_page).returns(nil)

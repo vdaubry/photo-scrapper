@@ -13,11 +13,11 @@ end
 
 describe "Forum5" do
 
-  let(:category_name) { YAML.load_file('config/forums.yml')["forum5"]["category1"] }
+  let(:category_name) { YAML.load_file('private-conf/forums.yml')["forum5"]["category1"] }
   let(:date) { Date.parse("01/02/2010") }
 
   before(:each) do
-    @url = YAML.load_file('config/forums.yml')["forum5"]["url"]
+    @url = YAML.load_file('private-conf/forums.yml')["forum5"]["url"]
     @forum5 = Forum5Scrapper.new(@url)
   end
 
