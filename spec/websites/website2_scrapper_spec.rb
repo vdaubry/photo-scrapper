@@ -75,7 +75,7 @@ describe "Website2Scrapper", :local => :true do
   end
 
   describe "find_latest_pic_date", vcr: true do
-    it { @website2.find_latest_pic_date(sample_page).should == "2014-03-24" }
+    it { @website2.find_latest_pic_date(sample_page).should == "2014-04-16" }
   end
 
   describe "images_links", vcr: true do
@@ -122,7 +122,7 @@ describe "Website2Scrapper", :local => :true do
   end
 
   describe "lastpid", vcr: true do
-    it { @website2.lastpid(sample_page).should == "1025297" }
+    it { @website2.lastpid(sample_page).should == "1037314" }
   end
 
   describe "go_to_next_page", vcr: true do
@@ -134,7 +134,7 @@ describe "Website2Scrapper", :local => :true do
     it "gets next page" do
       post_url = YAML.load_file('private-conf/websites.yml')["website2"]["post_url"]
       mock_page = stub(:content => "</div>|815|976002")
-      Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "1025297"}).returns(mock_page)
+      Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "1037314"}).returns(mock_page)
       @website2.stubs(:scrap_page).returns(nil)
       
       @website2.go_to_next_page(sample_page, date)

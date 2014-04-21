@@ -34,7 +34,7 @@ set :deploy_to, '/srv/www/photo-scrapper'
 # Default value for keep_releases is 5
 set :keep_releases, 1
 
-set :ssh_options, { :forward_agent => true, :keys => %w(~/.ssh/paulette_ec2.pem) }
+set :ssh_options, { :forward_agent => true, :keys => %w(~/.ssh/paulette_ec2.pem), :paranoid => false }
 
 
 
