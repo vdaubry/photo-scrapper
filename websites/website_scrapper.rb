@@ -20,9 +20,7 @@ class WebsiteScrapper
       pp "End scrapping #{@scrapper.url} with duration : #{duration}"
       Scrapping.update(@scrapper.id, scrapping.id, {:success => true, :duration => duration})
     ensure
-      unless 
-      system()
+      system("sudo shutdown now") if APP_ENV['production']
     end
-    
   end
 end
