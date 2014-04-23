@@ -22,8 +22,13 @@ class WebsiteScrapper
     rescue StandardError => e
       puts "Fail for unknown reason : "+e.to_s
     ensure
-      puts "Shutting down in env #{APP_ENV}"
-      system("shutdown -h now") if APP_ENV == 'production'
+      if APP_ENV == 'production'
+        puts "Shutting down in env #{APP_ENV}"
+        system("shutdown -h now") 
+      else
+        puts "Error app env = #{APP_ENV}"
+        puts "APP_ENV == 'production' : #{APP_ENV == 'production'}"
+      end
     end
   end
 end
