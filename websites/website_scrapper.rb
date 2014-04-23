@@ -7,7 +7,6 @@ class WebsiteScrapper
 
   def start
     begin
-      fail = 1/0
       start_time = DateTime.now
       scrapping_date = @scrapper.scrapping_date
       pp "Start scrapping #{@scrapper.url} for month : #{scrapping_date}"
