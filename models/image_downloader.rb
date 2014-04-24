@@ -5,6 +5,7 @@ require 'mini_magick'
 require 'active_support/time'
 require 'benchmark'
 require 'progressbar'
+require 'image_optim'
 require_relative 'facades/ftp'
 require_relative 'image'
 
@@ -67,6 +68,13 @@ class ImageDownloader
   def clean_images
     File.delete(image_save_path) if File.exist?(image_save_path)
     File.delete(thumbnail_save_path) if File.exist?(thumbnail_save_path)
+  end
+
+  def compress_image
+    File.open(image_save_path) {|f| puts "size before = #{f.size}"}
+    image_optim = ImageOptim.new(:jpegoptim => {:max_quality => 75})
+    image_optim.optimize_image!(image_save_path)
+    File.open(image_save_path) {|f| puts "size after = #{f.size}"}
   end
 
   def download(page_image=nil)
