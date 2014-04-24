@@ -43,6 +43,7 @@ describe ImageDownloader do
 			image.stub_chain(:open, :read) { File.open("spec/ressources/calinours.jpg").read }
 			image.stubs(:generate_thumb).returns(true)
 			image.stubs(:set_image_info).returns(true)
+			image.stubs(:compress_image).returns(true)
 		end
 
 		it "uploads file to FTP" do
