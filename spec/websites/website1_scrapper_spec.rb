@@ -143,22 +143,6 @@ describe "Website1Scrapper", :local => :true do
         website1.scrap_category(page, month)
       end
 
-      it "destroys post if post_image_count is 0" do
-        page = go_to_category
-        Post.stubs(:create).returns(Post.new({"id" => "6789"}))
-        website1.stubs(:post_images_count).returns(0)
-        Post.expects(:destroy).with("12345", "6789")
-        
-        website1.scrap_category(page, month)
-      end
-
-      it "sets post_image_count to 0" do
-        page = go_to_category
-        Post.stubs(:create).returns(Post.new({"id" => "6789"}))
-        website1.scrap_category(page, month)
-
-        website1.post_images_count.should == 0      
-      end
 
       it "iterates on all links" do
         page = go_to_category
@@ -221,44 +205,12 @@ describe "Website1Scrapper", :local => :true do
       @website1_scrapper.download_image(url)
     end
 
-    context "download image ok" do
-      it "increases post_images_count" do
-        @website1_scrapper.post_images_count = 0
-        ImageDownloader.any_instance.expects(:download).returns(true)
-
-        @website1_scrapper.download_image(url)
-
-        @website1_scrapper.post_images_count.should == 1
-      end
-    end
-
-    context "download image ko" do
-      it "doesn't increase post_images_count" do
-        @website1_scrapper.post_images_count = 0
-        ImageDownloader.any_instance.expects(:download).returns(false)
-
-        @website1_scrapper.download_image(url)
-
-        @website1_scrapper.post_images_count.should == 0
-      end
-    end
-
     context "invalid uri" do
       it "doesn't download image" do
         ImageDownloader.any_instance.stubs(:build_info).returns(stub(:key => nil))
         ImageDownloader.any_instance.expects(:download).never
 
         @website1_scrapper.download_image(url)
-      end
-
-
-      it "doesn't increase post_images_count" do
-        @website1_scrapper.post_images_count = 0
-        ImageDownloader.any_instance.stubs(:build_info).returns(stub(:key => nil))
-        
-        @website1_scrapper.download_image(url)
-
-        @website1_scrapper.post_images_count.should == 0
       end
     end
   end

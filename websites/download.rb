@@ -12,7 +12,6 @@ module Download
       if imageDownloader.key
         pp "Save #{imageDownloader.key}"
         success = imageDownloader.download(page_image)
-        @post_images_count += 1 if success
         sleep(1) unless ENV['TEST']
       end
     else

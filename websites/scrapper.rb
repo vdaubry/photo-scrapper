@@ -17,7 +17,7 @@ class Scrapper
   extend Forwardable
   def_delegators :@website, :url, :id
 
-  attr_accessor :website, :current_page, :current_post_name, :post_images_count, :post_id
+  attr_accessor :website, :current_page, :current_post_name, :post_id
 
   def initialize(url)
     websites = Website.find_by(url)

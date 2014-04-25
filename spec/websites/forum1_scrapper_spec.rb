@@ -79,24 +79,6 @@ describe "Forum1" do
           @forum1.scrap_post_hosted_images(forum_page, date)
         end
 
-        it "sets post_image_count to 0" do
-          Post.stubs(:create).returns(Post.new({"id" => "6789"}))
-          @forum1.stubs(:scrap_from_page).returns(nil)
-
-          @forum1.scrap_post_hosted_images(forum_page, date)
-
-          @forum1.post_images_count.should == 0      
-        end
-
-        it "destroys post if post_image_count is 0" do
-          Post.stubs(:create).returns(Post.new({"id" => "6789"}))
-          @forum1.stubs(:scrap_from_page).returns(nil)
-          @forum1.stubs(:post_images_count).returns(0)
-          Post.expects(:destroy).with("52f7e1df4d61635e70010000", "6789")
-          
-          @forum1.scrap_post_hosted_images(forum_page, date)
-        end
-
         it "scrap post" do
           Post.stubs(:create).returns(Post.new({"id" => "6789"}))
           @forum1.expects(:scrap_from_page).once.returns(nil)

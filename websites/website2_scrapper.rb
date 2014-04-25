@@ -52,7 +52,6 @@ class Website2Scrapper < Scrapper
       post_name = link.text
       post = Post.create(id, post_name)
       @post_id = post.id
-      @post_images_count = 0
       
       pp "Scrap : #{post.name} since #{previous_scrapping_date}"
       page = link.click
@@ -61,8 +60,6 @@ class Website2Scrapper < Scrapper
       @has_next_page = button.present?
       @model_id = model_id(page)
       scrap_page(page, previous_scrapping_date)
-
-      Post.destroy(id, @post_id) if @post_images_count==0
     end
   end
 
@@ -70,14 +67,11 @@ class Website2Scrapper < Scrapper
     page = Mechanize.new.get(page_name)
     post = Post.create(id, post_name)
     @post_id = post.id
-    @post_images_count = 0
 
     button = next_page_button(page)
     @has_next_page = button.present?
     @model_id = model_id(page)
     scrap_page(page, 10.year.ago)
-
-    Post.destroy(id, @post_id) if @post_images_count==0
   end
 
   def scrap_page(page, previous_scrapping_date)

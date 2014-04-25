@@ -153,6 +153,12 @@ describe ImageDownloader do
 				page_image.stubs(:fetch).raises(MiniMagick::Invalid)
 				@image.download(page_image) == false
 			end
+
+			it "catches memory error" do
+				page_image = mock()
+				page_image.stubs(:fetch).raises(Errno::ENOMEM)
+				@image.download(page_image) == false
+			end
 		end
 	end
 

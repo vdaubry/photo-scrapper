@@ -44,7 +44,6 @@ class Website1Scrapper < Scrapper
 
     post = Post.create(id, @current_post_name)
     @post_id = post.id
-    @post_images_count = 0
     
     link_reg_exp = YAML.load_file('private-conf/websites.yml')["website1"]["link_reg_exp"]
     links = category_page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
@@ -52,8 +51,6 @@ class Website1Scrapper < Scrapper
     links.each do |link|
       parse_image(link)
     end
-
-    Post.destroy(id, @post_id) if @post_images_count==0
   end
 
   def parse_image(link)

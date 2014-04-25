@@ -63,15 +63,6 @@ describe "Website2Scrapper", :local => :true do
       
       @website2.scrap_allowed_links(excluded_urls, date)
     end
-
-    it "destroys post if post_image_count is 0" do
-      @website2.stubs(:post_images_count).returns(0)
-      Post.stubs(:create).returns(Post.new({"id" => "123"}))
-      @website2.stubs(:scrap_page).returns(nil)
-      Post.expects(:destroy).with("52eea6be4d6163b84e000000", "123").times(10)
-      
-      @website2.scrap_allowed_links(excluded_urls, date)
-    end
   end
 
   describe "find_latest_pic_date", vcr: true do

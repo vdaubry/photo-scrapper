@@ -49,11 +49,8 @@ module ForumHelper
     pp "Scrap post for hosted images : #{post_page.title} - #{post_page.uri.to_s}"
     post = Post.create(id, post_page.title)
     @post_id = post.id
-    @post_images_count = 0
-
+    
     scrap_from_page(post_page, previous_scrapping_date)
-
-    Post.destroy(id, @post_id) if @post_images_count==0
   end
 
   def direct_urls(post_page)
