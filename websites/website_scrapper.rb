@@ -27,7 +27,7 @@ class WebsiteScrapper
         system("shutdown -h now") 
       else
         puts "Error app env = #{APP_ENV}"
-        puts "APP_ENV == 'production' : #{APP_ENV == 'production'}"
+        puts "is env production : #{APP_ENV == 'production'}"
       end
     end
   end
