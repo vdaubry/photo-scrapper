@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'spec_helper'
-require_relative '../../websites/tumblr1_scrapper'
+require_relative '../../websites/tumblr/tumblr1_scrapper'
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassette_library'
@@ -52,6 +52,10 @@ describe "Tumblr1" do
     end
 
     describe "do_scrap", :vcr => true do
+      before(:each) do
+        @tumblr1.stubs(:go_to_next_page)
+      end
+      
       it "creates post" do
         @tumblr1.stubs(:download_image)
         post_name = YAML.load_file('private-conf/tumblr.yml')["tumblr1"]["post_name"]

@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'spec_helper'
-require_relative '../../websites/tumblr2_scrapper'
+require_relative '../../websites/tumblr/tumblr2_scrapper'
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassette_library'
