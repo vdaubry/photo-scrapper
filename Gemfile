@@ -13,6 +13,7 @@ gem 'progressbar',              '~> 0.21.0'
 gem 'retriable',                '~> 1.4.1'
 gem 'activemodel',              '~> 4.1.0'
 gem 'image_optim',              '~> 0.13.2'
+gem 'sentry-raven',             '~> 0.8.0'
 
 
 group :test do
