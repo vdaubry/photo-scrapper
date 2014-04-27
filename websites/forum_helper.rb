@@ -10,12 +10,8 @@ module ForumHelper
   end
 
   def do_scrap
-    #@category_page = @current_page
-    puts "@current_page = #{@current_page.uri}"
     (1..number_of_categories).each do |category_number|
       scrap_posts_from_category(category_name(category_number), scrapping_date)
-      puts "@current_page = #{@current_page.uri}"
-      #@current_page = @category_page
     end
   end
 

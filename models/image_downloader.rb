@@ -18,13 +18,18 @@ class ImageDownloader
     @key = key
   end
 
+  def key_from_url(source_url)
+    image_path = File.basename(URI.parse(source_url).path)
+    DateTime.now.to_i.to_s + "_" + image_path.gsub('-', '_').gsub(/[^0-9A-Za-z_\.]/, '')
+  end
+
   def build_info(website_id, post_id, source_url, hosting_url=nil)
     @website_id = website_id
     @post_id = post_id
     @source_url = source_url
     @hosting_url = hosting_url
     begin
-      @key = (DateTime.now.to_i.to_s + "_" + File.basename(URI.parse(source_url).path)).gsub('-', '_').gsub(/[^0-9A-Za-z_\.]/, '')
+      @key = key_from_url(source_url)
     rescue URI::InvalidURIError => e
       puts e.to_s
     end
