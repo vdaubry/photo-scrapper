@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'spec_helper'
-require_relative '../../websites/tumblr/tumblr1_scrapper'
+require_relative '../../../websites/tumblr/tumblr1_scrapper'
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassette_library'
@@ -28,7 +28,7 @@ describe "Tumblr1" do
         photoset_links = @tumblr1.photoset_links
         photoset_links.count.should == 30
 
-        expected_url = YAML.load_file('spec/websites/tumblr_test_conf.yml')["tumblr1"]["photoset_links"]["image_source"]
+        expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["photoset_links"]["image_source"]
         photoset_links.first.should == expected_url
       end
     end
@@ -38,15 +38,15 @@ describe "Tumblr1" do
         single_photo_links = @tumblr1.single_photo_links
         single_photo_links.count.should == 9
 
-        expected_url = YAML.load_file('spec/websites/tumblr_test_conf.yml')["tumblr1"]["single_photo_links"]["image_source"]
+        expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["single_photo_links"]["image_source"]
         single_photo_links.first.should == expected_url
       end
     end
 
     describe "image_at_link", :vcr => true do
       it "finds photo" do
-        image_src = YAML.load_file('spec/websites/tumblr_test_conf.yml')["tumblr1"]["single_photo_links"]["image_source"]
-        image_link = YAML.load_file('spec/websites/tumblr_test_conf.yml')["tumblr1"]["image_at_link"]["image_link"]
+        image_src = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["single_photo_links"]["image_source"]
+        image_link = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["image_at_link"]["image_link"]
         @tumblr1.image_at_link(image_link).should == image_src
       end
     end
@@ -67,7 +67,7 @@ describe "Tumblr1" do
       end
 
       it "downloads image" do
-        image_src = YAML.load_file('spec/websites/tumblr_test_conf.yml')["tumblr1"]["do_scrap"]["image_source"]
+        image_src = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["do_scrap"]["image_source"]
         @tumblr1.expects(:download_image).with(image_src, nil).once
         @tumblr1.stubs(:download_image).with(Not(equals(image_src)), nil).times(38)
 
