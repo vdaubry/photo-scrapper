@@ -70,5 +70,44 @@ describe "Tumblr1" do
         @tumblr1.do_scrap
       end
     end
+
+    describe "go_to_next_page", :vcr => true do
+      before(:each) do
+        @tumblr1.post_id = "123"
+        @tumblr1.stubs(:do_scrap).returns(nil)
+      end
+
+      context "2nd page not scrapped" do
+        before(:each) do
+          Post.stubs(:find_by).returns(nil)
+        end
+
+        it "goes to page 2" do
+          Post.expects(:update).with('535bf2a06d627028a7000000', "123", "#{@url}/page/2")
+          @tumblr1.go_to_next_page
+        end
+
+        it "goes to page n" do
+          @tumblr1.current_page = Mechanize.new.get("#{@url}/page/3")
+          Post.expects(:update).with('535bf2a06d627028a7000000', "123", "#{@url}/page/4")
+          @tumblr1.go_to_next_page
+        end
+
+        it "stops if no more pages" do
+          @tumblr1.current_page = Mechanize.new.get("#{@url}/page/200")
+          Post.expects(:update).never
+          @tumblr1.go_to_next_page
+        end
+      end
+
+      context "2nd page already scrapped" do
+        it "doesn't scrap second page" do
+          Post.stubs(:find_by).returns(mock('Post'))
+          Post.expects(:update).never
+
+          @tumblr1.go_to_next_page
+        end
+      end      
+    end
   end
-end
+end 
