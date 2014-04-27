@@ -6,9 +6,12 @@ require_relative '../../models/facades/ftp'
 describe ImageDownloader do
 
 	describe "build info" do
+		before(:each) do
+			@fake_date = DateTime.parse("01/01/2014")
+			DateTime.stubs(:now).returns @fake_date
+		end
+
 		it "create a new image with parameters" do
-			fake_date = DateTime.parse("01/01/2014")
-			DateTime.stubs(:now).returns fake_date
 			url = "http://foo.bar"
 			
 			img = ImageDownloader.new.build_info(123, 456, url)
@@ -16,18 +19,14 @@ describe ImageDownloader do
 			img.website_id.should == 123
 			img.post_id.should == 456
 			img.source_url.should == url
-			img.key.should == fake_date.to_i.to_s + "_" + File.basename(URI.parse(url).path)
+			img.key.should == @fake_date.to_i.to_s + "_" + File.basename(URI.parse(url).path)
 			img.status.should == ImageDownloader::TO_SORT_STATUS
 		end
 
 		it "format special characters" do
-			fake_date = DateTime.parse("01/01/2014")
-			DateTime.stubs(:now).returns fake_date
-			url = "http://foo.bar/abc-jhvg-emil123.jpg"
+			img = ImageDownloader.new.build_info(123, 456, "http://foo.bar/abc-jhvg-emil123.jpg")
 
-			img = ImageDownloader.new.build_info(123, 456, url)
-
-			img.key.should == fake_date.to_i.to_s + "_" + "abc_jhvg_emil123.jpg"
+			img.key.should == @fake_date.to_i.to_s + "_" + "abc_jhvg_emil123.jpg"
 		end
 
 		it "sets nil key if invalid uri" do

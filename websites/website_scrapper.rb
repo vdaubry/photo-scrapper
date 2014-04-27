@@ -19,6 +19,7 @@ class WebsiteScrapper
       duration = DateTime.now-start_time
       pp "End scrapping #{@scrapper.url} with duration : #{duration}"
       Scrapping.update(@scrapper.id, scrapping.id, {:success => true, :duration => duration})
+      puts "about to shutdown"
     rescue StandardError => e
       puts "Fail for unknown reason : "+e.to_s
     ensure

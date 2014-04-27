@@ -2,7 +2,8 @@ spec/fixtures
 coverage
 websites_test_conf.yml
 forums_test_conf.yml
-spec/hosts/hosts_conf_spec.yml
+tumblr_test_conf.yml
+hosts_conf_spec.yml
 
 
 *.rbc
