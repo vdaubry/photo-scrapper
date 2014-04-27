@@ -1,10 +1,8 @@
-require_relative 'scrapper'
-
-class Tumblr2Scrapper < Scrapper
+module TumblrHelper
 
   def single_photo_links
     doc = @current_page.parser
-    links = doc.xpath('//div[@class="photo-wrapper-inner"]//a').map {|img| img[:href]}
+    links = doc.xpath(single_photo_xpath).map {|img| img[:href]}
     links.map {|link| image_at_link(link)}
   end
 
@@ -14,22 +12,27 @@ class Tumblr2Scrapper < Scrapper
     doc.xpath('//img[@id="content-image"]').first["data-src"]
   end
 
+  def photoset_links
+    links = []
+    @current_page.iframes_with(:src => /post/).each do |iframe|
+      photoset = iframe.click
+      doc = photoset.parser
+      links += doc.xpath('//a').map {|img| img[:href]}
+    end
+    links
+  end
+
   def do_scrap
-    post_name = YAML.load_file('private-conf/tumblr.yml')["tumblr2"]["post_name"]
     post = Post.create(id, post_name)
     @post_id = post.id
 
-    image_links = single_photo_links
+    image_links = single_photo_links+photoset_links
 
     image_links.each do |img_url|
       download_image(img_url)
     end
 
     go_to_next_page
-  end
-
-  def is_current_page_last_page
-    @current_page.parser.xpath('//div[@class="post-wrapper clearfix"]').blank?
   end
 
   def go_to_next_page
@@ -53,4 +56,5 @@ class Tumblr2Scrapper < Scrapper
       puts "Next page already scrapped : #{next_link_url}"
     end
   end
+
 end
