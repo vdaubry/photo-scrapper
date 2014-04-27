@@ -1,6 +1,3 @@
-# config valid only for Capistrano 3.2
-lock '3.2.1'
-
 set :application, 'photo-scrapper'
 set :repo_url, 'git@github.com:vdaubry/photo-scrapper.git'
 
@@ -50,6 +47,7 @@ namespace :deploy do
       upload! 'private-conf/websites.yml',    "#{release_path}/private-conf/websites.yml"
       upload! 'private-conf/forums.yml',      "#{release_path}/private-conf/forums.yml"
       upload! 'private-conf/hosts_conf.yml',  "#{release_path}/private-conf/hosts_conf.yml"
+      upload! 'private-conf/tumblr.yml',  "#{release_path}/private-conf/tumblr.yml"
     end
   end
 
