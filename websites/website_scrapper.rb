@@ -8,7 +8,6 @@ class WebsiteScrapper
 
   def start
     terminate_after do
-      1/0
       start_time = DateTime.now
       scrapping_date = @scrapper.scrapping_date
       pp "Start scrapping #{@scrapper.url} for month : #{scrapping_date}"
