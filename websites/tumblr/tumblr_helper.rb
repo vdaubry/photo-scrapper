@@ -4,9 +4,13 @@ module TumblrHelper
     '//div[@class="media"]//a'
   end
 
+  def direct_images_xpath
+    '//div[@class="media"]//img[not(parent::a)]'
+  end
+
   def direct_images_urls
     doc = @current_page.parser
-    doc.xpath('//div[@class="media"]//img[not(parent::a)]').map {|img| img[:src]}
+    doc.xpath(direct_images_xpath).map {|img| img[:src]}
   end
 
   def single_photo_links

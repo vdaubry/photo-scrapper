@@ -32,23 +32,5 @@ describe "Tumblr5" do
         single_photo_links.first.should == expected_url
       end
     end
-
-    describe "is_current_page_last_page", :vcr => true do
-      context "is not at last page" do
-        before(:each) do
-          @tumblr5.current_page = Mechanize.new.get("#{@url}/page/3")
-        end
-
-        it { @tumblr5.is_current_page_last_page.should == false }
-      end
-
-      context "is at last page" do
-        before(:each) do
-          @tumblr5.current_page = Mechanize.new.get("#{@url}/page/200")
-        end
-
-        it { @tumblr5.is_current_page_last_page.should == true }
-      end
-    end
   end
 end
