@@ -82,30 +82,39 @@ class ImageDownloader
     File.open(image_save_path) {|f| puts "size after = #{f.size}"}
   end
 
+  def get_remote_image(page_image)
+    if page_image
+      puts "Downloading with mechanize #{page_image.url.to_s}"
+      puts Benchmark.measure { 
+        page_image.fetch.save image_save_path #To protect from hotlinking we reuse the same session
+      }
+    else
+      puts "Downloading with open-uri : #{source_url}"
+      puts Benchmark.measure { 
+        open(image_save_path, 'wb') do |file|
+          file << open(source_url, :allow_redirections => :all).read
+        end
+      }
+    end
+  end
+
   def download(page_image=nil)
     result = false
-    pbar = nil
-    begin
-      if page_image
-        puts "Downloading with mechanize #{page_image.url.to_s}"
-        puts Benchmark.measure { 
-          page_image.fetch.save image_save_path #To protect from hotlinking we reuse the same session
-        }
-      else
-        puts "Downloading with open-uri : #{source_url}"
-        puts Benchmark.measure { 
-          open(image_save_path, 'wb') do |file|
-            file << open(source_url, :allow_redirections => :all).read
-          end
-        }
-      end
-      
+    rescue_errors do
+      get_remote_image(page_image)
       compress_image
       set_image_info
       generate_thumb
       result = Image.create(website_id, post_id, source_url, hosting_url, key, status, image_hash, width, height, file_size).present?            
       Ftp.new.upload_file(self) if result
-        
+    end
+    
+    result
+  end
+
+  def rescue_errors
+    begin
+      yield
     rescue Timeout::Error, Errno::ENOENT => e
       puts e.to_s
     rescue OpenURI::HTTPError => e
@@ -133,7 +142,5 @@ class ImageDownloader
     ensure
       clean_images
     end
-    result
   end
-
 end
