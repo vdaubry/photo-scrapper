@@ -25,7 +25,7 @@ module TumblrHelper
         direct_images << link.xpath('//img').first[:src]
       end
     end
-    links_to_image = links_to_image.map {|link| image_at_link(link)}
+    links_to_image = links_to_image.map {|link| image_at_link(link)}.compact
 
     links_to_image+direct_images
   end
@@ -33,7 +33,7 @@ module TumblrHelper
   def image_at_link(url)
     browser = Mechanize.new.get(url)
     doc = browser.parser
-    doc.xpath('//img[@id="content-image"]').first["data-src"]
+    doc.xpath('//img[@id="content-image"]').first["data-src"] rescue nil
   end
 
   def photoset_links
