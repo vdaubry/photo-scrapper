@@ -77,7 +77,7 @@ class ImageDownloader
 
   def compress_image
     File.open(image_save_path) {|f| puts "size before = #{f.size}"}
-    image_optim = ImageOptim.new(:jpegoptim => {:max_quality => 75})
+    image_optim = ImageOptim.new(:pngout => false, :jpegoptim => {:max_quality => 75})
     image_optim.optimize_image!(image_save_path)
     File.open(image_save_path) {|f| puts "size after = #{f.size}"}
   end
@@ -87,12 +87,12 @@ class ImageDownloader
     pbar = nil
     begin
       if page_image
-        puts "Downloading with mechanize"
+        puts "Downloading with mechanize #{page_image.url.to_s}"
         puts Benchmark.measure { 
           page_image.fetch.save image_save_path #To protect from hotlinking we reuse the same session
         }
       else
-        puts "Downloading with open-uri"
+        puts "Downloading with open-uri : #{source_url}"
         puts Benchmark.measure { 
           open(image_save_path, 'wb') do |file|
             file << open(source_url, :allow_redirections => :all).read
