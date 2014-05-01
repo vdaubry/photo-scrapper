@@ -35,6 +35,10 @@ module TumblrHelper
     go_to_next_page
   end
 
+  def is_current_page_last_page
+    @current_page.parser.xpath('//div[@class="post"]').blank?
+  end
+
   def go_to_next_page
     page_number = 1
     if @current_page.uri.to_s.include?("page")
