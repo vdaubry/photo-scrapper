@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'mechanize'
 require 'spec_helper'
-require_relative '../../../websites/tumblr/tumblr3_scrapper'
+require_relative '../../../websites/tumblr/tumblr7_scrapper'
 
 VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassette_library'
@@ -11,24 +11,24 @@ VCR.configure do |c|
   c.configure_rspec_metadata!
 end
 
-describe "Tumblr3" do
+describe "Tumblr7" do
 
   before(:each) do
-    @url = YAML.load_file('private-conf/tumblr.yml')["tumblr3"]["url"]
-    @tumblr3 = Tumblr3Scrapper.new(@url)
+    @url = YAML.load_file('private-conf/tumblr.yml')["tumblr7"]["url"]
+    @tumblr7 = Tumblr7Scrapper.new(@url)
   end
 
   describe "unit tests", :local => :true do
     before(:each) do
-      @tumblr3.home_page
+      @tumblr7.home_page
     end
 
     describe "single_photo_links", :vcr => true do
       it "finds single images" do
-        single_photo_links = @tumblr3.single_photo_links
-        single_photo_links.count.should == 9
+        single_photo_links = @tumblr7.single_photo_links
+        single_photo_links.count.should == 15
 
-        expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr3"]["single_photo_links"]["image_source"]
+        expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr7"]["single_photo_links"]["image_source"]
         single_photo_links.first.should == expected_url
       end
     end

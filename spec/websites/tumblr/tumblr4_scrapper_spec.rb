@@ -44,23 +44,5 @@ describe "tumblr4" do
         @tumblr4.photoset_links.count.should == 4
       end
     end
-
-    describe "is_current_page_last_page", :vcr => true do
-      context "is not at last page" do
-        before(:each) do
-          @tumblr4.current_page = Mechanize.new.get("#{@url}/page/3")
-        end
-
-        it { @tumblr4.is_current_page_last_page.should == false }
-      end
-
-      context "is at last page" do
-        before(:each) do
-          @tumblr4.current_page = Mechanize.new.get("#{@url}/page/500")
-        end
-
-        it { @tumblr4.is_current_page_last_page.should == true }
-      end
-    end
   end
 end
