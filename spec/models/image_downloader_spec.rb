@@ -126,6 +126,7 @@ describe ImageDownloader do
 
 			it "catches mechanize responseCodeError" do
 				page_image = mock()
+				page_image.stubs(:url)
 				page_image.stubs(:fetch).raises(Mechanize::ResponseCodeError.new(stub(:code=>404)))
 				@image.download(page_image) == false
 			end
@@ -136,27 +137,23 @@ describe ImageDownloader do
 			end
 
 			it "catches Zlib::BufError" do
-				page_image = mock()
-				page_image.stubs(:fetch).raises(Zlib::BufError)
-				@image.download(page_image) == false
+				@image.stubs(:open).raises(Zlib::BufError)
+				@image.download.should == false
 			end
 
 			it "catches Net::HTTP::Persistent::Error" do
-				page_image = mock()
-				page_image.stubs(:fetch).raises(Net::HTTP::Persistent::Error)
-				@image.download(page_image) == false
+				@image.stubs(:open).raises(Net::HTTP::Persistent::Error)
+				@image.download.should == false
 			end
 
 			it "catches MiniMagick::Invalid" do
-				page_image = mock()
-				page_image.stubs(:fetch).raises(MiniMagick::Invalid)
-				@image.download(page_image) == false
+				@image.stubs(:open).raises(MiniMagick::Invalid)
+				@image.download.should == false
 			end
 
 			it "catches memory error" do
-				page_image = mock()
-				page_image.stubs(:fetch).raises(Errno::ENOMEM)
-				@image.download(page_image) == false
+				@image.stubs(:open).raises(Errno::ENOMEM)
+				@image.download.should == false
 			end
 		end
 	end
