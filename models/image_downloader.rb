@@ -77,7 +77,7 @@ class ImageDownloader
 
   def compress_image
     File.open(image_save_path) {|f| puts "size before = #{f.size}"}
-    image_optim = ImageOptim.new(:pngout => false, :jpegoptim => {:max_quality => 75})
+    image_optim = ImageOptim.new(:pngout => false, :jpegoptim => {:max_quality => 85})
     image_optim.optimize_image!(image_save_path)
     File.open(image_save_path) {|f| puts "size after = #{f.size}"}
   end
