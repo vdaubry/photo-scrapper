@@ -103,7 +103,7 @@ describe "Forum1" do
     end
 
     describe "direct_urls", :vcr => true do
-      it "finds all gotlink images" do
+      it "finds all hotlink images" do
         forum_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_urls"]["hotlink_image"]
         forum_page = Mechanize.new.get(forum_url)
         res = @forum1.direct_urls(forum_page)
@@ -111,29 +111,12 @@ describe "Forum1" do
       end
     end
 
-    describe "page_image_at_host_url", :vcr => true do
-      it "finds all images urls" do
-        host_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_url"]
-        expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["image_url"]
-        @forum1.page_image_at_host_url(host_url).url.to_s.should == expected_image
-      end
-    end
-
     describe "scrap_from_page", :vcr => true do
       let(:fake_host_url) { YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["host_url"] }
 
       it "iterates on all urls" do
-        expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["image_url"]
         @forum1.stubs(:host_urls).returns([fake_host_url])
-        @forum1.expects(:download_image).with(expected_image, anything).once.returns(nil)
-
-        @forum1.scrap_from_page(forum_page, date)
-      end
-
-      it "skips images not found" do
-        @forum1.stubs(:host_urls).returns([fake_host_url])
-        @forum1.stubs(:page_image_at_host_url).returns(nil)
-        @forum1.expects(:download_image).never
+        @forum1.expects(:download_image).with(fake_host_url, anything).once.returns(nil)
 
         @forum1.scrap_from_page(forum_page, date)
       end

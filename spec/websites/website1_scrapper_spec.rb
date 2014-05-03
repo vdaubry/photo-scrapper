@@ -165,7 +165,7 @@ describe "Website1Scrapper", :local => :true do
 
     it "do nothing if no image on link" do
       Image.stubs(:find_by).returns([Image.new({"key" => "image_key"})])
-      ImageDownloader.any_instance.expects(:download).never
+      @website1_scrapper.expects(:send_image_message).never
       @website1_scrapper.parse_image(link)
     end
 
@@ -175,14 +175,14 @@ describe "Website1Scrapper", :local => :true do
       @website1_scrapper.current_page = current_page
       do_sign_in
 
-      ImageDownloader.any_instance.expects(:download).once
+      @website1_scrapper.expects(:send_image_message).once
       @website1_scrapper.parse_image(link)
     end
 
     context "Search API failure" do
       it "do nothing if no image on link" do
         Image.stubs(:find_by).returns(nil)
-        ImageDownloader.any_instance.expects(:download).never
+        @website1_scrapper.expects(:send_image_message).never
         @website1_scrapper.parse_image(link)
       end
     end
@@ -194,22 +194,20 @@ describe "Website1Scrapper", :local => :true do
     before(:each) do
       @website1_scrapper.website = Website.new({"id" => "123", "scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
       @website1_scrapper.post_id = "456"
-      Image.stubs(:find_by).returns([])
     end
 
-    it "downloads image" do
-      mock = ImageDownloader.new("key")
-      mock.expects(:download).once
-      ImageDownloader.any_instance.expects(:build_info).with("123", "456", url).returns(mock)
-
-      @website1_scrapper.download_image(url)
+    context "image not previously downloaded" do
+      it "sends image message to sqs queue" do
+        Image.stubs(:find_by).returns([])
+        @website1_scrapper.expects(:send_image_message).with("123", "456", "www.foo.bar/image.png")
+        @website1_scrapper.download_image(url)
+      end
     end
 
-    context "invalid uri" do
-      it "doesn't download image" do
-        ImageDownloader.any_instance.stubs(:build_info).returns(stub(:key => nil))
-        ImageDownloader.any_instance.expects(:download).never
-
+    context "image already downloaded" do
+      it "doesn't send image message" do
+        Image.stubs(:find_by).returns([Image.new("")])
+        @website1_scrapper.expects(:send_image_message).never
         @website1_scrapper.download_image(url)
       end
     end

@@ -6,7 +6,6 @@ require 'active_support/time'
 require_relative '../models/website'
 require_relative '../models/image'
 require_relative '../models/post'
-require_relative '../models/image_downloader'
 require_relative 'navigation'
 require_relative 'download'
 

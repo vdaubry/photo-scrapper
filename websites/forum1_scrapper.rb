@@ -1,6 +1,5 @@
 require_relative 'scrapper'
 require_relative 'forum_helper'
-require_relative '../hosts/host_factory'
 
 class Forum1Scrapper < Scrapper
   include ForumHelper
@@ -37,8 +36,7 @@ class Forum1Scrapper < Scrapper
 
     urls.each do |host_url|
       if host_url.include?("http")
-        page_image = page_image_at_host_url(host_url)
-        download_image(page_image.url.to_s, page_image) if page_image.present?
+        download_image(host_url)
       else
         base_url = YAML.load_file('private-conf/forums.yml')["forum1"]["base_url"]
         download_image("#{base_url}#{host_url}", nil)

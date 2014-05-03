@@ -8,14 +8,14 @@ module Download
     end
 
     if images.first.nil?
-      imageDownloader = ImageDownloader.new.build_info(id, @post_id, url)
-      if imageDownloader.key
-        pp "Save #{imageDownloader.key}"
-        success = imageDownloader.download(page_image)
-        sleep(1) unless ENV['TEST']
-      end
+      send_image_message(id, @post_id, url)
     else
       puts "Image search found a similar images : #{images.first.key}"
     end
+  end
+
+  def send_image_message(website_id, post_id, url)
+    img_json_str = {:website_id => website_id, :post_id => post_id, :image_url => url}.to_s
+    Facades::SQS.new.send(img_json) unless ENV['TEST']
   end
 end

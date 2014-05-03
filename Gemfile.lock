@@ -20,6 +20,9 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     addressable (2.3.6)
+    aws-sdk (1.39.0)
+      json (~> 1.4)
+      nokogiri (>= 1.4.4)
     builder (3.2.2)
     capistrano (3.2.1)
       i18n
@@ -154,6 +157,7 @@ PLATFORMS
 DEPENDENCIES
   activemodel (~> 4.1.0)
   activesupport (~> 4.1.0)
+  aws-sdk (~> 1.39.0)
   capistrano (~> 3.2.1)
   capistrano-bundler (~> 1.1.2)
   coveralls (~> 0.7.0)

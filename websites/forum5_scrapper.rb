@@ -1,6 +1,5 @@
 require_relative 'scrapper'
 require_relative 'forum_helper'
-require_relative '../hosts/host_factory'
 
 class Forum5Scrapper < Scrapper
   include ForumHelper

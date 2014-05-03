@@ -28,9 +28,9 @@ module ForumHelper
     hrefs.reject {|u| u.include?("profile")}
   end
 
-  def page_image_at_host_url(host_url)
-    HostFactory.create_with_host_url(host_url).page_image rescue nil
-  end
+  # def page_image_at_host_url(host_url)
+  #   HostFactory.create_with_host_url(host_url).page_image rescue nil
+  # end
 
   def scrap_posts_from_category(category_name, previous_scrapping_date)
     forum_page = category_forums(category_name)
@@ -59,9 +59,8 @@ module ForumHelper
     hosted_urls = host_urls(post_page)
     puts "No hosted images to scrap on page : #{post_page.uri.to_s}" if hosted_urls.blank?
 
-    hosted_urls.each do |host_url|
-      page_image = page_image_at_host_url(host_url)
-      download_image(page_image.url.to_s, page_image) if page_image.present?
+    hosted_urls.each do |host_url|      
+      download_image(host_url)
     end
 
     forum_hosted_urls = direct_urls(post_page)

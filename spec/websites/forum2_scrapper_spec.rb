@@ -115,19 +115,6 @@ describe "Forum2" do
       end      
     end
 
-    describe "page_image_at_host_url", :vcr => true do
-      it "finds all images urls" do
-        host_url = YAML.load_file('spec/websites/forums_test_conf.yml')["forum2"]["host_url"]
-        expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum2"]["image_url"]
-        @forum2.page_image_at_host_url(host_url).url.to_s.should == expected_image
-      end
-
-      it "returns nil if host is nil" do
-        HostFactory.stubs(:create_with_host_url).returns(nil)
-        @forum2.page_image_at_host_url("www.foo.bar").should == nil
-      end
-    end
-
     describe "scrap_from_page", :vcr => true do
       let(:fake_host_url) { YAML.load_file('spec/websites/forums_test_conf.yml')["forum2"]["host_url"] }
 
@@ -136,17 +123,8 @@ describe "Forum2" do
       end
 
       it "scraps hosted images" do
-        expected_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum2"]["image_url"]
         @forum2.stubs(:host_urls).returns([fake_host_url])
-        @forum2.expects(:download_image).with(expected_image, anything).once.returns(nil)
-
-        @forum2.scrap_from_page(forum_page, date)
-      end
-
-      it "skips images not found" do
-        @forum2.stubs(:host_urls).returns([fake_host_url])
-        @forum2.stubs(:page_image_at_host_url).returns(nil)
-        @forum2.expects(:download_image).never
+        @forum2.expects(:download_image).with(fake_host_url, anything).once.returns(nil)
 
         @forum2.scrap_from_page(forum_page, date)
       end

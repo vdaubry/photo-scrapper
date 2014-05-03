@@ -14,7 +14,7 @@ gem 'retriable',                '~> 1.4.1'
 gem 'activemodel',              '~> 4.1.0'
 gem 'image_optim',              '~> 0.13.2'
 gem 'sentry-raven',             '~> 0.8.0'
-
+gem 'aws-sdk',                  '~> 1.39.0'
 
 group :test do
   gem 'coveralls',              '~> 0.7.0', require: false
