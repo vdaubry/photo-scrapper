@@ -16,9 +16,9 @@ module Facades
       sqs = AWS::SQS.new 
 
       @queue = begin
-                sqs.queues.named("image_downloader")
+                sqs.queues.named(ENV["QUEUE_NAME"])
               rescue AWS::SQS::Errors::NonExistentQueue => e
-                sqs.queues.create("image_downloader")
+                sqs.queues.create(ENV["QUEUE_NAME"])
               end
     end
 
