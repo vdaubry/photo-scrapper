@@ -50,19 +50,4 @@ describe "Facades::SQS" do
       end
     end
   end
-
-  describe "poll" do
-    context "has messages in queue" do
-      it "pulls messages from queue" do
-        @mock_queue.stubs(:poll)
-          .yields(AWS::SQS::ReceivedMessage.new(nil, nil, nil, {:body => "foo"}))
-          .then.yields(AWS::SQS::ReceivedMessage.new(nil, nil, nil, {:body => "bar"}))
-
-        facade = Facades::SQS.new
-
-        facade.poll {|msg| msg.should == "foo"}
-        facade.poll {|msg| msg.should == "bar"}
-      end
-    end
-  end
 end

@@ -25,11 +25,5 @@ module Facades
     def send(message)
       @queue.send_message("#{message}") unless message.nil?
     end
-
-    def poll
-      @queue.poll do |received_message| 
-        yield(received_message.body)
-      end
-    end
   end
 end
