@@ -51,6 +51,8 @@ class Website2Scrapper < Scrapper
     allowed_links(excluded_urls).each do |link|
       post_name = link.text
       post = Post.create(id, post_name)
+      return if post.banished
+
       @post_id = post.id
       
       pp "Scrap : #{post.name} since #{previous_scrapping_date}"

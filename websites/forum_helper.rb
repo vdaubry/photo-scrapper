@@ -44,6 +44,7 @@ module ForumHelper
   def scrap_post_hosted_images(post_page, previous_scrapping_date)
     pp "Scrap post for hosted images : #{post_page.title} - #{post_page.uri.to_s}"
     post = Post.create(id, post_page.title)
+    return if post.banished
     @post_id = post.id
     
     scrap_from_page(post_page, previous_scrapping_date)

@@ -63,6 +63,13 @@ describe "Website2Scrapper", :local => :true do
       
       @website2.scrap_allowed_links(excluded_urls, date)
     end
+
+    it "doesn't scrap links if post is banished" do
+      Post.stubs(:create).returns(Post.new({"id" => "123", "banished" => true}))
+      @website2.expects(:scrap_page).never
+      
+      @website2.scrap_allowed_links(excluded_urls, date)
+    end
   end
 
   describe "find_latest_pic_date", vcr: true do

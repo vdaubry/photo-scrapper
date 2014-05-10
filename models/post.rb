@@ -51,4 +51,8 @@ class Post
   def id
     @json["id"]
   end 
+
+  def banished
+    @json["banished"]
+  end 
 end

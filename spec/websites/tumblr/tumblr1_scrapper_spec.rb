@@ -59,11 +59,19 @@ describe "Tumblr1" do
       it "creates post" do
         @tumblr1.stubs(:download_image)
         post_name = YAML.load_file('private-conf/tumblr.yml')["tumblr1"]["post_name"]
-        Post.expects(:create).with(@tumblr1.id, post_name).once.returns(mock(:id => "123"))
+        Post.expects(:create).with(@tumblr1.id, post_name).once.returns(Post.new({"id" => "123", "banished" => false}))
         
         @tumblr1.do_scrap
 
         @tumblr1.post_id.should == "123"
+      end
+
+      it "doesn't creates post" do
+        Post.stubs(:create).returns(Post.new({"id" => "6789", "banished" => true}))
+        
+        @tumblr1.do_scrap
+
+        @tumblr1.expects(:download_image).never
       end
 
       it "downloads image" do

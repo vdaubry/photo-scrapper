@@ -85,6 +85,13 @@ describe "Forum1" do
 
           @forum1.scrap_post_hosted_images(forum_page, date)
         end
+
+        it "doesn't scrap post if post is banished" do
+          Post.stubs(:create).returns(Post.new({"id" => "6789", "banished" => true}))
+          @forum1.expects(:scrap_from_page).never
+
+          @forum1.scrap_post_hosted_images(forum_page, date)
+        end
       end
     end
 

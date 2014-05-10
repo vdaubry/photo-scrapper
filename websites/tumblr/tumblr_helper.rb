@@ -48,6 +48,7 @@ module TumblrHelper
 
   def do_scrap
     post = Post.create(id, post_name)
+    return if post.banished
     @post_id = post.id
 
     image_links = single_photo_links+photoset_links

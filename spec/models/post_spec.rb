@@ -3,8 +3,8 @@ require_relative '../../models/post'
 
 describe "Post" do
 
-  let(:post_json) {'{"post":{"id":"5314e4264d6163063f020000","name":"some_name","status":"SORTED_STATUS","pages_url":["www.foo.bar","www.foo.bar1"]}}'}
-  let(:posts_json) {'{"posts":[{"id":"5314e4264d6163063f020000","name":"some_name","status":"SORTED_STATUS","pages_url":["www.foo.bar","www.foo.bar1"]}]}'}
+  let(:post_json) {'{"post":{"id":"5314e4264d6163063f020000","name":"some_name","status":"SORTED_STATUS","pages_url":["www.foo.bar","www.foo.bar1"],"banished":true}}'}
+  let(:posts_json) {'{"posts":[{"id":"5314e4264d6163063f020000","name":"some_name","status":"SORTED_STATUS","pages_url":["www.foo.bar","www.foo.bar1"],"banished":false}]}'}
 
   describe "create" do
     it "returns a post" do
@@ -17,6 +17,7 @@ describe "Post" do
       post = Post.create(123, "some_name")
       post.name.should == "some_name"
       post.id.should == "5314e4264d6163063f020000"
+      post.banished.should == true
     end
 
     it "retries 3 times" do
