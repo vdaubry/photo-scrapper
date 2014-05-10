@@ -18,11 +18,14 @@ module Facades
       @queue = begin
                 sqs.queues.named(ENV["QUEUE_NAME"])
               rescue AWS::SQS::Errors::NonExistentQueue => e
-                sqs.queues.create(ENV["QUEUE_NAME"])
+                sqs.queues.create(ENV["QUEUE_NAME"],
+                  :visibility_timeout => 90,
+                  :message_retention_period => 1209600)
               end
     end
 
     def send(message)
+      puts "send message #{message} to queue #{@queue.url}"
       @queue.send_message("#{message}") unless message.nil?
     end
   end

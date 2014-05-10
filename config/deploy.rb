@@ -29,14 +29,13 @@ set :deploy_to, '/srv/www/photo-scrapper'
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
 # Default value for keep_releases is 5
-set :keep_releases, 1
+set :keep_releases, 2
 
-set :ssh_options, { :forward_agent => true, :keys => %w(~/.ssh/paulette_ec2.pem), :paranoid => false }
+set :ssh_options, { :forward_agent => true, :paranoid => false }
 
 
 
 namespace :deploy do
-
 
   desc 'Copy config from local workstation'
   task :copy_production do
@@ -51,24 +50,5 @@ namespace :deploy do
   end
 
   after :publishing, :copy_production
-
-  # desc 'Restart application'
-  # task :restart do
-  #   on roles(:app), in: :sequence, wait: 5 do
-  #     # Your restart mechanism here, for example:
-  #     # execute :touch, release_path.join('tmp/restart.txt')
-  #   end
-  # end
-
-  # after :publishing, :restart
-
-  # after :restart, :clear_cache do
-  #   on roles(:web), in: :groups, limit: 3, wait: 10 do
-  #     # Here we can do anything such as:
-  #     # within release_path do
-  #     #   execute :rake, 'cache:clear'
-  #     # end
-  #   end
-  # end
 
 end
