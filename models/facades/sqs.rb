@@ -29,5 +29,13 @@ module Facades
       puts "send message #{message} to queue #{@queue.url}"
       @queue.send_message("#{message}") unless message.nil?
     end
+
+    def poll
+      puts "Start polling queue : #{@queue.url}"
+      @queue.poll do |received_message| 
+        yield(received_message.body)
+        received_message.delete
+      end
+    end
   end
 end
