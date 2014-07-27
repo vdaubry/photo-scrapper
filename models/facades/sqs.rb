@@ -6,7 +6,7 @@ module Facades
 
     attr_accessor :queue
 
-    def initialize
+    def initialize(queue_name)
       Dotenv.load
       AWS.config({
       :access_key_id => ENV["AWS_ACCESS_KEY_ID"],
@@ -17,9 +17,9 @@ module Facades
       sqs = AWS::SQS.new 
 
       @queue = begin
-                sqs.queues.named(ENV["QUEUE_NAME"])
+                sqs.queues.named(queue_name)
               rescue AWS::SQS::Errors::NonExistentQueue => e
-                sqs.queues.create(ENV["QUEUE_NAME"],
+                sqs.queues.create(queue_name,
                   :visibility_timeout => 90,
                   :message_retention_period => 1209600)
               end

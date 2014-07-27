@@ -16,7 +16,7 @@ describe "Facades::SQS" do
         mock_queue_collection.stubs(:create).returns(@mock_queue)
         AWS::SQS.any_instance.stubs(:queues).returns(mock_queue_collection)
         
-        facade = Facades::SQS.new
+        facade = Facades::SQS.new(ENV["WEBSITE_QUEUE_NAME"])
 
         facade.queue.url.should == "AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/472940034409/image_downloader"
       end
@@ -26,7 +26,7 @@ describe "Facades::SQS" do
       it "gets image_download queue" do
         AWS::SQS.any_instance.stub_chain(:queues, :named).returns(@mock_queue)
 
-        facade = Facades::SQS.new
+        facade = Facades::SQS.new(ENV["WEBSITE_QUEUE_NAME"])
         
         facade.queue.url.should == "AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/472940034409/image_downloader"
       end
@@ -37,7 +37,7 @@ describe "Facades::SQS" do
     context "not nil message" do
       it "adds message to queue" do
         @mock_queue.expects(:send_message).with("www.foo.bar/img.png")
-        facade = Facades::SQS.new
+        facade = Facades::SQS.new(ENV["WEBSITE_QUEUE_NAME"])
         facade.send("www.foo.bar/img.png")
       end
     end
@@ -45,7 +45,7 @@ describe "Facades::SQS" do
     context "nil message" do
       it "doesn't adds message to queue" do
         @mock_queue.expects(:send_message).never
-        facade = Facades::SQS.new
+        facade = Facades::SQS.new(ENV["WEBSITE_QUEUE_NAME"])
         facade.send(nil)
       end
     end
