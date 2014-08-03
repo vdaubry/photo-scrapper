@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
 
-  "Description" : "AMI with preinstalled packages, checkout latest script code from GitHub, checkout private conf from S3",
+  "Description" : "Start auto scaling group based on messages in website scrapper queue : AMI with pre-installed packages, checkout latest script code from GitHub, checkout private conf from S3, run scrappers",
 
   "Parameters" : {
     "KeyName" : {
@@ -94,7 +94,7 @@
             "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
             "cfn-init --region ", { "Ref" : "AWS::Region" },
             "    -s ", { "Ref" : "AWS::StackId" }, " -r LaunchConfig ", "-v\n",
-            "chown -R ubuntu:ubuntu /srv\n"
+            "chown -R ubuntu:ubuntu /srv\n",
             "cd /srv/www/photo-scrapper/current\n",
             "bundle install\n",
             "echo APP_ENV=\"'production'\" | sudo tee config/application.rb\n",
@@ -136,7 +136,7 @@
       }
     },
 
-    "PhotoDownloaderIncreaseScalingPolicy": {
+    "PhotoScrapperIncreaseScalingPolicy": {
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
         "AdjustmentType": "ChangeInCapacity",
@@ -145,7 +145,7 @@
       }
     },
 
-    "PhotoDownloaderDecreaseScalingPolicy": {
+    "PhotoScrapperDecreaseScalingPolicy": {
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
         "AdjustmentType": "ChangeInCapacity",
@@ -157,18 +157,18 @@
     "QueueAlarmHigh": {
         "Type":"AWS::CloudWatch::Alarm",
         "Properties": {
-            "AlarmDescription": "Scale-upifMessage>2000for1hour",
+            "AlarmDescription": "Scale-upifMessage>5for1hour",
             "MetricName": "ApproximateNumberOfMessagesVisible",
             "Namespace": "AWS/SQS",
             "Statistic": "Minimum",
             "Period": "3600",
             "EvaluationPeriods": "1",
-            "Threshold": "2000",
-            "AlarmActions": [ { "Ref": "PhotoDownloaderIncreaseScalingPolicy" } ],
+            "Threshold": "5",
+            "AlarmActions": [ { "Ref": "PhotoScrapperIncreaseScalingPolicy" } ],
             "Dimensions": [
                 {
                     "Name": "QueueName",
-                    "Value": "image_downloader_prod"
+                    "Value": "website_downloader_prod"
                 }
             ],
             "ComparisonOperator": "GreaterThanThreshold"
@@ -178,18 +178,18 @@
     "QueueAlarmLow": {
         "Type":"AWS::CloudWatch::Alarm",
         "Properties": {
-            "AlarmDescription": "Scale-downifMessage<500for1hour",
+            "AlarmDescription": "Scale-downifMessage<1for1hour",
             "MetricName": "ApproximateNumberOfMessagesVisible",
             "Namespace": "AWS/SQS",
             "Statistic": "Maximum",
             "Period": "3600",
             "EvaluationPeriods": "1",
-            "Threshold": "500",
-            "AlarmActions": [ { "Ref": "PhotoDownloaderDecreaseScalingPolicy" } ],
+            "Threshold": "1",
+            "AlarmActions": [ { "Ref": "PhotoScrapperDecreaseScalingPolicy" } ],
             "Dimensions": [
                 {
                     "Name": "QueueName",
-                    "Value": "image_downloader_prod"
+                    "Value": "website_downloader_prod"
                 }
             ],
             "ComparisonOperator": "LessThanThreshold"
