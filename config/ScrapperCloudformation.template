@@ -1,0 +1,218 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "AMI with preinstalled packages, checkout latest script code from GitHub, checkout private conf from S3",
+
+  "Parameters" : {
+    "KeyName" : {
+      "Description" : "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+      "Type" : "String",
+      "Default" : "pauletteEC2"
+    },
+    "InstanceType" : {
+      "Description" : "EC2 instance type",
+      "Type" : "String",
+      "Default" : "t1.micro"
+    }
+  },
+
+  "Mappings" : {
+    "RegionMap" : {
+      "eu-west-1" : {
+          "AMI" : "ami-ce7ba8b9"
+      }
+    }
+  },
+
+  "Resources" : {
+    "InstanceRole":{
+       "Type":"AWS::IAM::Role",
+       "Properties":{
+          "AssumeRolePolicyDocument":{
+             "Statement":[
+                {
+                   "Effect":"Allow",
+                   "Principal":{
+                      "Service":[ "ec2.amazonaws.com" ]
+                   },
+                   "Action":[ "sts:AssumeRole" ]
+                }
+             ]
+          },
+          "Path":"/"
+       }
+    },
+
+    "RolePolicies":{
+       "Type":"AWS::IAM::Policy",
+       "Properties":{
+          "PolicyName":"S3Download",
+          "PolicyDocument":{
+             "Statement":[
+                {
+                   "Action":[ "s3:GetObject" ],
+                   "Effect":"Allow",
+                   "Resource":"arn:aws:s3:::privateconf/*"
+                }
+             ]
+          },
+          "Roles":[ { "Ref":"InstanceRole" } ]
+       }
+    },
+
+    "InstanceProfile":{
+       "Type":"AWS::IAM::InstanceProfile",
+       "Properties":{
+          "Path":"/",
+          "Roles":[ { "Ref":"InstanceRole" } ]
+       }
+    },
+
+    "WebServerGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": ["eu-west-1a"],
+        "LaunchConfigurationName": { "Ref": "LaunchConfig" },
+        "MinSize": "0",
+        "MaxSize": "1",
+        "DesiredCapacity" : "0",
+        "TerminationPolicies" : ["OldestInstance"]
+      }
+    },
+
+    "LaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties" : {
+        "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+        "KeyName" : { "Ref" : "KeyName" },
+        "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "AMI" ]},
+        "InstanceType" : { "Ref" : "InstanceType" },
+        "IamInstanceProfile": { "Ref":"InstanceProfile" },
+        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+            "#!/bin/bash\n",
+            "apt-get -y install python-setuptools\n",
+            "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+            "cfn-init --region ", { "Ref" : "AWS::Region" },
+            "    -s ", { "Ref" : "AWS::StackId" }, " -r LaunchConfig ", "-v\n",
+            "chown -R ubuntu:ubuntu /srv\n"
+            "cd /srv/www/photo-scrapper/current\n",
+            "bundle install\n",
+            "echo APP_ENV=\"'production'\" | sudo tee config/application.rb\n",
+            "nohup ruby scrappers/run_scrapping.rb >> log/scrapping.log 2>> log/scrapping.log < /dev/null &"
+        ]]}}
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Authentication":{
+          "S3AccessCreds":{
+            "type":"S3",
+            "roleName": { "Ref":"InstanceRole" }
+          }
+        },
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "sources": {
+              "/srv/www/photo-scrapper/current": "https://github.com/vdaubry/photo-scrapper/tarball/master"
+            },
+            "files" : {
+              "/srv/www/photo-scrapper/current/private-conf/forums.yml" : {
+                "source":"https://s3-eu-west-1.amazonaws.com/privateconf/scrapperconf/forums.yml",
+                "authentication":"S3AccessCreds"
+              },
+              "/srv/www/photo-scrapper/current/private-conf/tumblr.yml" : {
+                "source":"https://s3-eu-west-1.amazonaws.com/privateconf/scrapperconf/tumblr.yml",
+                "authentication":"S3AccessCreds"
+              },
+              "/srv/www/photo-scrapper/current/private-conf/websites.yml" : {
+                "source":"https://s3-eu-west-1.amazonaws.com/privateconf/scrapperconf/websites.yml",
+                "authentication":"S3AccessCreds"
+              },
+              "/srv/www/photo-scrapper/current/private-conf/.env" : {
+                "source":"https://s3-eu-west-1.amazonaws.com/privateconf/scrapperconf/.env",
+                "authentication":"S3AccessCreds"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "PhotoDownloaderIncreaseScalingPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "AdjustmentType": "ChangeInCapacity",
+        "AutoScalingGroupName": { "Ref": "WebServerGroup" },
+        "ScalingAdjustment": "1"
+      }
+    },
+
+    "PhotoDownloaderDecreaseScalingPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "AdjustmentType": "ChangeInCapacity",
+        "AutoScalingGroupName": { "Ref": "WebServerGroup" },
+        "ScalingAdjustment": "-1"
+      }
+    },
+
+    "QueueAlarmHigh": {
+        "Type":"AWS::CloudWatch::Alarm",
+        "Properties": {
+            "AlarmDescription": "Scale-upifMessage>2000for1hour",
+            "MetricName": "ApproximateNumberOfMessagesVisible",
+            "Namespace": "AWS/SQS",
+            "Statistic": "Minimum",
+            "Period": "3600",
+            "EvaluationPeriods": "1",
+            "Threshold": "2000",
+            "AlarmActions": [ { "Ref": "PhotoDownloaderIncreaseScalingPolicy" } ],
+            "Dimensions": [
+                {
+                    "Name": "QueueName",
+                    "Value": "image_downloader_prod"
+                }
+            ],
+            "ComparisonOperator": "GreaterThanThreshold"
+        }
+    },
+
+    "QueueAlarmLow": {
+        "Type":"AWS::CloudWatch::Alarm",
+        "Properties": {
+            "AlarmDescription": "Scale-downifMessage<500for1hour",
+            "MetricName": "ApproximateNumberOfMessagesVisible",
+            "Namespace": "AWS/SQS",
+            "Statistic": "Maximum",
+            "Period": "3600",
+            "EvaluationPeriods": "1",
+            "Threshold": "500",
+            "AlarmActions": [ { "Ref": "PhotoDownloaderDecreaseScalingPolicy" } ],
+            "Dimensions": [
+                {
+                    "Name": "QueueName",
+                    "Value": "image_downloader_prod"
+                }
+            ],
+            "ComparisonOperator": "LessThanThreshold"
+        }
+    },
+
+    "InstanceSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable SSH access via port 22",
+        "SecurityGroupIngress" : [ {
+          "IpProtocol" : "tcp",
+          "FromPort" : "22",
+          "ToPort" : "22",
+          "CidrIp" : "84.103.194.173/32"
+        },
+        {
+          "IpProtocol" : "tcp",
+          "FromPort" : "22",
+          "ToPort" : "22",
+          "CidrIp" : "194.206.152.109/32"
+        } ]
+      }
+    }
+  }
+}
