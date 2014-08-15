@@ -39,7 +39,7 @@ class Forum1Scrapper < Scrapper
         download_image(host_url)
       else
         base_url = YAML.load_file('private-conf/forums.yml')["forum1"]["base_url"]
-        download_image("#{base_url}#{host_url}", nil)
+        download_image("#{base_url}#{host_url}")
       end
     end
 

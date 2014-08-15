@@ -123,7 +123,7 @@ describe "Forum1" do
 
       it "iterates on all urls" do
         @forum1.stubs(:host_urls).returns([fake_host_url])
-        @forum1.expects(:download_image).with(fake_host_url, anything).once.returns(nil)
+        @forum1.expects(:download_image).with(fake_host_url).once.returns(nil)
 
         @forum1.scrap_from_page(forum_page, date)
       end
@@ -134,8 +134,8 @@ describe "Forum1" do
         do_sign_in
         wbw_hosted_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["scrap_from_page"]["wbw_hosted_image"]
 
-        @forum1.expects(:download_image).with(wbw_hosted_image, nil)
-        @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)), nil)
+        @forum1.expects(:download_image).with(wbw_hosted_image)
+        @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)))
         
         @forum1.scrap_from_page(@forum1.current_page, date)
       end
@@ -146,8 +146,8 @@ describe "Forum1" do
         hotlinked_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum1"]["scrap_from_page"]["hotlinked_image"]
         @forum1.stubs(:go_to_next_page).returns(nil)
 
-        @forum1.expects(:download_image).with(hotlinked_image, nil)
-        @forum1.stubs(:download_image).with(Not(equals(hotlinked_image)), nil)
+        @forum1.expects(:download_image).with(hotlinked_image)
+        @forum1.stubs(:download_image).with(Not(equals(hotlinked_image)))
         
         @forum1.scrap_from_page(@forum1.current_page, date)
       end      

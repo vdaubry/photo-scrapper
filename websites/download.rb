@@ -1,7 +1,7 @@
 require_relative '../models/facades/sqs'
 
 module Download
-  def download_image(url, page_image=nil)
+  def download_image(url)
     images = Image.find_by(id, {:source_url => url})
     if images.nil?
       puts "Image search failed"

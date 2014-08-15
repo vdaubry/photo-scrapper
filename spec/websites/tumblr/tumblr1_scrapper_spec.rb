@@ -76,8 +76,8 @@ describe "Tumblr1" do
 
       it "downloads image" do
         image_src = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["do_scrap"]["image_source"]
-        @tumblr1.expects(:download_image).with(image_src, nil).once
-        @tumblr1.stubs(:download_image).with(Not(equals(image_src)), nil).times(38)
+        @tumblr1.expects(:download_image).with(image_src).once
+        @tumblr1.stubs(:download_image).with(Not(equals(image_src))).times(38)
 
         @tumblr1.do_scrap
       end

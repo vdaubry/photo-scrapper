@@ -124,7 +124,7 @@ describe "Forum2" do
 
       it "scraps hosted images" do
         @forum2.stubs(:host_urls).returns([fake_host_url])
-        @forum2.expects(:download_image).with(fake_host_url, anything).once.returns(nil)
+        @forum2.expects(:download_image).with(fake_host_url).once.returns(nil)
 
         @forum2.scrap_from_page(forum_page, date)
       end
@@ -135,8 +135,8 @@ describe "Forum2" do
         do_sign_in
         tmp_hosted_image = YAML.load_file('spec/websites/forums_test_conf.yml')["forum2"]["scrap_from_page"]["tmp_hosted_image"]
 
-        @forum2.expects(:download_image).with(tmp_hosted_image, nil).once
-        @forum2.stubs(:download_image).with(Not(equals(tmp_hosted_image)), nil)
+        @forum2.expects(:download_image).with(tmp_hosted_image).once
+        @forum2.stubs(:download_image).with(Not(equals(tmp_hosted_image)))
 
         @forum2.scrap_from_page(@forum2.current_page, date)
       end
