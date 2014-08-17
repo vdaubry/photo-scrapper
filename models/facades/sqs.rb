@@ -20,7 +20,7 @@ module Facades
                 sqs.queues.named(queue_name)
               rescue AWS::SQS::Errors::NonExistentQueue => e
                 sqs.queues.create(queue_name,
-                  :visibility_timeout => 90,
+                  :visibility_timeout => 43200,
                   :message_retention_period => 1209600)
               end
     end

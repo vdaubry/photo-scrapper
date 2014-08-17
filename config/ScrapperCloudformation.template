@@ -161,9 +161,9 @@
             "MetricName": "ApproximateNumberOfMessagesVisible",
             "Namespace": "AWS/SQS",
             "Statistic": "Minimum",
-            "Period": "3600",
+            "Period": "60",
             "EvaluationPeriods": "1",
-            "Threshold": "5",
+            "Threshold": "1",
             "AlarmActions": [ { "Ref": "PhotoScrapperIncreaseScalingPolicy" } ],
             "Dimensions": [
                 {
@@ -171,7 +171,7 @@
                     "Value": "website_downloader_prod"
                 }
             ],
-            "ComparisonOperator": "GreaterThanThreshold"
+            "ComparisonOperator": "GreaterThanOrEqualToThreshold"
         }
     },
 
@@ -182,7 +182,7 @@
             "MetricName": "ApproximateNumberOfMessagesVisible",
             "Namespace": "AWS/SQS",
             "Statistic": "Maximum",
-            "Period": "3600",
+            "Period": "60",
             "EvaluationPeriods": "1",
             "Threshold": "1",
             "AlarmActions": [ { "Ref": "PhotoScrapperDecreaseScalingPolicy" } ],
