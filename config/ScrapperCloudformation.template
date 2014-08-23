@@ -182,7 +182,7 @@
             "MetricName": "ApproximateNumberOfMessagesVisible",
             "Namespace": "AWS/SQS",
             "Statistic": "Maximum",
-            "Period": "60",
+            "Period": "3600",
             "EvaluationPeriods": "1",
             "Threshold": "1",
             "AlarmActions": [ { "Ref": "PhotoScrapperDecreaseScalingPolicy" } ],
