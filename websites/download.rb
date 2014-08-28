@@ -16,7 +16,11 @@ module Download
   end
 
   def send_image_message(website_id, post_id, url)
-    img_json_str = {:website_id => website_id, :post_id => post_id, :image_url => url}.to_json
-    Facades::SQS.new(ENV["IMAGE_QUEUE_NAME"]).send(img_json_str) unless ENV['TEST']
+    img_json_str = {:website_id => website_id, :post_id => post_id, :image_url => url, :scrapped_at => DateTime.now.to_s}.to_json
+    send_except_for_test(img_json_str)
+  end
+
+  def send_except_for_test(json)
+    Facades::SQS.new(ENV["IMAGE_QUEUE_NAME"]).send(json) unless ENV['TEST']
   end
 end

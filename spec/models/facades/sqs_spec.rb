@@ -4,7 +4,7 @@ require_relative "../../../models/facades/sqs"
 describe "Facades::SQS" do
   before(:each) do
     @mock_queue = mock('AWS::SQS::Queue')
-    @mock_queue.stubs(:url).returns("AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/472940034409/image_downloader")
+    @mock_queue.stubs(:url).returns("AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/fake/fake")
     AWS::SQS.any_instance.stub_chain(:queues, :named).returns(@mock_queue)
   end
 
@@ -18,7 +18,7 @@ describe "Facades::SQS" do
         
         facade = Facades::SQS.new(ENV["WEBSITE_QUEUE_NAME"])
 
-        facade.queue.url.should == "AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/472940034409/image_downloader"
+        facade.queue.url.should == "AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/fake/fake"
       end
     end
 
@@ -28,7 +28,7 @@ describe "Facades::SQS" do
 
         facade = Facades::SQS.new(ENV["WEBSITE_QUEUE_NAME"])
         
-        facade.queue.url.should == "AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/472940034409/image_downloader"
+        facade.queue.url.should == "AWS::SQS::Queue:https://sqs.us-east-1.amazonaws.com/fake/fake"
       end
     end
   end
