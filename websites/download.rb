@@ -21,6 +21,6 @@ module Download
   end
 
   def send_except_for_test(json)
-    Facades::SQS.new(ENV["IMAGE_QUEUE_NAME"]).send(img_json_str) unless ENV['TEST']
+    Facades::SQS.new(ENV["IMAGE_QUEUE_NAME"]).send(json) unless ENV['TEST']
   end
 end
