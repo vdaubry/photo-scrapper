@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+
 require_relative 'scrapper_conf'
 require_relative 'scrapper_factory'
 ScrapperConf.load

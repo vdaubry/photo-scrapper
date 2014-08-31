@@ -2,6 +2,12 @@ require_relative 'scrapper'
 
 class Website1Scrapper < Scrapper
 
+  def home_page
+    agent = Mechanize.new
+    agent.set_proxy("92.222.1.55", 3128, "photo-visualizer", ENV['SQUID_PASSWORD'])
+    @current_page = agent.get(url)
+  end
+
   def scrapping_date
     1.month.ago.beginning_of_month
   end
