@@ -16,13 +16,6 @@ class Post
     end
   end
 
-  def self.destroy(website_id, id)
-    set_base_uri
-    retry_call do
-      delete("/websites/#{website_id}/posts/#{id}.json")
-    end
-  end
-
   def self.find_by(website_id, page_url)
     set_base_uri
     retry_call do
