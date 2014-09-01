@@ -65,21 +65,4 @@ describe "Post" do
       Post.update(123, "5314e4264d6163063f020000", "www.foo.bar")
     end
   end
-
-  describe "destroy" do
-    it "calls delete" do
-      stub_request(:delete, "http://localhost:3002/websites/123/posts/456.json")
-      .to_return(:headers => {"Content-Type" => 'application/json'},
-                  :body => nil, 
-                  :status => 200)
-
-      Post.destroy(123, 456).should_not == nil
-    end
-
-    it "retries 3 times" do
-      Post.expects(:delete).times(3).raises(Errno::ECONNRESET)
-
-      Post.destroy(123, 456)
-    end
-  end
 end
