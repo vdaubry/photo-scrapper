@@ -28,7 +28,7 @@ class Website1Scrapper < Scrapper
       category_name = YAML.load_file('private-conf/websites.yml')["website1"]["category#{category_number}"]
       category_page = category(category_name, scrapping_date)
       scrap_category(category_page, scrapping_date)
-      sleep(Random.rand(500.0/100.0))
+      sleep(Random.rand(500.0/100.0)) unless ENV['TEST']
     end
   end
 
