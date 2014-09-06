@@ -1,6 +1,8 @@
 module Navigation
   def home_page
-    @current_page = Mechanize.new.get(url)
+    agent = Mechanize.new
+    agent.user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:31.0) Gecko/20100101 Firefox/31.0"
+    @current_page = agent.get(url)
   end
 
   def sign_in(user, password)

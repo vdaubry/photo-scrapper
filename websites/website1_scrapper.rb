@@ -4,7 +4,7 @@ class Website1Scrapper < Scrapper
 
   def home_page
     agent = Mechanize.new
-    agent.set_proxy("92.222.1.55", 3128, "photo-visualizer", ENV['SQUID_PASSWORD'])
+    agent.set_proxy("photo-visualizer.no-ip.org", 3128, "photo-visualizer", ENV['SQUID_PASSWORD'])
     @current_page = agent.get(url)
   end
 
@@ -28,6 +28,7 @@ class Website1Scrapper < Scrapper
       category_name = YAML.load_file('private-conf/websites.yml')["website1"]["category#{category_number}"]
       category_page = category(category_name, scrapping_date)
       scrap_category(category_page, scrapping_date)
+      sleep(Random.rand(500.0/100.0))
     end
   end
 
