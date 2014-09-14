@@ -87,10 +87,13 @@ module ForumHelper
 
       if not_scrapped
         puts "Scrapping next page"
-        Post.update(id, @post_id, next_link_url)
-        
-        post_page = next_link_button.click
-        scrap_from_page(post_page, previous_scrapping_date)
+        begin 
+          post_page = next_link_button.click
+          Post.update(id, @post_id, next_link_url)
+          scrap_from_page(post_page, previous_scrapping_date)
+        rescue SocketError => e
+          puts "error = #{e.to_s}"
+        end
       else
         puts "Next page already scrapped : #{next_link_url}"
       end

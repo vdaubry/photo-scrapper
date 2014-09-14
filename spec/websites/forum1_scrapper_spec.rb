@@ -188,6 +188,14 @@ describe "Forum1" do
           @forum1.go_to_next_page(last_page, date)
         end
       end
+
+      context "SocketError" do
+        it "catches exception" do
+          Post.stubs(:find_by).returns([])
+          Mechanize.any_instance.stubs(:click).raises(SocketError)
+          @forum1.go_to_next_page(last_page, date)
+        end
+      end
     end
   end
 

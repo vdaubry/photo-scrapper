@@ -98,7 +98,8 @@
             "cd /srv/www/photo-scrapper/current\n",
             "bundle install\n",
             "echo APP_ENV=\"'production'\" | sudo tee config/application.rb\n",
-            "nohup ruby scrappers/run_scrapping.rb >> log/scrapping.log 2>> log/scrapping.log < /dev/null &"
+            "mkdir -p /home/ubuntu/god/log\n",
+            "nohup god -c config/god/scrapper.god.rb -D >> /home/ubuntu/god/log/god.log 2>> /home/ubuntu/god/log/god.log < /dev/null &"
         ]]}}
       },
       "Metadata": {
