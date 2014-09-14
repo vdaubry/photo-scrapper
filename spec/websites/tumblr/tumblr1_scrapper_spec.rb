@@ -110,6 +110,15 @@ describe "Tumblr1" do
           Post.expects(:update).never
           @tumblr1.go_to_next_page
         end
+
+        context "page doesn't exist" do
+          it "catches error" do
+            page = mock("Mechanize::Page")
+            page.stubs(:code).returns(404)
+            Mechanize.any_instance.stubs(:get).raises(Mechanize::ResponseCodeError.new(page))
+            @tumblr1.go_to_next_page
+          end
+        end
       end
 
       context "2nd page already scrapped" do
@@ -119,7 +128,7 @@ describe "Tumblr1" do
 
           @tumblr1.go_to_next_page
         end
-      end      
+      end
     end
   end
 end 

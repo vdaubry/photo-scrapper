@@ -75,7 +75,12 @@ module TumblrHelper
 
     if not_scrapped
       puts "Scrapping next page : #{next_link_url}"
-      @current_page = Mechanize.new.get(next_link_url)
+
+      begin
+        @current_page = Mechanize.new.get(next_link_url)
+      rescue Mechanize::ResponseCodeError => e
+        puts "error = #{e.to_s}"
+      end
 
       unless is_current_page_last_page
         Post.update(id, @post_id, next_link_url)
