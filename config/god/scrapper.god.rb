@@ -1,5 +1,5 @@
 app_path = '/srv/www/photo-scrapper/current'
-num_workers = 2
+num_workers = 1
 
 God.pid_file_directory = '/home/ubuntu/god/pids'
  
