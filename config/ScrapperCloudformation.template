@@ -74,7 +74,7 @@
         "AvailabilityZones": ["eu-west-1a"],
         "LaunchConfigurationName": { "Ref": "LaunchConfig" },
         "MinSize": "0",
-        "MaxSize": "1",
+        "MaxSize": "3",
         "DesiredCapacity" : "0",
         "TerminationPolicies" : ["OldestInstance"]
       }

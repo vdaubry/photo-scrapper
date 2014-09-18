@@ -34,10 +34,16 @@ module ForumHelper
 
   def scrap_posts_from_category(category_name, previous_scrapping_date)
     forum_page = category_forums(category_name)
-    links = forum_topics(forum_page)
-    links.each do |link|
-      post_page = forum_page.link_with(:href => link).click
-      scrap_post_hosted_images(post_page, previous_scrapping_date)
+    if forum_page
+      links = forum_topics(forum_page)
+      links.each do |link|
+        begin
+          post_page = forum_page.link_with(:href => link).click
+          scrap_post_hosted_images(post_page, previous_scrapping_date)
+        rescue Net::HTTP::Persistent::Error => e
+          puts "error : #{e.to_s}"
+        end
+      end
     end
   end
 

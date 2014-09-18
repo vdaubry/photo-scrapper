@@ -12,7 +12,7 @@ num_workers.times do |num|
     w.dir           = app_path
     w.start         = "bundle exec ruby #{app_path}/scrappers/run_scrapping.rb"
     w.start_grace   = 10.seconds
-    w.log           = File.join(app_path, 'log', 'download.log')
+    w.log           = File.join(app_path, 'log', 'scrapper.log')
  
     # restart if memory gets too high
     w.transition(:up, :restart) do |on|

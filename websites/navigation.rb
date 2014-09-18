@@ -14,7 +14,11 @@ module Navigation
   end
 
   def category_forums(category_name)
-    @current_page.link_with(:text => category_name).click
+    begin
+      @current_page.link_with(:text => category_name).click
+    rescue Net::HTTP::Persistent::Error => e
+      puts "error : #{e.to_s}"
+    end
   end
 
 end
