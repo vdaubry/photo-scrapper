@@ -12,11 +12,11 @@ gem 'aws-sdk',                  '~> 1.54.0'
 
 group :test do
   gem 'coveralls',              '~> 0.7.1', require: false
-  gem 'rspec',                  '~> 3.0.0'
+  gem 'rspec',                  '~> 3.1.0'
   gem 'factory_girl',           '~> 4.4.0'
   gem 'mocha',                  '~> 1.1.0'
   gem 'webmock',                '~> 1.19.0'
-  gem 'vcr',                    '~> 2.9.2'
+  gem 'vcr',                    '~> 2.9.3'
 end
 
 group :development do
