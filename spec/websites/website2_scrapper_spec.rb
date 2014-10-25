@@ -13,7 +13,7 @@ end
 
 describe "Website2Scrapper", :local => :true do
 
-  let(:date) { Date.parse("01/02/2010") }
+  let(:date) { Date.parse("01/02/2000") }
   let(:excluded_urls) { YAML.load_file('private-conf/websites.yml')["website2"]["excluded_urls"] }
   let(:sample_page) {
     page_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website2"]["find_latest_pic"]["link"]
@@ -72,79 +72,23 @@ describe "Website2Scrapper", :local => :true do
     end
   end
 
-  describe "find_latest_pic_date", vcr: true do
-    it { @website2.find_latest_pic_date(sample_page).should == "2014-04-16" }
-  end
-
-  describe "images_links", vcr: true do
-    it { @website2.images_links(sample_page).count.should == 100 }
-  end
-
   describe "scrap_page", vcr: true do
-    it "downloads found images" do
-      @website2.expects(:download_image).times(100).returns(nil)
-      @website2.stubs(:go_to_next_page).returns(nil)
-      
-      @website2.scrap_page(sample_page, date )
+    it "downloads all found images" do
+      @website2.expects(:download_image).times(1059).returns(nil)
+      @website2.scrap_page(sample_page, date)
     end
 
-    it "goes to next page" do
-      @website2.stubs(:download_image).returns(nil)
-      @website2.expects(:go_to_next_page)
-      
+    it "downloads image url" do
+      @website2.expects(:download_image).at_least_once
+      expected_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website2"]["expected_pic"]
+      @website2.expects(:download_image).with(expected_url).once.returns(nil)
       @website2.scrap_page(sample_page, date)
     end
 
     it "ignores post with older dates" do
-      @website2.stubs(:find_latest_pic_date).returns("01/01/2010")
-      @website2.expects(:images_links).never
-
+      @website2.stubs(:latest_pic_date).returns("01/01/1910")
+      @website2.expects(:download_image).never
       @website2.scrap_page(sample_page, date)
-    end
-
-    it "scraps images after current scrapping date" do
-      @website2.stubs(:find_latest_pic_date).returns("01/02/2010")
-      @website2.stubs(:go_to_next_page).returns(nil)
-      @website2.expects(:images_links).once.returns([])
-
-      @website2.scrap_page(sample_page, date)
-    end
-  end
-
-  describe "next_page_button", vcr: true do
-    it { @website2.next_page_button(sample_page).attributes["id"].value.should == "mp_button" }
-  end
-
-  describe "model_id", vcr: true do
-    it { @website2.model_id(sample_page).should == "601553" }
-  end
-
-  describe "lastpid", vcr: true do
-    it { @website2.lastpid(sample_page).should == "1037314" }
-  end
-
-  describe "go_to_next_page", vcr: true do
-    before(:each) do
-      @website2.has_next_page = true
-      @website2.model_id = "601553"
-    end
-
-    it "gets next page" do
-      post_url = YAML.load_file('private-conf/websites.yml')["website2"]["post_url"]
-      mock_page = stub(:content => "</div>|815|976002")
-      Mechanize.any_instance.expects(:post).with(post_url, {"req" => "morepics", "cid" => "601553", "lastpid" => "1037314"}).returns(mock_page)
-      @website2.stubs(:scrap_page).returns(nil)
-      
-      @website2.go_to_next_page(sample_page, date)
-    end
-
-    it "scraps next page" do
-      mock_page = stub(:content => "</div>|815|976002")
-      date = Date.parse("01/02/2010")
-      Mechanize.any_instance.stubs(:post).returns(mock_page)
-      @website2.expects(:scrap_page).with(mock_page, date).once
-
-      @website2.go_to_next_page(sample_page, date)
     end
   end
 end

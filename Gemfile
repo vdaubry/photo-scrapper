@@ -17,7 +17,9 @@ group :test do
   gem 'mocha',                  '~> 1.1.0'
   gem 'webmock',                '~> 1.19.0'
   gem 'vcr',                    '~> 2.9.3'
+  gem 'byebug',                 '~> 3.5.1'
 end
 
-group :development do
+group :development, :test do
+  
 end
