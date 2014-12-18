@@ -74,7 +74,7 @@ describe "Website2Scrapper", :local => :true do
 
   describe "scrap_page", vcr: true do
     it "downloads all found images" do
-      @website2.expects(:download_image).times(1059).returns(nil)
+      @website2.expects(:download_image).times(1064).returns(nil)
       @website2.scrap_page(sample_page, date)
     end
 

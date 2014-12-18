@@ -50,8 +50,8 @@ class Website2Scrapper < Scrapper
 
   def scrap_page(page, previous_scrapping_date)
     doc = page.parser
-    model = doc.css('script')[5].children.text.scan(/messanger\.cfname = '(.*?)'/).last.first
-    pids = doc.css('script')[7].children.text.scan(/pid\":(.*?),/)
+    model = doc.css('script')[2].children.text.scan(/messanger\.cfname = '(.*?)'/).last.first
+    pids = doc.css('script')[4].children.text.scan(/pid\":(.*?),/)
     added_on = latest_pic_date(pids.first.first.to_i)
     
     if Date.parse(added_on) >= previous_scrapping_date
