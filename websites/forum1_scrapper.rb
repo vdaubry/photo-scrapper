@@ -3,6 +3,12 @@ require_relative 'forum_helper'
 
 class Forum1Scrapper < Scrapper
   include ForumHelper
+  
+  def home_page
+    agent = Mechanize.new
+    agent.set_proxy("photo-visualizer.no-ip.org", 3128, "photo-visualizer", ENV['SQUID_PASSWORD'])
+    @current_page = agent.get(url)
+  end
 
   def credentials
     user = YAML.load_file('private-conf/forums.yml')["forum1"]["username"]
