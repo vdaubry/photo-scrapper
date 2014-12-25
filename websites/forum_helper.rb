@@ -18,7 +18,7 @@ module ForumHelper
     links = doc.xpath(host_urls_xpath)
 
     hrefs = links
-              .reject {|i| %w(mp4 hdv).any?{|term| i[:href].downcase.include?(term) } }
+              .reject {|i| %w(mp4 hdv).any?{|term| i[:href] && i[:href].downcase.include?(term) } }
               .map { |i| i[:href] }
     already_downloaded_images = Image.find_by(id, {:hosting_urls => hrefs})
     hrefs = hrefs-already_downloaded_images.map(&:hosting_url) if already_downloaded_images
