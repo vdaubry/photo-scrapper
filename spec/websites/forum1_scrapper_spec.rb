@@ -14,7 +14,6 @@ end
 describe "Forum1" do
 
   let(:category_name) { YAML.load_file('private-conf/forums.yml')["forum1"]["category1"] }
-  let(:date) { Date.parse("01/02/2010") }
 
   before(:each) do
     @url = YAML.load_file('private-conf/forums.yml')["forum1"]["url"]
@@ -65,14 +64,14 @@ describe "Forum1" do
         go_to_home_page
         @forum1.expects(:scrap_post_hosted_images).times(50).returns(nil)
 
-        @forum1.scrap_posts_from_category(category_name, date)
+        @forum1.scrap_posts_from_category(category_name)
       end
 
       it "catches net timeout" do
         go_to_home_page
         @forum1.stubs(:forum_topics).returns(["/forums/read/161323/limit:10/page:4"])
         Mechanize::Page::Link.any_instance.stubs(:click).raises(Net::HTTP::Persistent::Error.new)
-        @forum1.scrap_posts_from_category(category_name, date)
+        @forum1.scrap_posts_from_category(category_name)
       end
     end
 
@@ -83,21 +82,21 @@ describe "Forum1" do
           Post.expects(:create).with("52f7e1df4d61635e70010000", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
           @forum1.stubs(:scrap_from_page).returns(nil)
 
-          @forum1.scrap_post_hosted_images(forum_page, date)
+          @forum1.scrap_post_hosted_images(forum_page)
         end
 
         it "scrap post" do
           Post.stubs(:create).returns(Post.new({"id" => "6789"}))
           @forum1.expects(:scrap_from_page).once.returns(nil)
 
-          @forum1.scrap_post_hosted_images(forum_page, date)
+          @forum1.scrap_post_hosted_images(forum_page)
         end
 
         it "doesn't scrap post if post is banished" do
           Post.stubs(:create).returns(Post.new({"id" => "6789", "banished" => true}))
           @forum1.expects(:scrap_from_page).never
 
-          @forum1.scrap_post_hosted_images(forum_page, date)
+          @forum1.scrap_post_hosted_images(forum_page)
         end
       end
     end
@@ -132,7 +131,7 @@ describe "Forum1" do
         @forum1.stubs(:host_urls).returns([fake_host_url])
         @forum1.expects(:download_image).with(fake_host_url).once.returns(nil)
 
-        @forum1.scrap_from_page(forum_page, date)
+        @forum1.scrap_from_page(forum_page)
       end
 
       it "scraps images hosted on forum" do
@@ -144,7 +143,7 @@ describe "Forum1" do
         @forum1.expects(:download_image).with(wbw_hosted_image)
         @forum1.stubs(:download_image).with(Not(equals(wbw_hosted_image)))
         
-        @forum1.scrap_from_page(@forum1.current_page, date)
+        @forum1.scrap_from_page(@forum1.current_page)
       end
 
       it "scraps images hotlinked on forum" do
@@ -156,7 +155,7 @@ describe "Forum1" do
         @forum1.expects(:download_image).with(hotlinked_image)
         @forum1.stubs(:download_image).with(Not(equals(hotlinked_image)))
         
-        @forum1.scrap_from_page(@forum1.current_page, date)
+        @forum1.scrap_from_page(@forum1.current_page)
       end      
     end
 
@@ -174,7 +173,7 @@ describe "Forum1" do
           @forum1.stubs(:scrap_from_page).returns(nil)
           Post.expects(:update).with('52f7e1df4d61635e70010000', "456", expected_url)
           
-          @forum1.go_to_next_page(last_page, date)
+          @forum1.go_to_next_page(last_page)
         end
 
         it "scraps next page" do
@@ -182,7 +181,7 @@ describe "Forum1" do
           @forum1.expects(:scrap_from_page).once.returns(nil)
           Post.stubs(:update).returns(nil)
           
-          @forum1.go_to_next_page(last_page, date)
+          @forum1.go_to_next_page(last_page)
         end
       end
 
@@ -192,7 +191,7 @@ describe "Forum1" do
           @forum1.expects(:scrap_from_page).never
           Post.expects(:update).never
 
-          @forum1.go_to_next_page(last_page, date)
+          @forum1.go_to_next_page(last_page)
         end
       end
 
@@ -200,7 +199,7 @@ describe "Forum1" do
         it "catches exception" do
           Post.stubs(:find_by).returns([])
           Mechanize.any_instance.stubs(:click).raises(SocketError)
-          @forum1.go_to_next_page(last_page, date)
+          @forum1.go_to_next_page(last_page)
         end
       end
     end
@@ -217,7 +216,7 @@ describe "Forum1" do
         Image.stubs(:find_by).returns([])
         Image.expects(:create).times(107).with(anything, anything, anything, anything, anything, anything, Not(equals("42492684e24356a4081134894eabeb9e")), anything, anything, anything)
 
-        @forum1.scrap_from_page(@forum1.current_page, date)
+        @forum1.scrap_from_page(@forum1.current_page)
       end
     end
   end

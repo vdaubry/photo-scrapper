@@ -8,7 +8,7 @@ class Website1Scrapper < Scrapper
     @current_page = agent.get(url)
   end
 
-  def scrapping_date
+  def month
     1.month.ago.beginning_of_month
   end
 
@@ -26,8 +26,8 @@ class Website1Scrapper < Scrapper
     images_saved = 0
     (1..12).each do |category_number|
       category_name = YAML.load_file('private-conf/websites.yml')["website1"]["category#{category_number}"]
-      category_page = category(category_name, scrapping_date)
-      scrap_category(category_page, scrapping_date)
+      category_page = category(category_name, month)
+      scrap_category(category_page, month)
       sleep(Random.rand(500.0/100.0)) unless ENV['TEST']
     end
   end

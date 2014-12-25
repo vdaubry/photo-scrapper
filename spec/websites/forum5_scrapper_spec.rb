@@ -14,7 +14,6 @@ end
 describe "Forum5" do
 
   let(:category_name) { YAML.load_file('private-conf/forums.yml')["forum5"]["category1"] }
-  let(:date) { Date.parse("01/02/2010") }
 
   before(:each) do
     @url = YAML.load_file('private-conf/forums.yml')["forum5"]["url"]
@@ -45,7 +44,7 @@ describe "Forum5" do
       it "iterates on all categories" do
         go_to_home_page
         @forum5.expects(:scrap_post_hosted_images).times(50).returns(nil)
-        @forum5.scrap_posts_from_category(category_name, date)
+        @forum5.scrap_posts_from_category(category_name)
       end
     end
 
@@ -69,7 +68,7 @@ describe "Forum5" do
           @forum5.stubs(:scrap_from_page).returns(nil)
           Post.expects(:update).with('534ace494d6163689e000000', "456", expected_url)
           
-          @forum5.go_to_next_page(forum_page, date)
+          @forum5.go_to_next_page(forum_page)
         end
       end
     end
