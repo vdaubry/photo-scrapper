@@ -1,6 +1,8 @@
 require_relative 'scrapper'
 
 class Website2Scrapper < Scrapper
+  attr_accessor :specific_model
+  
   def do_scrap
     if @specific_model
       base_url = YAML.load_file('private-conf/websites.yml')["website2"]["base_url"]
@@ -35,10 +37,7 @@ class Website2Scrapper < Scrapper
     post = Post.create(id, post_name)
     @post_id = post.id
 
-    button = next_page_button(page)
-    @has_next_page = button.present?
-    @model_id = model_id(page)
-    scrap_page(page, 10.year.ago)
+    scrap_page(page)
   end
 
   def latest_pic_date(image_id)
