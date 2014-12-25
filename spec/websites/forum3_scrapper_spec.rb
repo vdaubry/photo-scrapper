@@ -14,7 +14,6 @@ end
 describe "Forum3" do
 
   let(:category_name) { YAML.load_file('private-conf/forums.yml')["forum3"]["category1"] }
-  let(:date) { Date.parse("01/02/2010") }
 
   before(:each) do
     @url = YAML.load_file('private-conf/forums.yml')["forum3"]["url"]
@@ -57,7 +56,7 @@ describe "Forum3" do
         do_sign_in
         @forum3.expects(:scrap_post_hosted_images).times(71).returns(nil)
 
-        @forum3.scrap_posts_from_category(category_name, date)
+        @forum3.scrap_posts_from_category(category_name)
       end
     end
 
@@ -68,14 +67,14 @@ describe "Forum3" do
           Post.expects(:create).with("52fd1d9a4d616303ef000000", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
           @forum3.stubs(:scrap_from_page).returns(nil)
 
-          @forum3.scrap_post_hosted_images(forum_page, date)
+          @forum3.scrap_post_hosted_images(forum_page)
         end
 
         it "scrap post" do
           Post.stubs(:create).returns(Post.new({"id" => "6789"}))
           @forum3.expects(:scrap_from_page).once.returns(nil)
 
-          @forum3.scrap_post_hosted_images(forum_page, date)
+          @forum3.scrap_post_hosted_images(forum_page)
         end
       end
     end
@@ -118,7 +117,7 @@ describe "Forum3" do
         @forum3.stubs(:host_urls).returns([fake_host_url])
         @forum3.expects(:download_image).with(expected_image).once.returns(nil)
 
-        @forum3.scrap_from_page(forum_page, date)
+        @forum3.scrap_from_page(forum_page)
       end
 
       it "scraps direct images" do
@@ -130,7 +129,7 @@ describe "Forum3" do
         @forum3.expects(:download_image).with(tmp_hosted_image).once
         @forum3.stubs(:download_image).with(Not(equals(tmp_hosted_image)))
 
-        @forum3.scrap_from_page(@forum3.current_page, date)
+        @forum3.scrap_from_page(@forum3.current_page)
       end
     end
 
@@ -146,7 +145,7 @@ describe "Forum3" do
           @forum3.stubs(:scrap_from_page).returns(nil)
           Post.expects(:update).with('52fd1d9a4d616303ef000000', "456", expected_url)
           
-          @forum3.go_to_next_page(forum_page, date)
+          @forum3.go_to_next_page(forum_page)
         end
 
         it "scraps next page" do
@@ -154,7 +153,7 @@ describe "Forum3" do
           @forum3.expects(:scrap_from_page).once.returns(nil)
           Post.stubs(:update).returns(nil)
           
-          @forum3.go_to_next_page(forum_page, date)
+          @forum3.go_to_next_page(forum_page)
         end
       end
 
@@ -164,7 +163,7 @@ describe "Forum3" do
           @forum3.expects(:scrap_from_page).never
           Post.expects(:update).never
 
-          @forum3.go_to_next_page(forum_page, date)
+          @forum3.go_to_next_page(forum_page)
         end
       end
     end

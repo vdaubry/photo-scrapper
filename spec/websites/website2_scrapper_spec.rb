@@ -13,7 +13,6 @@ end
 
 describe "Website2Scrapper", :local => :true do
 
-  let(:date) { Date.parse("01/02/2000") }
   let(:excluded_urls) { YAML.load_file('private-conf/websites.yml')["website2"]["excluded_urls"] }
   let(:sample_page) {
     page_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website2"]["find_latest_pic"]["link"]
@@ -54,41 +53,41 @@ describe "Website2Scrapper", :local => :true do
       Post.expects(:create).times(10).returns(Post.new({"id" => "123"}))
       @website2.stubs(:scrap_page).returns(nil)
 
-      @website2.scrap_allowed_links(excluded_urls, date)
+      @website2.scrap_allowed_links(excluded_urls)
     end
 
     it "scraps each link" do
       Post.stubs(:create).returns(Post.new({"id" => "123"}))
       @website2.expects(:scrap_page).times(10).returns(nil)
       
-      @website2.scrap_allowed_links(excluded_urls, date)
+      @website2.scrap_allowed_links(excluded_urls)
     end
 
     it "doesn't scrap links if post is banished" do
       Post.stubs(:create).returns(Post.new({"id" => "123", "banished" => true}))
       @website2.expects(:scrap_page).never
       
-      @website2.scrap_allowed_links(excluded_urls, date)
+      @website2.scrap_allowed_links(excluded_urls)
     end
   end
 
   describe "scrap_page", vcr: true do
     it "downloads all found images" do
       @website2.expects(:download_image).times(1064).returns(nil)
-      @website2.scrap_page(sample_page, date)
+      @website2.scrap_page(sample_page)
     end
 
     it "downloads image url" do
       @website2.expects(:download_image).at_least_once
       expected_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website2"]["expected_pic"]
       @website2.expects(:download_image).with(expected_url).once.returns(nil)
-      @website2.scrap_page(sample_page, date)
+      @website2.scrap_page(sample_page)
     end
 
     it "ignores post with older dates" do
-      @website2.stubs(:latest_pic_date).returns("01/01/1910")
+      Image.stubs(:find_by).returns("an image")
       @website2.expects(:download_image).never
-      @website2.scrap_page(sample_page, date)
+      @website2.scrap_page(sample_page)
     end
   end
 end

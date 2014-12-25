@@ -27,11 +27,6 @@ class Website
     @json = json
   end
 
-  def scrapping_date
-    date_str = @json["scrapping_date"]
-    Date.parse(date_str) unless date_str.nil?
-  end
-
   def url
     @json["url"]
   end

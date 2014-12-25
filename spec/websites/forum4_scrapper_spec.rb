@@ -14,7 +14,6 @@ end
 describe "Forum4" do
 
   let(:category_name) { YAML.load_file('private-conf/forums.yml')["forum4"]["category1"] }
-  let(:date) { Date.parse("01/02/2010") }
 
   before(:each) do
     @url = YAML.load_file('private-conf/forums.yml')["forum4"]["url"]
@@ -56,7 +55,7 @@ describe "Forum4" do
         do_sign_in
         @forum4.expects(:scrap_post_hosted_images).times(45).returns(nil)
 
-        @forum4.scrap_posts_from_category(category_name, date)
+        @forum4.scrap_posts_from_category(category_name)
       end
     end
 
@@ -80,7 +79,7 @@ describe "Forum4" do
           @forum4.stubs(:scrap_from_page).returns(nil)
           Post.expects(:update).with('534a4fb44d6163615a000000', "456", expected_url)
           
-          @forum4.go_to_next_page(forum_page, date)
+          @forum4.go_to_next_page(forum_page)
         end
       end
     end

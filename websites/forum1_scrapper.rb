@@ -6,7 +6,7 @@ class Forum1Scrapper < Scrapper
   
   def home_page
     agent = Mechanize.new
-    agent.set_proxy("photo-visualizer.no-ip.org", 3128, "photo-visualizer", ENV['SQUID_PASSWORD'])
+    agent.set_proxy("photo-visualizer.no-ip.org", 3128, "photo-visualizer", ENV['SQUID_PASSWORD']) unless ENV['TEST']
     @current_page = agent.get(url)
   end
 
@@ -14,6 +14,10 @@ class Forum1Scrapper < Scrapper
     user = YAML.load_file('private-conf/forums.yml')["forum1"]["username"]
     password = YAML.load_file('private-conf/forums.yml')["forum1"]["password"]
     return user, password
+  end
+  
+  def number_of_categories
+    2
   end
 
   def category_name(category_number)
@@ -35,7 +39,7 @@ class Forum1Scrapper < Scrapper
     '//div[@class="bodyContent"]//img[parent::a[contains(@href, "postimage")]]'
   end
 
-  def scrap_from_page(post_page, previous_scrapping_date)
+  def scrap_from_page(post_page)
     urls = host_urls(post_page)
     hotlink_urls = direct_urls(post_page)
     puts "All images scrapped on page : #{post_page.uri.to_s}" if urls.blank? && hotlink_urls.blank?
@@ -53,7 +57,7 @@ class Forum1Scrapper < Scrapper
       download_image(hotlink_url)
     end
 
-    go_to_next_page(post_page, previous_scrapping_date)
+    go_to_next_page(post_page)
   end
 
   def next_link_text

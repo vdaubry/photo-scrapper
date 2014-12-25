@@ -4,7 +4,7 @@ require_relative '../../models/website'
 describe "Website" do
 
   describe "find_by" do
-    let(:website_json) {'{"websites":[{"id":"506144650ed4c08d84000001","name":"some name","url":"some url","scrapping_date":"2010-01-01","images_to_sort_count":0,"latest_post_id":null}]}'}
+    let(:website_json) {'{"websites":[{"id":"506144650ed4c08d84000001","name":"some name","url":"some url","images_to_sort_count":0,"latest_post_id":null}]}'}
 
     it "returns a website" do
       stub_request(:get, "http://localhost:3002/websites/search.json?url=www.foo.bar")
@@ -13,7 +13,6 @@ describe "Website" do
                   :status => 200)
 
       website = Website.find_by("www.foo.bar").first
-      website.scrapping_date.should == Date.parse("2010-01-01")
       website.id.should == "506144650ed4c08d84000001"
       website.url.should == "some url"
     end

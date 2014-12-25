@@ -129,7 +129,7 @@ describe "Website1Scrapper", :local => :true do
     context "calls post api" do
       let(:month) { Date.parse("01/01/2010") }
       let(:website1) do
-        @website1_scrapper.website = Website.new({"id" => "12345", "scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
+        @website1_scrapper.website = Website.new({"id" => "12345", "url" => "www.foo.bar"})
         @website1_scrapper.current_post_name = "foobar_2010_January"
         @website1_scrapper.stubs(:parse_image).returns(nil)
         
@@ -192,7 +192,7 @@ describe "Website1Scrapper", :local => :true do
     let(:url) { "www.foo.bar/image.png" }
 
     before(:each) do
-      @website1_scrapper.website = Website.new({"id" => "123", "scrapping_date" => "01/02/2010", "url" => "www.foo.bar"})
+      @website1_scrapper.website = Website.new({"id" => "123", "url" => "www.foo.bar"})
       @website1_scrapper.post_id = "456"
     end
 

@@ -11,7 +11,7 @@ module Download
     if images.first.nil?
       send_image_message(id, @post_id, url)
     else
-      puts "Image search found a similar images : #{images.first.key}"
+      puts "Image search found a similar image : #{images.first.key}"
     end
   end
 
