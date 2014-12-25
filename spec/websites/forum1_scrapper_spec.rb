@@ -66,13 +66,6 @@ describe "Forum1" do
 
         @forum1.scrap_posts_from_category(category_name)
       end
-
-      it "catches net timeout" do
-        go_to_home_page
-        @forum1.stubs(:forum_topics).returns(["/forums/read/161323/limit:10/page:4"])
-        Mechanize::Page::Link.any_instance.stubs(:click).raises(Net::HTTP::Persistent::Error.new)
-        @forum1.scrap_posts_from_category(category_name)
-      end
     end
 
     describe "scrap_post_hosted_images", :vcr => true do

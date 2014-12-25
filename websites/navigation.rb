@@ -15,7 +15,7 @@ module Navigation
 
   def category_forums(category_name)
     begin
-      @current_page.link_with(:text => category_name).click
+      @current_page.link_with(:text => category_name).try(:click)
     rescue Net::HTTP::Persistent::Error => e
       puts "error : #{e.to_s}"
     end

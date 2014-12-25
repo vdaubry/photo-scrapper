@@ -5,12 +5,9 @@ module ForumHelper
     sign_in(user, password)
   end
 
-  def number_of_categories
-    2
-  end
-
   def do_scrap
     (1..number_of_categories).each do |category_number|
+      puts "scrap category number : category_number , name : #{category_name(category_number)}"
       scrap_posts_from_category(category_name(category_number))
     end
   end
@@ -32,6 +29,7 @@ module ForumHelper
     forum_page = category_forums(category_name)
     if forum_page
       links = forum_topics(forum_page)
+      puts "links = #{links}"
       links.each do |link|
         begin
           post_page = forum_page.link_with(:href => link).click
@@ -40,6 +38,8 @@ module ForumHelper
           puts "error : #{e.to_s}"
         end
       end
+    else 
+      raise "Error in forum category config, couldn't find #{category_name}"
     end
   end
 

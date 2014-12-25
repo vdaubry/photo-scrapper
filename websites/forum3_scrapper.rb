@@ -16,6 +16,10 @@ class Forum3Scrapper < Scrapper
       form.fields.second.value = password
     end.submit
   end
+  
+  def number_of_categories
+    2
+  end
 
   def category_name(category_number)
     YAML.load_file('private-conf/forums.yml')["forum3"]["category#{category_number}"]

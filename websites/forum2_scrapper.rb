@@ -9,6 +9,10 @@ class Forum2Scrapper < Scrapper
     password = YAML.load_file('private-conf/forums.yml')["forum2"]["password"]
     return user, password
   end
+  
+  def number_of_categories
+    2
+  end
 
   def category_name(category_number)
     YAML.load_file('private-conf/forums.yml')["forum2"]["category#{category_number}"]
