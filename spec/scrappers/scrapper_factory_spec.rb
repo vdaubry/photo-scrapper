@@ -3,6 +3,7 @@ require 'spec_helper'
 require_relative '../../scrappers/scrapper_factory'
 require_relative '../../websites/forum1_scrapper'
 require_relative '../../websites/website2_scrapper'
+require_relative '../../websites/website2_page_scrapper'
 require_relative '../../websites/tumblr/tumblr3_scrapper'
 
 

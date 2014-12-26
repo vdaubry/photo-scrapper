@@ -12,6 +12,7 @@ Facades::SQS.new(ENV["WEBSITE_QUEUE_NAME"]).poll do |msg|
   puts "Found website to scrap : #{msg}"
   json_msg = JSON.parse(msg)
   key = json_msg["website_key"].tap {|k| puts "Found key : #{k}"}
-  scrapper = ScrapperFactory.new(key).scrapper
+  params = json_msg["params"].tap {|k| puts "Params : #{k}"}
+  scrapper = ScrapperFactory.new(key, params).scrapper
   WebsiteScrapper.new(scrapper).start
 end

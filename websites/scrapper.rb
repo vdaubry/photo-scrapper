@@ -18,7 +18,8 @@ class Scrapper
 
   attr_accessor :website, :current_page, :current_post_name, :post_id
 
-  def initialize(url)
+  def initialize(url, params=nil)
+    @params = params
     websites = Website.find_by(url)
     if websites.nil?
       raise "Website search failed"

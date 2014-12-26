@@ -1,7 +1,8 @@
 class ScrapperFactory
 
-  def initialize(website_name)
+  def initialize(website_name, params=nil)
     @website_name = website_name
+    @params = params
   end
 
   def scrapper
@@ -9,7 +10,7 @@ class ScrapperFactory
     class_name = YAML.load_file("private-conf/#{yml}")[@website_name]["class_name"]
     if class_name
       scrapper = Object.const_get(class_name)
-      scrapper.new(YAML.load_file("private-conf/#{yml}")[@website_name]["url"])
+      scrapper.new(YAML.load_file("private-conf/#{yml}")[@website_name]["url"], @params)
     end
   end
 end
