@@ -9,7 +9,7 @@ class Website1Scrapper < Scrapper
   end
 
   def month
-    1.month.ago.beginning_of_month
+    2.month.ago.beginning_of_month
   end
 
   def authorize
