@@ -1,6 +1,8 @@
 require_relative 'scrapper'
 require_relative 'website2_utils'
 
+#A merger avec website2
+
 class Website2PageScrapper < Scrapper
   include Website2Utils
   

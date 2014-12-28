@@ -22,7 +22,7 @@ module ForumHelper
               .map { |i| i[:href] }
     already_downloaded_images = Image.find_by(id, {:hosting_urls => hrefs})
     hrefs = hrefs-already_downloaded_images.map(&:hosting_url) if already_downloaded_images
-    hrefs.reject {|u| u.include?("profile")}
+    hrefs.reject {|u| u && u.include?("profile")}
   end
 
   def scrap_posts_from_category(category_name)
