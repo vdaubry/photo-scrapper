@@ -9,7 +9,7 @@ require_relative '../../websites/tumblr/tumblr3_scrapper'
 
 describe "scrapper", :local => :true  do
   before(:each) do
-    Website.stubs(:find_by).returns([])
+    Website.stubs(:find_by).returns([""])
   end
   
   it "finds Forum1 scrapper based on name" do

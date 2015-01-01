@@ -5,13 +5,15 @@ module Download
     images = Image.find_by(id, {:source_url => url})
     if images.nil?
       puts "Image search failed"
-      return
+      return true
     end
 
     if images.first.nil?
       send_image_message(id, @post_id, url)
+      return true
     else
       puts "Image search found a similar image : #{images.first.key}"
+      return false
     end
   end
 

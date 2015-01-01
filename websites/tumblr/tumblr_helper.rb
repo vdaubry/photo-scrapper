@@ -53,11 +53,12 @@ module TumblrHelper
 
     image_links = single_photo_links+photoset_links
 
+    has_new_images = false
     image_links.each do |img_url|
-      download_image(img_url)
+      has_new_images = download_image(img_url)
     end
 
-    go_to_next_page
+    go_to_next_page if has_new_images
   end
 
   def is_current_page_last_page
@@ -71,24 +72,20 @@ module TumblrHelper
     end
 
     next_link_url = "#{url}/page/#{page_number+1}"
-    not_scrapped = Post.find_by(id, next_link_url).blank?
+    puts "Scrapping next page : #{next_link_url}"
 
-    if not_scrapped
-      puts "Scrapping next page : #{next_link_url}"
-
-      begin
-        @current_page = Mechanize.new.get(next_link_url)
-      rescue Mechanize::ResponseCodeError => e
-        puts "error = #{e.to_s}"
-      end
-
-      unless is_current_page_last_page
-        Post.update(id, @post_id, next_link_url)
-        do_scrap
-      end
-    else
-      puts "Next page already scrapped : #{next_link_url}"
+    begin
+      @current_page = Mechanize.new.get(next_link_url)
+    rescue Mechanize::ResponseCodeError => e
+      puts "error = #{e.to_s}"
     end
+
+    unless is_current_page_last_page
+      puts "foo"
+      Post.update(id, @post_id, next_link_url)
+      do_scrap
+    end
+    
   end
 
 end

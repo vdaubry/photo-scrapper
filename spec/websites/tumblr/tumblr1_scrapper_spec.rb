@@ -26,7 +26,7 @@ describe "Tumblr1" do
     describe "photoset_links", :vcr => true do
       it "finds images inside photoset" do
         photoset_links = @tumblr1.photoset_links
-        photoset_links.count.should == 30
+        photoset_links.count.should == 98
 
         expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["photoset_links"]["image_source"]
         photoset_links.first.should == expected_url
@@ -36,10 +36,10 @@ describe "Tumblr1" do
     describe "single_photo_links", :vcr => true do
       it "finds single images" do
         single_photo_links = @tumblr1.single_photo_links
-        single_photo_links.count.should == 9
+        single_photo_links.count.should == 0
 
-        expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["single_photo_links"]["image_source"]
-        single_photo_links.first.should == expected_url
+        #expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["single_photo_links"]["image_source"]
+        #single_photo_links.first.should == expected_url
       end
     end
 
@@ -52,34 +52,45 @@ describe "Tumblr1" do
     end
 
     describe "do_scrap", :vcr => true do
-      before(:each) do
-        @tumblr1.stubs(:go_to_next_page)
+      
+      context "has not downloaded next page" do
+        before(:each) do
+          @tumblr1.stubs(:go_to_next_page)
+        end
+        
+        it "creates post" do
+          @tumblr1.stubs(:download_image)
+          post_name = YAML.load_file('private-conf/tumblr.yml')["tumblr1"]["post_name"]
+          Post.expects(:create).with(@tumblr1.id, post_name).once.returns(Post.new({"id" => "123", "banished" => false}))
+          
+          @tumblr1.do_scrap
+
+          @tumblr1.post_id.should == "123"
+        end
+
+        it "doesn't creates post" do
+          Post.stubs(:create).returns(Post.new({"id" => "6789", "banished" => true}))
+          
+          @tumblr1.do_scrap
+
+          @tumblr1.expects(:download_image).never
+        end
+
+        it "downloads image" do
+          image_src = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["do_scrap"]["image_source"]
+          @tumblr1.expects(:download_image).with(image_src).once
+          @tumblr1.stubs(:download_image).with(Not(equals(image_src))).times(97)
+
+          @tumblr1.do_scrap
+        end
       end
       
-      it "creates post" do
-        @tumblr1.stubs(:download_image)
-        post_name = YAML.load_file('private-conf/tumblr.yml')["tumblr1"]["post_name"]
-        Post.expects(:create).with(@tumblr1.id, post_name).once.returns(Post.new({"id" => "123", "banished" => false}))
-        
-        @tumblr1.do_scrap
-
-        @tumblr1.post_id.should == "123"
-      end
-
-      it "doesn't creates post" do
-        Post.stubs(:create).returns(Post.new({"id" => "6789", "banished" => true}))
-        
-        @tumblr1.do_scrap
-
-        @tumblr1.expects(:download_image).never
-      end
-
-      it "downloads image" do
-        image_src = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["do_scrap"]["image_source"]
-        @tumblr1.expects(:download_image).with(image_src).once
-        @tumblr1.stubs(:download_image).with(Not(equals(image_src))).times(38)
-
-        @tumblr1.do_scrap
+      context "has downloaded next page" do
+        it "stops if an already downloaded image is found" do
+          @tumblr1.stubs(:download_image).returns(false)
+          @tumblr1.do_scrap
+          @tumblr1.expects(:go_to_next_page).never
+        end
       end
     end
 
@@ -92,17 +103,6 @@ describe "Tumblr1" do
       context "2nd page not scrapped" do
         before(:each) do
           Post.stubs(:find_by).returns(nil)
-        end
-
-        it "goes to page 2" do
-          Post.expects(:update).with('535bf2a06d627028a7000000', "123", "#{@url}/page/2")
-          @tumblr1.go_to_next_page
-        end
-
-        it "goes to page n" do
-          @tumblr1.current_page = Mechanize.new.get("#{@url}/page/3")
-          Post.expects(:update).with('535bf2a06d627028a7000000', "123", "#{@url}/page/4")
-          @tumblr1.go_to_next_page
         end
 
         it "stops if no more pages" do
@@ -118,15 +118,6 @@ describe "Tumblr1" do
             Mechanize.any_instance.stubs(:get).raises(Mechanize::ResponseCodeError.new(page))
             @tumblr1.go_to_next_page
           end
-        end
-      end
-
-      context "2nd page already scrapped" do
-        it "doesn't scrap second page" do
-          Post.stubs(:find_by).returns(mock('Post'))
-          Post.expects(:update).never
-
-          @tumblr1.go_to_next_page
         end
       end
     end
