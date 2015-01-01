@@ -19,7 +19,7 @@ module TumblrHelper
     direct_images = direct_images_urls
     links_to_image = []
     doc.xpath(single_photo_xpath).each do |link|
-      if link[:href] .include?(url)
+      if link[:href].include?(url)
         links_to_image << link[:href] 
       else
         direct_images << link.xpath('//img').first[:src]
