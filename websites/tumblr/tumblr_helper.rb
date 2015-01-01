@@ -58,7 +58,8 @@ module TumblrHelper
       has_new_images = download_image(img_url)
     end
 
-    go_to_next_page if has_new_images
+    #temporary re-scrap all pages
+    go_to_next_page# if has_new_images
   end
 
   def is_current_page_last_page
