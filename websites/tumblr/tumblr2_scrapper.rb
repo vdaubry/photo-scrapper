@@ -13,6 +13,6 @@ class Tumblr2Scrapper < Scrapper
   end
 
   def is_current_page_last_page
-    @current_page.parser.xpath('//div[@class="post-wrapper clearfix"]').blank?
+    @current_page.parser.xpath('//section[@id="posts"]//article').blank?
   end
 end

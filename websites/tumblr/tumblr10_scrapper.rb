@@ -21,4 +21,8 @@ class Tumblr10Scrapper < Scrapper
   def post_name
     YAML.load_file('private-conf/tumblr.yml')["tumblr10"]["post_name"]
   end
+  
+  def is_current_page_last_page
+    @current_page.parser.xpath('//section[@id="posts"]//article').blank?
+  end
 end
