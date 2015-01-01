@@ -3,8 +3,14 @@ require 'dotenv'
 require 'json'
 require 'mechanize'
 
+#Load models
 path = File.expand_path('models', File.dirname(__FILE__))
 Dir[path+"/**/*.rb"].each {|file| require file}
+
+#Load website scrappers
+path = File.expand_path('websites', File.dirname(__FILE__))
+Dir[path+"/**/*.rb"].each {|file| require file}
+
 
 APP_ENV = ARGV[0] || "development"
 
