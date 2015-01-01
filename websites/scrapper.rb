@@ -21,7 +21,7 @@ class Scrapper
   def initialize(url, params=nil)
     @params = params
     websites = Website.find_by(url)
-    if websites.nil?
+    if websites.blank?
       raise "Website search failed"
     else 
       @website = websites.first
