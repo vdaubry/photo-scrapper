@@ -22,8 +22,10 @@ module TumblrHelper
     doc.xpath(single_photo_xpath).each do |link|
       if link[:href].include?(url)
         links_to_image << link[:href] 
-      else
+      elsif link.xpath('img').present?
         direct_images << link.xpath('img').first[:src]
+      elsif link[:href].include?("media.tumblr.com")
+        direct_images << link[:href]
       end
     end
     links_to_image = links_to_image.map {|link| image_at_link(link)}.compact
@@ -80,7 +82,7 @@ module TumblrHelper
     rescue Mechanize::ResponseCodeError => e
       puts "error = #{e.to_s}"
     end
-
+    
     unless is_current_page_last_page
       Post.update(id, @post_id, next_link_url)
       do_scrap

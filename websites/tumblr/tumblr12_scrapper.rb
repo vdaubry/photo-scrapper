@@ -3,19 +3,10 @@ require_relative 'tumblr_helper'
 
 class Tumblr12Scrapper < Scrapper
   include TumblrHelper
-
-  def single_photo_xpath
-    '//div[@class="attachment"]//a'
-  end
-
-  def photoset_links
-    links = []
-    @current_page.iframes.each do |iframe|
-      photoset = iframe.click
-      doc = photoset.parser
-      links += doc.xpath('//div[@class="photoset"]//img').map {|img| img[:src]}
-    end
-    links
+  
+  def direct_images_urls
+    doc = @current_page.parser
+    doc.xpath('//div[@class="attachment"]/a/img').map {|img| img.attr('data-highres')}
   end
 
   def post_name

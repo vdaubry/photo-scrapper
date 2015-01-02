@@ -2,6 +2,11 @@ require_relative '../models/facades/sqs'
 
 module Download
   def download_image(url)
+    if url.blank?
+      puts "Tried to download empty url"
+      return true
+    end
+    
     images = Image.find_by(id, {:source_url => url})
     if images.nil?
       puts "Image search failed"
