@@ -1,3 +1,5 @@
+require 'byebug'
+
 module TumblrHelper
 
   def single_photo_xpath
@@ -15,14 +17,13 @@ module TumblrHelper
 
   def single_photo_links
     doc = @current_page.parser
-
     direct_images = direct_images_urls
     links_to_image = []
     doc.xpath(single_photo_xpath).each do |link|
       if link[:href].include?(url)
         links_to_image << link[:href] 
       else
-        direct_images << link.xpath('//img').first[:src]
+        direct_images << link.xpath('img').first[:src]
       end
     end
     links_to_image = links_to_image.map {|link| image_at_link(link)}.compact
@@ -58,8 +59,7 @@ module TumblrHelper
       has_new_images = download_image(img_url)
     end
 
-    #temporary re-scrap all pages
-    go_to_next_page# if has_new_images
+    go_to_next_page if has_new_images
   end
 
   def is_current_page_last_page
@@ -82,7 +82,6 @@ module TumblrHelper
     end
 
     unless is_current_page_last_page
-      puts "foo"
       Post.update(id, @post_id, next_link_url)
       do_scrap
     end
