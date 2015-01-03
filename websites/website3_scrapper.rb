@@ -2,15 +2,18 @@ require_relative 'scrapper'
 
 class Website3Scrapper < Scrapper
   
+  def home_page
+    agent = Mechanize.new
+    agent.user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:31.0) Gecko/20100101 Firefox/31.0"
+    @current_page = agent.get(url+"?page=2")
+  end
+  
   def links
     links = @current_page.links_with(:href => /posts/).uniq {|link| link.href}
   end
   
   def do_scrap
     @page_number ||= 2
-    if @page_number == 2
-      go_to_next_page(2)
-    end
     puts "scrapping page : #{@page_number}"
     
     subpage_links = links
