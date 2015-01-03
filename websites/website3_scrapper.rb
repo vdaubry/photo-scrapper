@@ -7,7 +7,7 @@ class Website3Scrapper < Scrapper
   end
   
   def do_scrap
-    @page_number ||= 1
+    @page_number ||= 2
     puts "scrapping page : #{@page_number}"
     
     subpage_links = links
