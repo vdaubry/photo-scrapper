@@ -9,6 +9,7 @@ gem 'dotenv',                   '~> 1.0.2'
 gem 'retriable',                '~> 1.4.1'
 gem 'sentry-raven',             '~> 0.10.1'
 gem 'aws-sdk',                  '~> 1.57.0'
+gem 'bloomfilter-rb',           '~> 2.1.1'
 
 group :test do
   gem 'coveralls',              '~> 0.7.1', require: false

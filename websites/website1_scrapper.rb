@@ -47,10 +47,14 @@ class Website1Scrapper < Scrapper
 
   #Very similar to ForumHelper:scrap_post_hosted_images => except we don't use the current page title as post name, but the current category being scrapped. To refactor ?
   def scrap_category(category_page, month)
-    puts "creating post  = #{@current_post_name}"
-
-    post = Post.create(id, @current_post_name)
-    @post_id = post.id
+    @post = Post.new(category_page.title, category_page.uri, @website)
+    
+    if @bloom_filter.include?(@post.url)
+      puts "already scrapped #{@post}"
+      return
+    end
+    
+    @post.send_create_msg
     
     link_reg_exp = YAML.load_file('private-conf/websites.yml')["website1"]["link_reg_exp"]
     links = category_page.links_with(:href => %r{#{link_reg_exp}})#[0..1]
@@ -58,6 +62,9 @@ class Website1Scrapper < Scrapper
     links.each do |link|
       parse_image(link)
     end
+    
+    @bloom_filter.insert(@post.url)
+    save_filter
   end
 
   def parse_image(link)
