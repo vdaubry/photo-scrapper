@@ -11,7 +11,7 @@ module Website2Utils
     model = doc.css('script')[2].children.text.scan(/messanger\.cfname = '(.*?)'/).last.first
     host = YAML.load_file('private-conf/websites.yml')["website2"]["images_host"]
     keyword = YAML.load_file('private-conf/websites.yml')["website2"]["keyword"]
-    pids = doc.css('script')[4].children.text.scan(/pid\":(.*?),/)
+    pids = doc.css('script').select {|s| s.children.text.scan(/pid\":(.*?),/).present?}.first.children.text.scan(/pid\":(.*?),/)
     most_recent_pic = pids.map {|pid| pid.first.to_i}.sort.last
     added_on = latest_pic_date(most_recent_pic)
     most_recent_image = Image.find_by(id, {:source_url => "#{host}/#{model}-#{keyword}-#{most_recent_pic}.jpg"})

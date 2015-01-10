@@ -25,3 +25,4 @@ pickle-email-*.html
 .env
 # Ignore application configuration
 /config/application.yml
+*.dump
