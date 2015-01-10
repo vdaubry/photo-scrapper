@@ -53,7 +53,7 @@ class Scrapper
     
     def send_create_msg
       json = {:website_id => website.url, :post_id => post.url}.to_json
-      Facades::SQS.new(ENV["IMAGE_QUEUE_NAME"]).send(json) unless ENV['TEST']
+      Facades::SQS.new(ENV["POST_QUEUE_NAME"]).send(json) unless ENV['TEST']
     end
   end
 end

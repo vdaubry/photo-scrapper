@@ -15,7 +15,7 @@ module Facades
       })
 
       sqs = AWS::SQS.new 
-
+      @queue_name = queue_name
       @queue = begin
                 sqs.queues.named(queue_name)
               rescue AWS::SQS::Errors::NonExistentQueue => e
@@ -27,7 +27,9 @@ module Facades
 
     def send(message)
       puts "send message #{message} to queue #{@queue.url}"
-      @queue.send_message("#{message}") unless message.nil?
+      Thread.new do
+        AWS::SQS.new.queues.named(@queue_name).send_message("#{message}") unless message.nil?
+      end
     end
 
     def poll
