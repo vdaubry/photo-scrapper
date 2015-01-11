@@ -26,7 +26,7 @@ describe "Tumblr1" do
     describe "photoset_links", :vcr => true do
       it "finds images inside photoset" do
         photoset_links = @tumblr1.photoset_links
-        photoset_links.count.should == 98
+        photoset_links.count.should == 83
 
         expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["photoset_links"]["image_source"]
         photoset_links.first.should == expected_url
@@ -36,7 +36,7 @@ describe "Tumblr1" do
     describe "single_photo_links", :vcr => true do
       it "finds single images" do
         single_photo_links = @tumblr1.single_photo_links
-        single_photo_links.count.should == 0
+        single_photo_links.count.should == 4
 
         #expected_url = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["single_photo_links"]["image_source"]
         #single_photo_links.first.should == expected_url
@@ -79,7 +79,7 @@ describe "Tumblr1" do
         it "downloads image" do
           image_src = YAML.load_file('spec/websites/tumblr/tumblr_test_conf.yml')["tumblr1"]["do_scrap"]["image_source"]
           @tumblr1.expects(:download_image).with(image_src).once
-          @tumblr1.stubs(:download_image).with(Not(equals(image_src))).times(97)
+          @tumblr1.stubs(:download_image).with(Not(equals(image_src))).times(86)
 
           @tumblr1.do_scrap
         end
