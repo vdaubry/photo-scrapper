@@ -5,7 +5,7 @@ class Website3Scrapper < Scrapper
   def home_page
     agent = Mechanize.new
     agent.user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:31.0) Gecko/20100101 Firefox/31.0"
-    @current_page = agent.get(url+"?page=6")
+    @current_page = agent.get(url+"?page=8")
   end
   
   def links
@@ -13,7 +13,7 @@ class Website3Scrapper < Scrapper
   end
   
   def do_scrap
-    @page_number ||= 6
+    @page_number ||= 8
     puts "scrapping page : #{@page_number}"
     
     subpage_links = links

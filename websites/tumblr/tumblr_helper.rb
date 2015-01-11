@@ -46,7 +46,7 @@ module TumblrHelper
       doc = photoset.parser
       links += doc.xpath('//a').map {|img| img[:href]}
     end
-    links
+    links.reject { |l| l.empty? }
   end
 
   def do_scrap
