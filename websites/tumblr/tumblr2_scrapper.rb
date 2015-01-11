@@ -4,8 +4,8 @@ require_relative 'tumblr_helper'
 class Tumblr2Scrapper < Scrapper
   include TumblrHelper
 
-  def single_photo_xpath
-    '//div[@class="photo-wrapper-inner"]//a'
+  def direct_images_xpath
+    '//section[@class="post"]//img'
   end
 
   def post_name
