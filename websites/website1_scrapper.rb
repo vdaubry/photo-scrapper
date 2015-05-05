@@ -38,8 +38,6 @@ class Website1Scrapper < Scrapper
 
   def category(category_name, month)
     pp "Go to category : #{category_name} - #{month.strftime("%Y/%B")}"
-    @current_post_name = "#{category_name}_#{month.strftime("%Y_%B")}"
-
     page = @current_page.link_with(:text => category_name).click
     page = page.link_with(:text => month.strftime("%Y")).click
     page.link_with(:text => month.strftime("%B")).click

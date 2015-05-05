@@ -40,6 +40,18 @@ describe "ScrapperBoomFilter" do
       bf.include?("foo1").should == false
     end
     
+    it "doesn't inserts nil" do
+      bf = ScrapperBloomFilter.new(filter_path)
+      bf.insert(nil) rescue InvalidKeyError
+      bf.include?(nil).should == false
+    end
+    
+    it "doesn't inserts empty" do
+      bf = ScrapperBloomFilter.new(filter_path)
+      bf.insert("") rescue InvalidKeyError
+      bf.include?("").should == false
+    end
+    
     # Benchmarks
     # it "adds lots of elements" do
     #   bf = ScrapperBloomFilter.new(filter_path)

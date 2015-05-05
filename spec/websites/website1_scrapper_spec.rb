@@ -15,7 +15,7 @@ describe "Website1Scrapper", :local => :true do
 
   before(:each) do
     @url = YAML.load_file('private-conf/websites.yml')["website1"]["url"]
-    @website1_scrapper = Website1Scrapper.new(@url)
+    @website1_scrapper = Website1Scrapper.new("website1", @url)
   end
 
   def go_to_home_page
@@ -67,30 +67,6 @@ describe "Website1Scrapper", :local => :true do
     end
   end
 
-  describe "initialize", vcr: true do
-    context "API return websites" do
-      it "sets website" do
-        result = Website.new({"id" => "12345"})
-        Website.stubs(:find_by).with(@url).returns([result])
-
-        website = Website1Scrapper.new(@url)
-
-        website.id.should == "12345"
-      end
-    end
-
-    context "API return error" do
-      it "sets website" do
-        result = Website.new({"id" => "12345"})
-        Website.stubs(:find_by).with(@url).returns(nil)
-
-        expect {
-          Website1Scrapper.new(@url)
-          }.to raise_error(RuntimeError)
-      end
-    end
-  end
-
   describe "home_page", vcr: true do
     it "navigates to home_page" do
       go_to_home_page
@@ -115,8 +91,8 @@ describe "Website1Scrapper", :local => :true do
 
   describe "category", vcr: true do
     it "sets current post" do
-      go_to_category
-      @website1_scrapper.current_post_name.should == "#{@category_name}_2014_February"
+      page = go_to_category
+      page.title.should == "#{@category_name}_2014_February"
     end
 
     it "sets category on month and year" do
@@ -128,27 +104,11 @@ describe "Website1Scrapper", :local => :true do
   describe "scrap_category", vcr: true do
     context "calls post api" do
       let(:month) { Date.parse("01/01/2010") }
-      let(:website1) do
-        @website1_scrapper.website = Website.new({"id" => "12345", "url" => "www.foo.bar"})
-        @website1_scrapper.current_post_name = "foobar_2010_January"
-        @website1_scrapper.stubs(:parse_image).returns(nil)
-        
-        @website1_scrapper
-      end
-
-      it "creates a post" do
-        page = go_to_category
-        Post.expects(:create).with("12345", "foobar_2010_January").returns(Post.new({"id" => "6789"}))
-
-        website1.scrap_category(page, month)
-      end
-
 
       it "iterates on all links" do
         page = go_to_category
-        Post.stubs(:create).returns(Post.new({"id" => "6789"}))
-        website1.expects(:parse_image).times(100)
-        website1.scrap_category(page, month)
+        @website1_scrapper.expects(:parse_image).times(100)
+        @website1_scrapper.scrap_category(page, month)
       end
     end
   end
@@ -164,52 +124,17 @@ describe "Website1Scrapper", :local => :true do
     end
 
     it "do nothing if no image on link" do
-      Image.stubs(:find_by).returns([Image.new({"key" => "image_key"})])
       @website1_scrapper.expects(:send_image_message).never
       @website1_scrapper.parse_image(link)
     end
 
     it "downloads found image" do
       image_url = YAML.load_file('spec/websites/websites_test_conf.yml')["website1"]["parse_image"]["first_image"]
-      Image.stubs(:find_by).with('52ee82a14d6163a27e000000', {:source_url => image_url}).returns([])
       @website1_scrapper.current_page = current_page
       do_sign_in
 
       @website1_scrapper.expects(:send_image_message).once
       @website1_scrapper.parse_image(link)
-    end
-
-    context "Search API failure" do
-      it "do nothing if no image on link" do
-        Image.stubs(:find_by).returns(nil)
-        @website1_scrapper.expects(:send_image_message).never
-        @website1_scrapper.parse_image(link)
-      end
-    end
-  end
-
-  describe "download_image", vcr: true do
-    let(:url) { "www.foo.bar/image.png" }
-
-    before(:each) do
-      @website1_scrapper.website = Website.new({"id" => "123", "url" => "www.foo.bar"})
-      @website1_scrapper.post_id = "456"
-    end
-
-    context "image not previously downloaded" do
-      it "sends image message to sqs queue" do
-        Image.stubs(:find_by).returns([])
-        @website1_scrapper.expects(:send_image_message).with("123", "456", "www.foo.bar/image.png")
-        @website1_scrapper.download_image(url)
-      end
-    end
-
-    context "image already downloaded" do
-      it "doesn't send image message" do
-        Image.stubs(:find_by).returns([Image.new("")])
-        @website1_scrapper.expects(:send_image_message).never
-        @website1_scrapper.download_image(url)
-      end
     end
   end
 end

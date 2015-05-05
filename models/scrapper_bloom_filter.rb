@@ -1,5 +1,7 @@
 require 'bloomfilter-rb'
 
+class InvalidKeyError < StandardError; end
+
 class ScrapperBloomFilter
   attr_accessor :bf
   
@@ -24,6 +26,7 @@ class ScrapperBloomFilter
   end
   
   def insert(str)
+    raise InvalidKeyError, "tried to insert nil or empty value in bloom filter" if str.to_s.empty?
     @bf.insert(str)
   end
   
